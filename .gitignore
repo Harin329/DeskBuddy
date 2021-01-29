@@ -1,0 +1,10 @@
+# backend
+backend/dist
+backend/node_modules
+
+# frontend
+frontend/node_modules
+
+# misc
+.DS_Store
+npm-debug.log
