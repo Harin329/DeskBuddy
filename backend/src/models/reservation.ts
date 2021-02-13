@@ -1,4 +1,4 @@
-const sql = require('../config/db-handler');
+import { con } from '../config/db-handler';
 
 export const Reservation = function (this: any, reservation: any) {
     this.reservation_id = reservation.reservation_id;
@@ -12,7 +12,7 @@ export const Reservation = function (this: any, reservation: any) {
 };
 
 Reservation.createReservation = (newReservation: any, result: any) => {
-    sql.query(
+    con.query(
         'CALL createReservation(?,?,?,?,?,?,?)',
         [
             newReservation.fk_employee_id,
@@ -36,7 +36,7 @@ Reservation.createReservation = (newReservation: any, result: any) => {
 };
 
 Reservation.getAllReservations = (result: any) => {
-    sql.query("SELECT * FROM reservation", (err: any, res: any) => {
+    con.query("SELECT * FROM reservation", (err: any, res: any) => {
         if (err) {
             console.log('Error: ', err);
             result(err, null);
