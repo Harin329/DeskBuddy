@@ -1,6 +1,7 @@
 import { Reservation } from '../models/reservation';
 
-module.exports = class ReservationController {
+export default class ReservationController {
+    // tslint:disable-next-line:no-empty
     constructor() {}
 
     createReservation(req: any) {

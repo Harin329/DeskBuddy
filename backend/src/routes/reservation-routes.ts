@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 const router = Router();
 
-const ReservationController = require('../controllers/reservation-controller');
+import ReservationController from '../controllers/reservation-controller';
 const reservationServer = new ReservationController();
 
 // POST reserve desk endpoint
@@ -33,4 +33,4 @@ router.get('/getAllReservations', (_, res) => {
     })
 })
 
-module.exports = router;
+export default router
