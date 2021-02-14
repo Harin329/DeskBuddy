@@ -1,10 +1,13 @@
-import http from "http"
 import { DeskbuddyServer } from "../src/server";
+import supertest from "supertest";
+
 let server: DeskbuddyServer;
+let request: any;
 
 beforeAll(done => {
     server = new DeskbuddyServer(3000);
     server.start().then(() => {
+        request = supertest(server.getApp());
         done();
     });
 });
@@ -16,8 +19,8 @@ afterAll(done => {
 });
 
 describe("Reservation endpoints tests", () => {
-    it("GET /reservation", async done => {
-        done()
+    it("dummy", () => {
+        expect(5 + 5).toBe(10);
     });
 });
 
@@ -34,8 +37,10 @@ describe("Mail manager endpoints tests", () => {
 });
 
 describe("Miscellaneous tests", () => {
-    it("dummy", () => {
-        expect(5 + 5).toBe(10);
+    it("GET /", async done => {
+        const res = await request.get('/');
+        expect(res.status).toBe(200);
+        done();
     });
 });
 

@@ -11,6 +11,5 @@ export class App {
         });
     };
 }
-
 const application = new App();
 application.initialize(PORT);
