@@ -1,4 +1,8 @@
 import { con } from '../config/db-handler';
+console.log("hai");
+export interface Reserve {
+    id: string
+}
 
 export const Reservation = function (this: any, reservation: any) {
     this.reservation_id = reservation.reservation_id;
