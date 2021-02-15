@@ -5,6 +5,7 @@ import Reservation from './screens/Reservation';
 import Mail from './screens/Mail';
 import Social from './screens/Social';
 import './App.css';
+import "@fontsource/lato"
 
 function App() {
   return (
