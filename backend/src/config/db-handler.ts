@@ -1,21 +1,47 @@
 import mysql from 'mysql';
 import dotenv from 'dotenv';
 
-dotenv.config();
+export default class DBCon {
+    private static con: mysql.Connection;
+    // tslint:disable-next-line:no-empty
+    constructor() {}
 
-console.log(process.env.DB_HOST);
-console.log('ok')
-const con: mysql.Connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-});
+    public static async createCon(): Promise<boolean> {
+        dotenv.config();
+        return new Promise((fullfill, reject) => {
+            this.con = mysql.createConnection({
+                host: process.env.DB_HOST,
+                port: Number(process.env.DB_PORT),
+                user: process.env.DB_USER,
+                password: process.env.DB_PASS,
+                database: process.env.DB_NAME,
+            });
+            return this.con.connect(err => {
+                if (err) {
+                    reject(err);
+                } else {
+                    fullfill(true);
+                }
+            });
+        });
+    }
 
-con.connect((err) => {
-    if (err) throw err;
-    console.log("Connected!");
-});
+    public static getCon(): mysql.Connection {
+        if (!this.con) {
+            this.createCon().then(() => this.con);
+        }
+        return this.con;
+    }
 
-export { con }
+    public static closeDB(): Promise<boolean> {
+        return new Promise((fulfill, reject) => {
+            this.con?.end(err => {
+                if (err) {
+                    reject(err);
+                } else {
+                    fulfill(true);
+                }
+            });
+        });
+    }
+}

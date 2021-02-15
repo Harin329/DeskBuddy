@@ -1,4 +1,8 @@
-import { con } from '../config/db-handler';
+import DB from '../config/db-handler';
+export interface Reserve {
+    id: string
+}
+const con = DB.getCon();
 
 export const Reservation = function (this: any, reservation: any) {
     this.reservation_id = reservation.reservation_id;
