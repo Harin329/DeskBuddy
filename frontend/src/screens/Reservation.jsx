@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Button, List, ListItem, ListItemIcon, ListItemText, Grid, Typography, TextField, MenuItem, IconButton } from '@material-ui/core';
+import { Button, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InboxIcon from '@material-ui/icons/Inbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import SearchIcon from '@material-ui/icons/Search';
 import Search from '../assets/search.png';
+import Endpoint from '../config/Constants'
 
 const useStyles = makeStyles({
     background: {
@@ -22,6 +21,19 @@ const useStyles = makeStyles({
         fontFamily: 'Lato',
         fontWeight: 'bolder',
         fontSize: 18
+    },
+    reserveButton: {
+        background: '#00ADEF',
+        borderRadius: 20,
+        color: 'white',
+        height: '50px',
+        padding: '0 20px',
+        marginTop: '5px',
+        marginBottom: '5px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 14,
+        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
     },
     titleText: {
         color: 'white',
@@ -48,23 +60,27 @@ const useStyles = makeStyles({
         backgroundColor: 'white',
         borderRadius: 20,
         marginTop: '10px',
-    }
+    },
+    officeText: {
+        color: 'black',
+        fontFamily: 'Lato',
+        fontSize: 16,
+        textAlign: 'center'
+    },
+    deskSectionText: {
+        color: 'black',
+        fontFamily: 'Lato',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    deskText: {
+        color: 'black',
+        fontFamily: 'Lato',
+        fontSize: 14,
+        display: 'inline'
+    },
 });
 
-const offices = [
-    {
-        value: 'NV-1',
-        label: 'North Vancouver HQ',
-    },
-    {
-        value: 'BURN-1',
-        label: 'Burnaby',
-    },
-    {
-        value: 'NV-2',
-        label: 'North Vanouver Licensing',
-    },
-];
 
 const floors = [
     {
@@ -87,16 +103,69 @@ const floors = [
 
 function Reservation() {
     const classes = useStyles();
+    const [officeList, setOfficeList] = useState([]);
     const [office, setOffice] = useState();
-    const [floor, setFloor] = useState();
+    const [deskList, setDeskList] = useState([]);
+    const [desk, setDesk] = useState();
+    const [from, setFrom] = useState();
+    const [to, setTo] = useState();
+    const [deskResults, setDeskResults] = useState([]);
+
+    useEffect(() => {
+        var requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+          };
+          
+          fetch(Endpoint + "/office/getAllOffices", requestOptions)
+            .then((response) => response.text())
+            .then(result => {
+                setOfficeList(JSON.parse(result));
+                // console.log(JSON.parse(result));
+            })
+            .catch(error => console.log('error', error));
+    }, []);
 
 
     const handleOfficeChange = (event) => {
         setOffice(event.target.value);
+
+        const params = event.target.value.split(['-']);
+
+        console.log(params[0])
+        console.log(params[1])
+
+        var requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+          };
+          
+          fetch(Endpoint + "/desk/getDesksByOffice/" + params[0] + "/" + params[1], requestOptions)
+            .then((response) => response.text())
+            .then(result => {
+                setDeskList(JSON.parse(result));
+                // console.log(JSON.parse(result));
+            })
+            .catch(error => console.log('error', error));
     };
 
-    const handleFloorChange = (event) => {
-        setFloor(event.target.value);
+    const handleDeskChange = (event) => {
+        setDesk(event.target.value);
+    }
+
+    const handleFromChange = (event) => {
+        setFrom(event.target.value);
+    }
+
+    const handleToChange = (event) => {
+        setTo(event.target.value);
+    }
+
+    const search = () => {
+        console.log(office);
+        console.log(desk)
+        console.log(from);
+        console.log(to);
     }
 
     return (
@@ -117,9 +186,9 @@ function Reservation() {
                             OFFICE
                         </Typography>
                         <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
-                            {offices.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
+                            {officeList.map((option) => (
+                                <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
+                                    {option.name}
                                 </MenuItem>
                             ))}
                         </TextField>
@@ -128,10 +197,10 @@ function Reservation() {
                         <Typography className={classes.sectionText}>
                             DESK NUMBER
                         </Typography>
-                        <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleFloorChange} value={floor} className={classes.inputBoxes}>
-                            {floors.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
+                        <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleDeskChange} value={desk} className={classes.inputBoxes}>
+                            {deskList.map((option) => (
+                                <MenuItem key={option.fk_floor_num + "-" + option.desk_id} value={option.fk_floor_num + "-" + option.desk_id}>
+                                    {option.fk_floor_num + "-" + option.desk_id}
                                 </MenuItem>
                             ))}
                         </TextField>
@@ -150,27 +219,64 @@ function Reservation() {
                         <Typography className={classes.sectionText}>
                             FROM
                         </Typography>
-                        <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} />
+                        <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleFromChange} />
                     </Grid>
                     <Grid item xs={3}>
                         <Typography className={classes.sectionText}>
                             TO
                         </Typography>
-                        <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} />
+                        <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleToChange} />
                     </Grid>
                     <Grid item xs={1}>
-                        <button onClick={() => { console.log('search') }} style={{ backgroundColor: 'transparent', border: 'none' }}><img src={Search} alt="Search" style={{ height: '50px' }} /></button>
+                        <button onClick={search} style={{ backgroundColor: 'transparent', border: 'none' }}><img src={Search} alt="Search" style={{ height: '50px' }} /></button>
                     </Grid>
                 </Grid>
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                     <Grid item xs={7}>
                         <List>
-                            {offices.map((option) => (
-                                <ListItem style={{ backgroundColor: '#E5E5E5', height: '150px' }}>
-                                    <ListItemIcon>
-                                        <InboxIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary={option.label} />
+                            {deskResults.map((option) => (
+                                <ListItem style={{ backgroundColor: '#E5E5E5', height: '150px', marginBottom: '10px' }}>
+                                    <div style={{ width: '25%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                        <ListItemIcon style={{ width: '100px', height: '100px', backgroundColor: 'green', alignItems: 'center', justifyContent: 'center', borderRadius: 100 }}>
+                                            <InboxIcon />
+                                        </ListItemIcon>
+                                        <Typography className={classes.officeText}>
+                                            North Vancouver HQ
+                                    </Typography>
+                                    </div>
+                                    <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
+                                    <div style={{ width: '55%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
+                                        <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                            <Typography className={classes.deskSectionText}>
+                                                FLOOR: <Typography className={classes.deskText}>
+                                                    1
+                                                </Typography>
+                                            </Typography>
+                                            <Typography className={classes.deskSectionText}>
+                                                TYPE: <Typography className={classes.deskText}>
+                                                    Desk
+                                                </Typography>
+                                            </Typography>
+                                            <Typography className={classes.deskSectionText}>
+                                                CAPACITY: <Typography className={classes.deskText}>
+                                                    1
+                                                </Typography>
+                                            </Typography>
+                                        </div>
+                                        <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                            <Typography className={classes.deskSectionText}>
+                                                ADDRESS: <Typography className={classes.deskText}>
+                                                    North Vancouver HQ
+                                                </Typography>
+                                            </Typography>
+                                        </div>
+                                    </div>
+                                    <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
+                                    <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                        <Button className={classes.reserveButton} onClick={() => {
+                                            console.log("Loading More!");
+                                        }}>Reserve Now</Button>
+                                    </div>
                                 </ListItem>
                             ))}
                         </List>
