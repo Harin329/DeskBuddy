@@ -1,25 +1,32 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import reservationRoute from './routes/reservation-routes';
+import officeRoute from './routes/office-routes';
+import deskRoute from './routes/desk-routes';
 import DB from './config/db-handler';
 
 export class DeskbuddyServer {
-  private app;
-  private port;
+  private app: any;
+  private port: number;
   private handler: any;
 
   constructor(port: number) {
     this.port = port;
     this.app = express();
 
+    this.app.use(cors());
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
 
-    this.app.get('/', (req, res) => {
+    this.app.get('/', (req: Request, res: Response) => {
       res.send('Hello DeskBuddy!');
     });
 
     this.app.use('/reservation', reservationRoute);
+    this.app.use('/office', officeRoute);
+    this.app.use('/desk', deskRoute);
+
   }
 
   public getApp() {

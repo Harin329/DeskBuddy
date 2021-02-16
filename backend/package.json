@@ -4,7 +4,7 @@
   "description": "Backend for DeskBuddy",
   "main": "dist/app.js",
   "scripts": {
-    "start": "tsc && node dist/app.js",
+    "start": "tsc && node dist/src/app.js",
     "test": "jest --forceExit"
   },
   "repository": {
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/CPSC319-ICBC/DeskBuddy#readme",
   "devDependencies": {
+    "@types/cors": "^2.8.10",
     "@types/express": "^4.17.11",
     "@types/jest": "^26.0.20",
     "@types/supertest": "^2.0.10",
@@ -33,6 +34,7 @@
   "dependencies": {
     "@types/mysql": "^2.15.17",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mysql": "^2.18.1"
