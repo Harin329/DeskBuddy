@@ -51,3 +51,19 @@ Reservation.getAllReservations = (result: any) => {
         console.log(res);
     })
 };
+
+// Get upcoming reservations
+Reservation.getUpcomingReservations = (result: any) => {
+    // TODO: Need start_date and end_date to retrieve upcoming reservation
+    // TODO: Need to show start_date, office_location, desk_id for UI
+    // TODO: Get current date and use as start_date for query
+    const upcomingQuery = "";
+
+    con.query(upcomingQuery, (err: any, res: any) => {
+        if (err) {
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    })
+};
