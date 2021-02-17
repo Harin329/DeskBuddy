@@ -33,7 +33,7 @@ const offices = [
     },
     {
       value: 'NV-2',
-      label: 'North Vanouver Licensing',
+      label: 'North Vancouver Licensing',
     },
   ];
 
