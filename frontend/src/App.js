@@ -7,14 +7,14 @@ import Social from './screens/Social';
 import './App.css';
 
 function App() {
-  return (
-    <Router>
-      <Route exact path="/" component={Dashboard} />
-      <Route exact path="/reservation" component={Reservation} />
-      <Route exact path="/mail" component={Mail} />
-      <Route exact path="/social" component={Social} />
-    </Router>
-  );
+    return (
+        <Router>
+            <Route exact path="/" component={Dashboard} />
+            <Route exact path="/reservation" component={Reservation} />
+            <Route exact path="/mail" component={Mail} />
+            <Route exact path="/social" component={Social} />
+        </Router>
+    );
 }
 
 export default App;
