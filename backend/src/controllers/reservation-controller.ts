@@ -36,4 +36,15 @@ export default class ReservationController {
             })
         })
     }
+
+    upcomingReservations() {
+        return new Promise((resolve, reject) => {
+            Reservation.getUpcomingReservations((err: any, res: any) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            })
+        })
+    }
 }

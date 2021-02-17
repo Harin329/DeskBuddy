@@ -42,7 +42,7 @@ Reservation.createReservation = (newReservation: any, result: any) => {
 Reservation.getAllReservations = (result: any) => {
     con.query("SELECT * FROM reservation", (err: any, res: any) => {
         if (err) {
-            console.log('Error: ', err);
+            console.log("Error: ", err);
             result(err, null);
         } else {
             console.log(res);
@@ -52,18 +52,19 @@ Reservation.getAllReservations = (result: any) => {
     })
 };
 
-// Get upcoming reservations
+// Get upcoming reservations from the current date
 Reservation.getUpcomingReservations = (result: any) => {
-    // TODO: Need start_date and end_date to retrieve upcoming reservation
-    // TODO: Need to show start_date, office_location, desk_id for UI
-    // TODO: Get current date and use as start_date for query
-    const upcomingQuery = "";
+    const upcomingResQuery = "SELECT start_date, office_location, fk_floor_id, fk_desk_id FROM reservations " +
+        "WHERE start_date >= CURDATE()";
 
-    con.query(upcomingQuery, (err: any, res: any) => {
+    con.query(upcomingResQuery, (err: any, res: any) => {
         if (err) {
+            console.log("Error: ", err);
             result(err, null);
         } else {
+            console.log(res);
             result(null, res);
         }
+        console.log(res);
     })
 };
