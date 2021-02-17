@@ -37,7 +37,7 @@ export default class ReservationController {
         })
     }
 
-    upcomingReservations() {
+    findUpcomingReservations() {
         return new Promise((resolve, reject) => {
             Reservation.getUpcomingReservations((err: any, res: any) => {
                 if (err) {
