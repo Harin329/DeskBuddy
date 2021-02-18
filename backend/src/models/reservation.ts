@@ -89,7 +89,12 @@ Reservation.getEmployeeCountForOffice = (params: any, result: any) => {
 
 Reservation.deleteReservation = (reservationID: any, result: any) => {
     con.query("CALL deleteReservation(?)", [reservationID], (err: any, res: any) => {
-        console.log(res);
-        result(null, res);
-    });
+        if (err) {
+            console.log('Error: ', err);
+            result(err, null);
+        } else {
+            console.log(res);
+            result(null, res);
+        }
+    })
 };
