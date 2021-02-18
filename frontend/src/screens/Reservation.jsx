@@ -5,7 +5,8 @@ import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Search from '../assets/search.png';
 import Floorplan from '../assets/Location1.jpg';
-import Endpoint from '../config/Constants'
+import Endpoint from '../config/Constants';
+import BookingsCalendar from '../components/reservation/BookingsCalendar';
 
 const useStyles = makeStyles({
     background: {
@@ -30,6 +31,19 @@ const useStyles = makeStyles({
         color: 'white',
         height: '50px',
         padding: '0 20px',
+        marginTop: '5px',
+        marginBottom: '5px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 14,
+        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    },
+    cancelButton: {
+        background: '#ba0000',
+        borderRadius: 30,
+        color: 'white',
+        height: '30px',
+        padding: '0 15px',
         marginTop: '5px',
         marginBottom: '5px',
         fontFamily: 'Lato',
@@ -135,6 +149,7 @@ function Reservation() {
     const [to, setTo] = useState(formattedDate);
     const [deskResults, setDeskResults] = useState([]);
     const [open, setOpen] = useState(false);
+    const [employeeCount, setEmployeeCount] = useState(0);
     const [floorplan, setFloorplan] = useState(false);
     const [officeDisabled, setOfficeDisabled] = useState(true);
     const [confirmationDesk, setConfirmationDesk] = useState();
@@ -316,6 +331,35 @@ function Reservation() {
         search();
     }
 
+    const getEmployeeCount = (deskObj) => {
+        console.log(from);
+        console.log(to);
+        //var startDate = new Date(from);
+        //var endDate = new Date(to);
+        //console.log(startDate);
+        //console.log(endDate);
+        if (to >= from) {
+            //const startFullDate = startDate.getFullYear() + "-" + appendLeadingZeroes(startDate.getMonth() + 1) + "-" + appendLeadingZeroes(startDate.getDay());
+            //const endFullDate = endDate.getFullYear() + "-" + appendLeadingZeroes(endDate.getMonth() + 1) + "-" + appendLeadingZeroes(endDate.getDay());
+            var requestOptions = {
+                method: 'GET',
+                redirect: 'follow'
+            };
+
+            fetch(Endpoint + "/reservation/getCount/" + deskObj.office_id + "/" + from + "/" + to, requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    const res = JSON.parse(result)
+                    console.log(res[0].avg)
+                    setEmployeeCount(res[0].avg)
+                    if (res[0].avg == null) {
+                        setEmployeeCount(0);
+                    }
+                }).catch(error => console.log('error', error));
+        }
+        else setEmployeeCount(0); // just a placeholder else statement to account for to being earlier than from date
+    };
+
 
     const confirmationBody = () => {
         return (
@@ -335,13 +379,16 @@ function Reservation() {
                         </Typography>
                     </Typography>
                     <Typography className={classes.deskSectionText}>
-                        Desk ID: <Typography className={classes.deskText}>
-                            {confirmationDesk.fk_office_location + confirmationDesk.fk_office_id + "-" + confirmationDesk.fk_floor_num + confirmationDesk.desk_id}
+                        Floor Number: <Typography className={classes.deskText}> {confirmationDesk.fk_floor_num}
+                        </Typography>
+                    </Typography>
+                    <Typography className={classes.deskSectionText}>
+                        Desk Number: <Typography className={classes.deskText}> {confirmationDesk.desk_id}
                         </Typography>
                     </Typography>
                     <Typography className={classes.deskSectionText}>
                         Estimated Number of People: <Typography className={classes.deskText}>
-                            9
+                        {employeeCount}
                                                 </Typography>
                     </Typography>
                 </div>
@@ -388,6 +435,63 @@ function Reservation() {
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
+                <BookingsCalendar/>
+                <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
+                    <Grid item xs={3} className={classes.titleLines} />
+                    <Grid item xs={1}>
+                        <Typography className={classes.titleText}>
+                            UPCOMING RESERVATIONS
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={3} className={classes.titleLines} />
+                </Grid>
+                <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
+                    <Grid item xs={7}>
+                        <List>
+                            {deskResults.map((option) => (
+                                <ListItem style={{ backgroundColor: '#E5E5E5', height: '150px', marginBottom: '10px' }}>
+                                    <div style={{ width: '25%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                        <ListItemIcon style={{ width: '100px', height: '100px', backgroundColor: '#00ADEF', alignItems: 'center', justifyContent: 'center', borderRadius: 100 }}>
+                                            <DesktopMacIcon />
+                                        </ListItemIcon>
+                                        <Typography className={classes.officeText}>
+                                            {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.desk_id}
+                                        </Typography>
+                                    </div>
+                                    <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
+                                    <div style={{ width: '55%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
+                                        <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                            <Typography className={classes.deskSectionText}>
+                                                OFFICE: <Typography className={classes.deskText}>
+                                                {option.office_location} // TODO: Add full location
+                                            </Typography>
+                                            </Typography>
+                                            <Typography className={classes.deskSectionText}>
+                                                DESK ID: <Typography className={classes.deskText}>
+                                                {option.desk_id} // TODO: Add real desk ID
+                                            </Typography>
+                                            </Typography>
+                                        </div>
+                                    </div>
+                                    <Divider orientation='vertical' style={{ backgroundColor: 'black', height: '129px', width: '1px' }} />
+                                    <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                        <Button className={classes.cancelButton} onClick={() => {
+                                            getEmployeeCount(option);
+                                            handleOpen(option)
+                                            }}>Cancel</Button>
+                                    </div>
+                                    <Modal
+                                        open={open}
+                                        onClose={handleClose}
+                                    >
+                                        {confirmationDesk !== undefined ? confirmationBody() : null}
+                                    </Modal>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </Grid>
+                </Grid>
+
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                     <Grid item xs={3} className={classes.titleLines} />
                     <Grid item xs={1}>
@@ -501,6 +605,7 @@ function Reservation() {
                                     <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
                                     <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                                         <Button className={classes.reserveButton} onClick={() => {
+                                            getEmployeeCount(option);
                                             handleOpen(option)
                                             }}>Reserve Now</Button>
                                     </div>

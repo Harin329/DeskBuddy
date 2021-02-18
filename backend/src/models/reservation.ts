@@ -42,7 +42,7 @@ Reservation.createReservation = (newReservation: any, result: any) => {
 Reservation.getAllReservations = (result: any) => {
     con.query("SELECT * FROM reservation", (err: any, res: any) => {
         if (err) {
-            console.log('Error: ', err);
+            console.log("Error: ", err);
             result(err, null);
         } else {
             console.log(res);
@@ -51,6 +51,41 @@ Reservation.getAllReservations = (result: any) => {
         console.log(res);
     })
 };
+
+// Get upcoming reservations from the current date
+Reservation.getUpcomingReservations = (result: any) => {
+    const upcomingResQuery = "SELECT start_date, office_location, fk_floor_id, fk_desk_id FROM reservations " +
+        "WHERE start_date >= CURDATE()";
+
+    con.query(upcomingResQuery, (err: any, res: any) => {
+        if (err) {
+            console.log("Error: ", err);
+            result(err, null);
+        } else {
+            console.log(res);
+            result(null, res);
+        }
+        console.log(res);
+    })
+};
+
+Reservation.getEmployeeCountForOffice = (params: any, result: any) => {
+    // console.log(params.start_date);
+    con.query("SELECT AVG(z.count) AS avg FROM (SELECT COUNT(*) AS count FROM reservation r " +
+        "WHERE r.start_date >= ? AND r.end_date <= ? AND r.fk_office_id = ? GROUP BY r.start_date) AS z", [
+        String(params.start_date),
+        String(params.end_date),
+        params.office_id,
+    ], (err: any, res: any) => {
+        if (err) {
+            console.log('Error: ', err);
+            result(err, null);
+        } else {
+            // console.log(res);
+            result(null, res);
+        }
+    })
+}
 
 Reservation.deleteReservation = (reservationID: any, result: any) => {
     con.query("CALL deleteReservation(?)", [reservationID], (err: any, res: any) => {

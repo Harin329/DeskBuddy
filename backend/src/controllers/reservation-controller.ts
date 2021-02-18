@@ -37,6 +37,34 @@ export default class ReservationController {
         })
     }
 
+    findUpcomingReservations() {
+        return new Promise((resolve, reject) => {
+            Reservation.getUpcomingReservations((err: any, res: any) => {
+              if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            })
+        })
+    }
+
+    countEmployees(req: any) {
+        const date = {
+            office_id: req.officeID,
+            start_date: req.startDate,
+            end_date: req.endDate,
+        }
+        return new Promise((resolve, reject) => {
+            Reservation.getEmployeeCountForOffice(date,(err: any, res: any) => {
+              if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            })
+        })
+    }
+
+
     deleteReservation(req: any) {
         const reservationID = req.body.reservation_id;
         return new Promise((resolve, reject) => {
