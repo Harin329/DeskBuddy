@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Search from '../assets/search.png';
+import Floorplan from '../assets/Location1.jpg';
 import Endpoint from '../config/Constants'
 
 const useStyles = makeStyles({
@@ -94,6 +95,12 @@ const useStyles = makeStyles({
         fontSize: 14,
         fontWeight: 'bold',
     },
+    FloorText: {
+        color: 'black',
+        fontFamily: 'Lato',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
     confirmationModalText: {
         color: 'black',
         fontFamily: 'Lato',
@@ -116,6 +123,15 @@ const useStyles = makeStyles({
         backgroundColor: 'white',
         padding: '30px',
     },
+    floorplan: {
+        position: 'fixed',
+        top: '20%',
+        left: '30%',
+        width: '40%',
+        height: '50%',
+        backgroundColor: 'white',
+        padding: '30px',
+    },
 });
 
 function Reservation() {
@@ -126,11 +142,16 @@ function Reservation() {
     const [officeList, setOfficeList] = useState([]);
     const [office, setOffice] = useState('All');
     const [deskList, setDeskList] = useState([]);
+    const [floorList, setFloorList] = useState([]);
     const [desk, setDesk] = useState('All');
     const [from, setFrom] = useState(formattedDate);
     const [to, setTo] = useState(formattedDate);
     const [deskResults, setDeskResults] = useState([]);
     const [open, setOpen] = useState(false);
+    const [employeeCount, setEmployeeCount] = useState(0);
+    const [floorplan, setFloorplan] = useState(false);
+    const [officeDisabled, setOfficeDisabled] = useState(true);
+    const [confirmationDesk, setConfirmationDesk] = useState();
 
     function appendLeadingZeroes(n) {
         if (n <= 9) {
@@ -158,7 +179,8 @@ function Reservation() {
     }, []);
 
 
-    const handleOpen = () => {
+    const handleOpen = (option) => {
+        setConfirmationDesk(option);
         setOpen(true);
     };
 
@@ -166,26 +188,54 @@ function Reservation() {
         setOpen(false);
     };
 
+    const handleFloorplanOpen = () => {
+        setFloorplan(true);
+    };
+
+    const handleFloorplanClose = () => {
+        setFloorplan(false);
+    };
+
     const handleOfficeChange = (event) => {
         setOffice(event.target.value);
 
-        const params = event.target.value.split(['-']);
+        if (event.target.value !== 'All') {
+            const params = event.target.value.split(['-']);
 
-        console.log(params[0])
-        console.log(params[1])
+            console.log(params[0])
+            console.log(params[1])
 
-        var requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
+            var requestOptions = {
+                method: 'GET',
+                redirect: 'follow'
+            };
 
-        fetch(Endpoint + "/desk/getDesksByOffice/" + params[0] + "/" + params[1], requestOptions)
-            .then((response) => response.text())
-            .then(result => {
-                setDeskList(JSON.parse(result));
-                // console.log(JSON.parse(result));
-            })
-            .catch(error => console.log('error', error));
+            fetch(Endpoint + "/desk/getDesksByOffice/" + params[0] + "/" + params[1], requestOptions)
+                .then((response) => response.text())
+                .then(result => {
+                    setDeskList(JSON.parse(result));
+                    // console.log(JSON.parse(result));
+                })
+                .catch(error => console.log('error', error));
+
+            fetch(Endpoint + "/floor/getFloorsByOffice/" + params[0] + "/" + params[1], requestOptions)
+                .then((response) => response.text())
+                .then(result => {
+                    const res = JSON.parse(result)
+                    setFloorList(res);
+                    // console.log(res);
+                    if (res.length > 0) {
+                        setOfficeDisabled(false);
+                    } else {
+                        setOfficeDisabled(true);
+                    }
+                })
+                .catch(error => console.log('error', error));
+        } else {
+            setOfficeDisabled(true);
+            setFloorList([]);
+            setDeskList([]);
+        }
     };
 
     const handleDeskChange = (event) => {
@@ -194,10 +244,22 @@ function Reservation() {
 
     const handleFromChange = (event) => {
         setFrom(event.target.value);
+
+        const day = new Date(event.target.value)
+        const toDay = new Date(to)
+        if (day > toDay) {
+            setTo(event.target.value)
+        }
     }
 
     const handleToChange = (event) => {
         setTo(event.target.value);
+
+        const day = new Date(from)
+        const toDay = new Date(event.target.value)
+        if (day > toDay) {
+            setFrom(event.target.value)
+        }
     }
 
     const search = () => {
@@ -250,7 +312,7 @@ function Reservation() {
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
 
-            var raw = JSON.stringify({ "employee_id": 329, "desk_id": String(deskObj.desk_id), "floor_num": Number(deskObj.fk_floor_num), "office_id": Number(deskObj.fk_office_id), "office_location": String(deskObj.fk_office_location), "date": thisDate});
+            var raw = JSON.stringify({ "employee_id": 329, "desk_id": String(deskObj.desk_id), "floor_num": Number(deskObj.fk_floor_num), "office_id": Number(deskObj.fk_office_id), "office_location": String(deskObj.fk_office_location), "date": thisDate });
 
             var requestOptions = {
                 method: 'POST',
@@ -268,8 +330,37 @@ function Reservation() {
         search();
     }
 
+    const getEmployeeCount = (deskObj) => {
+        console.log(from);
+        console.log(to);
+        //var startDate = new Date(from);
+        //var endDate = new Date(to);
+        //console.log(startDate);
+        //console.log(endDate);
+        if (to >= from) {
+            //const startFullDate = startDate.getFullYear() + "-" + appendLeadingZeroes(startDate.getMonth() + 1) + "-" + appendLeadingZeroes(startDate.getDay());
+            //const endFullDate = endDate.getFullYear() + "-" + appendLeadingZeroes(endDate.getMonth() + 1) + "-" + appendLeadingZeroes(endDate.getDay());
+            var requestOptions = {
+                method: 'GET',
+                redirect: 'follow'
+            };
 
-    const confirmationBody = (option) => {
+            fetch(Endpoint + "/reservation/getCount/" + deskObj.office_id + "/" + from + "/" + to, requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    const res = JSON.parse(result)
+                    console.log(res[0].avg)
+                    setEmployeeCount(res[0].avg)
+                    if (res[0].avg == null) {
+                        setEmployeeCount(0);
+                    }
+                }).catch(error => console.log('error', error));
+        }
+        else setEmployeeCount(0); // just a placeholder else statement to account for to being earlier than from date
+    };
+
+
+    const confirmationBody = () => {
         return (
             <div className={classes.paper}>
                 <div style={{ width: '105%', marginTop: '-25px', justifyContent: 'flex-end', display: 'flex' }}>
@@ -283,17 +374,20 @@ function Reservation() {
                 <div style={{ width: '100%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                     <Typography className={classes.deskSectionText}>
                         Office: <Typography className={classes.deskText}>
-                            {option.name}
+                            {confirmationDesk.name}
                         </Typography>
                     </Typography>
                     <Typography className={classes.deskSectionText}>
-                        Desk ID: <Typography className={classes.deskText}>
-                            {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.desk_id}
+                        Floor Number: <Typography className={classes.deskText}> {option.fk_floor_num}
+                        </Typography>
+                    </Typography>
+                    <Typography className={classes.deskSectionText}>
+                        Desk Number: <Typography className={classes.deskText}> {option.desk_id}
                         </Typography>
                     </Typography>
                     <Typography className={classes.deskSectionText}>
                         Estimated Number of People: <Typography className={classes.deskText}>
-                            9
+                        {employeeCount}
                                                 </Typography>
                     </Typography>
                 </div>
@@ -302,8 +396,37 @@ function Reservation() {
                                             </Typography>
                 <div style={{ width: '100%', marginTop: '10px', justifyContent: 'center', display: 'flex' }}>
                     <Button className={classes.reserveButton} onClick={() => {
-                        makeReservation(option);
+                        makeReservation(confirmationDesk);
                     }}>Confirm</Button>
+                </div>
+            </div>)
+    };
+
+    const floorplanBody = () => {
+        const officeObj = officeList.find((item) => (item.office_location + "-" + item.office_id) === office);
+        const officeName = officeObj !== undefined ? officeObj.name : '';
+
+        return (
+            <div className={classes.floorplan}>
+                <div style={{ width: '102%', marginTop: '-25px', justifyContent: 'flex-end', display: 'flex' }}>
+                    <IconButton size='small' onClick={handleFloorplanClose}>
+                        <CancelIcon size="small" />
+                    </IconButton>
+                </div>
+                <Typography className={classes.sectionTextModal}>
+                    {officeName}
+                </Typography>
+                <div style={{ width: '100%', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
+                    <div style={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                        {floorList.map((option) => (
+                            <Button className={classes.FloorText}>
+                                Floor {option.floor_num}
+                            </Button>
+                        ))}
+                    </div>
+                    <div>
+                        <img src={Floorplan} alt="Floorplan" style={{ height: '45vh', marginLeft: '50px' }} />
+                    </div>
                 </div>
             </div>)
     };
@@ -380,6 +503,9 @@ function Reservation() {
                             OFFICE
                         </Typography>
                         <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
+                            <MenuItem key={'All'} value={'All'}>
+                                All
+                                </MenuItem>
                             {officeList.map((option) => (
                                 <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
                                     {option.name}
@@ -392,6 +518,9 @@ function Reservation() {
                             DESK NUMBER
                         </Typography>
                         <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleDeskChange} value={desk} className={classes.inputBoxes}>
+                            <MenuItem key={'All'} value={'All'}>
+                                All
+                                </MenuItem>
                             {deskList.map((option) => (
                                 <MenuItem key={option.fk_floor_num + "-" + option.desk_id} value={option.fk_floor_num + "-" + option.desk_id}>
                                     {option.fk_floor_num + "-" + option.desk_id}
@@ -403,9 +532,13 @@ function Reservation() {
                 </Grid>
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                     <Grid item xs={7}>
-                        <Button className={classes.actionButton} onClick={() => {
-                            console.log("Loading More!");
-                        }}>Floorplan</Button>
+                        <Button className={classes.actionButton} onClick={handleFloorplanOpen} disabled={officeDisabled}>Floorplan</Button>
+                        <Modal
+                            open={floorplan}
+                            onClose={handleFloorplanClose}
+                        >
+                            {floorplanBody()}
+                        </Modal>
                     </Grid>
                 </Grid>
                 <Grid container justify='center' alignItems='flex-end' className={classes.sectionSpacing}>
@@ -413,13 +546,13 @@ function Reservation() {
                         <Typography className={classes.sectionText}>
                             FROM
                         </Typography>
-                        <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleFromChange} defaultValue={formattedDate} />
+                        <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleFromChange} value={from} defaultValue={from} />
                     </Grid>
                     <Grid item xs={3}>
                         <Typography className={classes.sectionText}>
                             TO
                         </Typography>
-                        <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleToChange} defaultValue={formattedDate} />
+                        <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleToChange} value={to} defaultValue={to} />
                     </Grid>
                     <Grid item xs={1}>
                         <button onClick={search} style={{ backgroundColor: 'transparent', border: 'none' }}><img src={Search} alt="Search" style={{ height: '50px' }} /></button>
@@ -467,13 +600,16 @@ function Reservation() {
                                     </div>
                                     <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
                                     <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                        <Button className={classes.reserveButton} onClick={handleOpen}>Reserve Now</Button>
+                                        <Button className={classes.reserveButton} onClick={() => {
+                                            getEmployeeCount(option);
+                                            handleOpen(option)
+                                            }}>Reserve Now</Button>
                                     </div>
                                     <Modal
                                         open={open}
                                         onClose={handleClose}
                                     >
-                                        {confirmationBody(option)}
+                                        {confirmationDesk !== undefined ? confirmationBody() : null}
                                     </Modal>
                                 </ListItem>
                             ))}

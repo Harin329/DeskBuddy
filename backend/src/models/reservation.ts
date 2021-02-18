@@ -68,3 +68,30 @@ Reservation.getUpcomingReservations = (result: any) => {
         console.log(res);
     })
 };
+
+Reservation.getEmployeeCountForOffice = (params: any, result: any) => {
+    // console.log(params.start_date);
+    con.query("SELECT AVG(z.count) AS avg FROM (SELECT COUNT(*) AS count FROM reservation r " +
+        "WHERE r.start_date >= ? AND r.end_date <= ? AND r.fk_office_id = ? GROUP BY r.start_date) AS z", [
+        String(params.start_date),
+        String(params.end_date),
+        params.office_id,
+    ],(err: any, res: any) => {
+      if (err) {
+            console.log('Error: ', err);
+            result(err, null);
+        } else {
+          // console.log(res);
+            result(null, res);
+        }
+    })
+}
+
+  
+Reservation.deleteReservation = (reservationID: any, result: any) => {
+    con.query("CALL deleteReservation(?)", [reservationID], (err: any, res: any) => {
+            console.log(res);
+            result(null, res);
+        }
+    })
+};

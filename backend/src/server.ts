@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import reservationRoute from './routes/reservation-routes';
 import officeRoute from './routes/office-routes';
+import floorRoute from './routes/floor-routes';
 import deskRoute from './routes/desk-routes';
 import DB from './config/db-handler';
 
@@ -25,6 +26,7 @@ export class DeskbuddyServer {
 
     this.app.use('/reservation', reservationRoute);
     this.app.use('/office', officeRoute);
+    this.app.use('/floor', floorRoute)
     this.app.use('/desk', deskRoute);
 
   }

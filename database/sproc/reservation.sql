@@ -5,3 +5,12 @@ INSERT INTO `reservation` (`fk_employee_id`, `fk_desk_id`, `fk_floor_num`, `fk_o
 	VALUES (`employee_id`, `desk_id`, `floor_num`, `office_id`, `office_location`, `start_date`, `end_date`);
 
 END
+
+
+CREATE PROCEDURE `deleteReservation` (IN `my_reservation_id` INT(8))
+BEGIN
+
+DELETE FROM `reservation` where `reservation_id`=`my_reservation_id`;
+
+END
+
