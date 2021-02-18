@@ -16,4 +16,20 @@ router.get('/getDesksByOffice/:officeloc/:officeid', (req: Request, res: Respons
     })
 })
 
+router.post('/getOpenDesks', (req: Request, res: Response) => {
+    if (!req.body) {
+        res.status(400).send({
+            message: 'Content can not be empty!'
+        });
+    }
+
+    deskServer.getOpenDesks(req)
+    .then((desk: any) => {
+        res.json(desk);
+    })
+    .catch((err: any) => {
+        res.json(err);
+    })
+})
+
 export default router
