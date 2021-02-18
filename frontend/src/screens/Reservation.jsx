@@ -37,11 +37,11 @@ const useStyles = makeStyles({
         boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
     },
     cancelButton: {
-        background: '#a40000',
-        borderRadius: 20,
+        background: '#ba0000',
+        borderRadius: 30,
         color: 'white',
-        height: '50px',
-        padding: '0 20px',
+        height: '30px',
+        padding: '0 15px',
         marginTop: '5px',
         marginBottom: '5px',
         fontFamily: 'Lato',
@@ -337,30 +337,18 @@ function Reservation() {
                                     <div style={{ width: '55%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
                                         <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                                             <Typography className={classes.deskSectionText}>
-                                                FLOOR: <Typography className={classes.deskText}>
-                                                {option.fk_floor_num}
+                                                OFFICE: <Typography className={classes.deskText}>
+                                                {option.office_location} // TODO: Add full location
                                             </Typography>
                                             </Typography>
                                             <Typography className={classes.deskSectionText}>
-                                                TYPE: <Typography className={classes.deskText}>
-                                                Desk
-                                            </Typography>
-                                            </Typography>
-                                            <Typography className={classes.deskSectionText}>
-                                                CAPACITY: <Typography className={classes.deskText}>
-                                                {option.capacity}
-                                            </Typography>
-                                            </Typography>
-                                        </div>
-                                        <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                            <Typography className={classes.deskSectionText}>
-                                                ADDRESS: <Typography className={classes.deskText}>
-                                                {option.address}
+                                                DESK ID: <Typography className={classes.deskText}>
+                                                {option.desk_id} // TODO: Add real desk ID
                                             </Typography>
                                             </Typography>
                                         </div>
                                     </div>
-                                    <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
+                                    <Divider orientation='vertical' style={{ backgroundColor: 'black', height: '129px', width: '1px' }} />
                                     <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                                         <Button className={classes.cancelButton} onClick={handleOpen}>Cancel</Button>
                                     </div>
