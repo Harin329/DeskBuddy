@@ -51,3 +51,15 @@ Reservation.getAllReservations = (result: any) => {
         console.log(res);
     })
 };
+
+Reservation.deleteReservation = (reservationID: any, result: any) => {
+    con.query("CALL deleteReservation(?)", [reservationID], (err: any, res: any) => {
+        if (err) {
+            console.log('Error: ', err);
+            result(err, null);
+        } else {
+            console.log(res);
+            result(null, res);
+        }
+    })
+};
