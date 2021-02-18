@@ -5,7 +5,8 @@ import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Search from '../assets/search.png';
 import Floorplan from '../assets/Location1.jpg';
-import Endpoint from '../config/Constants'
+import Endpoint from '../config/Constants';
+import BookingsCalendar from '../components/reservation/BookingsCalendar';
 
 const useStyles = makeStyles({
     background: {
@@ -434,6 +435,7 @@ function Reservation() {
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
+                <BookingsCalendar/>
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                     <Grid item xs={3} className={classes.titleLines} />
                     <Grid item xs={1}>
@@ -473,20 +475,22 @@ function Reservation() {
                                     </div>
                                     <Divider orientation='vertical' style={{ backgroundColor: 'black', height: '129px', width: '1px' }} />
                                     <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                        <Button className={classes.cancelButton} onClick={handleOpen}>Cancel</Button>
+                                        <Button className={classes.cancelButton} onClick={() => {
+                                            getEmployeeCount(option);
+                                            handleOpen(option)
+                                            }}>Cancel</Button>
                                     </div>
                                     <Modal
                                         open={open}
                                         onClose={handleClose}
                                     >
-                                        {confirmationBody(option)}
+                                        {confirmationDesk !== undefined ? confirmationBody() : null}
                                     </Modal>
                                 </ListItem>
                             ))}
                         </List>
                     </Grid>
                 </Grid>
-
 
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                     <Grid item xs={3} className={classes.titleLines} />
