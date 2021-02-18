@@ -16,7 +16,6 @@ function App() {
                 <Route exact path="/mail" component={Mail} />
                 <Route exact path="/social" component={Social} />
             </Router>
-            <BookingsCalendar/>
         </div>
     );
 }
