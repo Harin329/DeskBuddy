@@ -42,7 +42,24 @@ Reservation.createReservation = (newReservation: any, result: any) => {
 Reservation.getAllReservations = (result: any) => {
     con.query("SELECT * FROM reservation", (err: any, res: any) => {
         if (err) {
-            console.log('Error: ', err);
+            console.log("Error: ", err);
+            result(err, null);
+        } else {
+            console.log(res);
+            result(null, res);
+        }
+        console.log(res);
+    })
+};
+
+// Get upcoming reservations from the current date
+Reservation.getUpcomingReservations = (result: any) => {
+    const upcomingResQuery = "SELECT start_date, office_location, fk_floor_id, fk_desk_id FROM reservations " +
+        "WHERE start_date >= CURDATE()";
+
+    con.query(upcomingResQuery, (err: any, res: any) => {
+        if (err) {
+            console.log("Error: ", err);
             result(err, null);
         } else {
             console.log(res);

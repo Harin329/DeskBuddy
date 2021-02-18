@@ -37,6 +37,17 @@ export default class ReservationController {
         })
     }
 
+    findUpcomingReservations() {
+        return new Promise((resolve, reject) => {
+            Reservation.getUpcomingReservations((err: any, res: any) => {
+              if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            })
+        })
+    }
+
     countEmployees(req: any) {
         const date = {
             office_id: req.officeID,
