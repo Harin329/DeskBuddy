@@ -1,4 +1,8 @@
-import { con } from '../config/db-handler';
+import DB from '../config/db-handler';
+export interface Reserve {
+    id: string
+}
+const con = DB.getCon();
 
 export const Reservation = function (this: any, reservation: any) {
     this.reservation_id = reservation.reservation_id;
@@ -45,5 +49,17 @@ Reservation.getAllReservations = (result: any) => {
             result(null, res);
         }
         console.log(res);
+    })
+};
+
+Reservation.deleteReservation = (reservationID: any, result: any) => {
+    con.query("CALL deleteReservation(?)", [reservationID], (err: any, res: any) => {
+        if (err) {
+            console.log('Error: ', err);
+            result(err, null);
+        } else {
+            console.log(res);
+            result(null, res);
+        }
     })
 };
