@@ -137,6 +137,7 @@ function Reservation() {
     const [open, setOpen] = useState(false);
     const [floorplan, setFloorplan] = useState(false);
     const [officeDisabled, setOfficeDisabled] = useState(true);
+    const [confirmationDesk, setConfirmationDesk] = useState();
 
     function appendLeadingZeroes(n) {
         if (n <= 9) {
@@ -164,7 +165,8 @@ function Reservation() {
     }, []);
 
 
-    const handleOpen = () => {
+    const handleOpen = (option) => {
+        setConfirmationDesk(option);
         setOpen(true);
     };
 
@@ -184,37 +186,37 @@ function Reservation() {
         setOffice(event.target.value);
 
         if (event.target.value !== 'All') {
-        const params = event.target.value.split(['-']);
+            const params = event.target.value.split(['-']);
 
-        console.log(params[0])
-        console.log(params[1])
+            console.log(params[0])
+            console.log(params[1])
 
-        var requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
+            var requestOptions = {
+                method: 'GET',
+                redirect: 'follow'
+            };
 
-        fetch(Endpoint + "/desk/getDesksByOffice/" + params[0] + "/" + params[1], requestOptions)
-            .then((response) => response.text())
-            .then(result => {
-                setDeskList(JSON.parse(result));
-                // console.log(JSON.parse(result));
-            })
-            .catch(error => console.log('error', error));
+            fetch(Endpoint + "/desk/getDesksByOffice/" + params[0] + "/" + params[1], requestOptions)
+                .then((response) => response.text())
+                .then(result => {
+                    setDeskList(JSON.parse(result));
+                    // console.log(JSON.parse(result));
+                })
+                .catch(error => console.log('error', error));
 
-        fetch(Endpoint + "/floor/getFloorsByOffice/" + params[0] + "/" + params[1], requestOptions)
-            .then((response) => response.text())
-            .then(result => {
-                const res = JSON.parse(result)
-                setFloorList(res);
-                // console.log(res);
-                if (res.length > 0) {
-                    setOfficeDisabled(false);
-                } else {
-                    setOfficeDisabled(true);
-                }
-            })
-            .catch(error => console.log('error', error));
+            fetch(Endpoint + "/floor/getFloorsByOffice/" + params[0] + "/" + params[1], requestOptions)
+                .then((response) => response.text())
+                .then(result => {
+                    const res = JSON.parse(result)
+                    setFloorList(res);
+                    // console.log(res);
+                    if (res.length > 0) {
+                        setOfficeDisabled(false);
+                    } else {
+                        setOfficeDisabled(true);
+                    }
+                })
+                .catch(error => console.log('error', error));
         } else {
             setOfficeDisabled(true);
             setFloorList([]);
@@ -315,7 +317,7 @@ function Reservation() {
     }
 
 
-    const confirmationBody = (option) => {
+    const confirmationBody = () => {
         return (
             <div className={classes.paper}>
                 <div style={{ width: '105%', marginTop: '-25px', justifyContent: 'flex-end', display: 'flex' }}>
@@ -329,12 +331,12 @@ function Reservation() {
                 <div style={{ width: '100%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                     <Typography className={classes.deskSectionText}>
                         Office: <Typography className={classes.deskText}>
-                            {option.name}
+                            {confirmationDesk.name}
                         </Typography>
                     </Typography>
                     <Typography className={classes.deskSectionText}>
                         Desk ID: <Typography className={classes.deskText}>
-                            {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.desk_id}
+                            {confirmationDesk.fk_office_location + confirmationDesk.fk_office_id + "-" + confirmationDesk.fk_floor_num + confirmationDesk.desk_id}
                         </Typography>
                     </Typography>
                     <Typography className={classes.deskSectionText}>
@@ -348,7 +350,7 @@ function Reservation() {
                                             </Typography>
                 <div style={{ width: '100%', marginTop: '10px', justifyContent: 'center', display: 'flex' }}>
                     <Button className={classes.reserveButton} onClick={() => {
-                        makeReservation(option);
+                        makeReservation(confirmationDesk);
                     }}>Confirm</Button>
                 </div>
             </div>)
@@ -402,7 +404,7 @@ function Reservation() {
                         </Typography>
                         <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
                             <MenuItem key={'All'} value={'All'}>
-                                    All
+                                All
                                 </MenuItem>
                             {officeList.map((option) => (
                                 <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
@@ -417,7 +419,7 @@ function Reservation() {
                         </Typography>
                         <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleDeskChange} value={desk} className={classes.inputBoxes}>
                             <MenuItem key={'All'} value={'All'}>
-                                    All
+                                All
                                 </MenuItem>
                             {deskList.map((option) => (
                                 <MenuItem key={option.fk_floor_num + "-" + option.desk_id} value={option.fk_floor_num + "-" + option.desk_id}>
@@ -498,13 +500,15 @@ function Reservation() {
                                     </div>
                                     <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
                                     <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                        <Button className={classes.reserveButton} onClick={handleOpen}>Reserve Now</Button>
+                                        <Button className={classes.reserveButton} onClick={() => {
+                                            handleOpen(option)
+                                            }}>Reserve Now</Button>
                                     </div>
                                     <Modal
                                         open={open}
                                         onClose={handleClose}
                                     >
-                                        {confirmationBody(option)}
+                                        {confirmationDesk !== undefined ? confirmationBody() : null}
                                     </Modal>
                                 </ListItem>
                             ))}
