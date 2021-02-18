@@ -33,4 +33,15 @@ router.get('/getAllReservations', (_, res: Response) => {
     })
 })
 
+// COUNT # of reservations for an office
+router.get("/getCount/:officeID/:startDate/:endDate", (req, res: Response) => {
+    reservationServer.countEmployees(req.params)
+        .then((count: any) => {
+            res.json(count);
+        })
+        .catch((err: any) => {
+            res.json(err);
+        })
+})
+
 export default router

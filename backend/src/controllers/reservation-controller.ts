@@ -36,4 +36,20 @@ export default class ReservationController {
             })
         })
     }
+
+    countEmployees(req: any) {
+        const date = {
+            office_id: req.officeID,
+            start_date: req.startDate,
+            end_date: req.endDate,
+        }
+        return new Promise((resolve, reject) => {
+            Reservation.getEmployeeCountForOffice(date,(err: any, res: any) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            })
+        })
+    }
 }

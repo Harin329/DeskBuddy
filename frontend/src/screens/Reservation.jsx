@@ -118,6 +118,7 @@ function Reservation() {
     const [to, setTo] = useState(formattedDate);
     const [deskResults, setDeskResults] = useState([]);
     const [open, setOpen] = useState(false);
+    const [employeeCount, setEmployeeCount] = useState(0);
 
     function appendLeadingZeroes(n) {
         if (n <= 9) {
@@ -255,6 +256,35 @@ function Reservation() {
         search();
     }
 
+    const getEmployeeCount = (deskObj) => {
+        console.log(from);
+        console.log(to);
+        //var startDate = new Date(from);
+        //var endDate = new Date(to);
+        //console.log(startDate);
+        //console.log(endDate);
+        if (to >= from) {
+            //const startFullDate = startDate.getFullYear() + "-" + appendLeadingZeroes(startDate.getMonth() + 1) + "-" + appendLeadingZeroes(startDate.getDay());
+            //const endFullDate = endDate.getFullYear() + "-" + appendLeadingZeroes(endDate.getMonth() + 1) + "-" + appendLeadingZeroes(endDate.getDay());
+            var requestOptions = {
+                method: 'GET',
+                redirect: 'follow'
+            };
+
+            fetch(Endpoint + "/reservation/getCount/" + deskObj.office_id + "/" + from + "/" + to, requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    const res = JSON.parse(result)
+                    console.log(res[0].avg)
+                    setEmployeeCount(res[0].avg)
+                    if (res[0].avg == null) {
+                        setEmployeeCount(0);
+                    }
+                }).catch(error => console.log('error', error));
+        }
+        else setEmployeeCount(0); // just a placeholder else statement to account for to being earlier than from date
+    };
+
 
     const confirmationBody = (option) => {
         return (
@@ -274,13 +304,16 @@ function Reservation() {
                         </Typography>
                     </Typography>
                     <Typography className={classes.deskSectionText}>
-                        Desk ID: <Typography className={classes.deskText}>
-                            {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.desk_id}
+                        Floor Number: <Typography className={classes.deskText}> {option.fk_floor_num}
+                        </Typography>
+                    </Typography>
+                    <Typography className={classes.deskSectionText}>
+                        Desk Number: <Typography className={classes.deskText}> {option.desk_id}
                         </Typography>
                     </Typography>
                     <Typography className={classes.deskSectionText}>
                         Estimated Number of People: <Typography className={classes.deskText}>
-                            9
+                        {employeeCount}
                                                 </Typography>
                     </Typography>
                 </div>
@@ -400,7 +433,7 @@ function Reservation() {
                                     </div>
                                     <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
                                     <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                        <Button className={classes.reserveButton} onClick={handleOpen}>Reserve Now</Button>
+                                        <Button className={classes.reserveButton} onClick={() => {getEmployeeCount(option); handleOpen();}}>Reserve Now</Button>
                                     </div>
                                     <Modal
                                         open={open}
