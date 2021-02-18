@@ -44,4 +44,23 @@ router.get("/getCount/:officeID/:startDate/:endDate", (req, res: Response) => {
         })
 })
 
+// DELETE reservation by reservation_id
+router.delete('/deleteReservation', (req, res) => {
+    if (!req.body.reservation_id) {
+        res.status(400).send({
+            message: 'Must provide a reservation_id!'
+        });
+    } else {
+        reservationServer.deleteReservation(req)
+            .then((status: any) => {
+                res.json(status);
+            })
+            .catch((err: any) => {
+                res.json(err);
+            })
+    }
+})
+
+
+
 export default router

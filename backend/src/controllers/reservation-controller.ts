@@ -45,6 +45,19 @@ export default class ReservationController {
         }
         return new Promise((resolve, reject) => {
             Reservation.getEmployeeCountForOffice(date,(err: any, res: any) => {
+              if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            })
+        })
+    }
+
+
+    deleteReservation(req: any) {
+        const reservationID = req.body.reservation_id;
+        return new Promise((resolve, reject) => {
+            Reservation.deleteReservation(reservationID, (err: any, res: any) => {
                 if (err) {
                     reject(err);
                 }
