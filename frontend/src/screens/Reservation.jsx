@@ -378,11 +378,11 @@ function Reservation() {
                         </Typography>
                     </Typography>
                     <Typography className={classes.deskSectionText}>
-                        Floor Number: <Typography className={classes.deskText}> {option.fk_floor_num}
+                        Floor Number: <Typography className={classes.deskText}> {confirmationDesk.fk_floor_num}
                         </Typography>
                     </Typography>
                     <Typography className={classes.deskSectionText}>
-                        Desk Number: <Typography className={classes.deskText}> {option.desk_id}
+                        Desk Number: <Typography className={classes.deskText}> {confirmationDesk.desk_id}
                         </Typography>
                     </Typography>
                     <Typography className={classes.deskSectionText}>

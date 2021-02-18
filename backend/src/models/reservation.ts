@@ -76,22 +76,20 @@ Reservation.getEmployeeCountForOffice = (params: any, result: any) => {
         String(params.start_date),
         String(params.end_date),
         params.office_id,
-    ],(err: any, res: any) => {
-      if (err) {
+    ], (err: any, res: any) => {
+        if (err) {
             console.log('Error: ', err);
             result(err, null);
         } else {
-          // console.log(res);
+            // console.log(res);
             result(null, res);
         }
     })
 }
 
-  
 Reservation.deleteReservation = (reservationID: any, result: any) => {
     con.query("CALL deleteReservation(?)", [reservationID], (err: any, res: any) => {
-            console.log(res);
-            result(null, res);
-        }
-    })
+        console.log(res);
+        result(null, res);
+    });
 };
