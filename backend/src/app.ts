@@ -1,22 +1,15 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-
-const app = express();
+import { DeskbuddyServer } from "./server";
 const PORT = 3000;
 
-// Json body settings
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Add your custom routes
-import reservationRoute from './routes/reservation-routes';
-
-app.get('/', (req, res) => {
-  res.send('Hello DeskBuddy!');
-});
-
-app.use('/reservation', reservationRoute);
-
-app.listen(PORT, () => {
-  return console.log(`Server is listening on ${PORT}`);
-});
+export class App {
+    public initialize(port: number) {
+        const server = new DeskbuddyServer(port);
+        server.start().then((output) => {
+            console.log("Application listening: " + output);
+        }).catch(err => {
+            console.log("Application error: " + err);
+        });
+    };
+}
+const application = new App();
+application.initialize(PORT);

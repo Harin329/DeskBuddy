@@ -6,6 +6,7 @@ import Mail from './screens/Mail';
 import Social from './screens/Social';
 import BookingsCalendar from "./components/reservation/BookingsCalendar";
 import './App.css';
+import "@fontsource/lato"
 
 function App() {
     return (
@@ -16,7 +17,6 @@ function App() {
                 <Route exact path="/mail" component={Mail} />
                 <Route exact path="/social" component={Social} />
             </Router>
-            <BookingsCalendar/>
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 
 const router = Router();
 
@@ -6,7 +6,7 @@ import ReservationController from '../controllers/reservation-controller';
 const reservationServer = new ReservationController();
 
 // POST reserve desk endpoint
-router.post('/', (req, res) => {
+router.post('/', (req: Request, res: Response) => {
     if (!req.body) {
         res.status(400).send({
             message: 'Content can not be empty!'
@@ -23,7 +23,7 @@ router.post('/', (req, res) => {
 });
 
 // GET all reservations, to test connections & setup
-router.get('/getAllReservations', (_, res) => {
+router.get('/getAllReservations', (_, res: Response) => {
     reservationServer.findAllReservations()
     .then((reservations: any) => {
         res.json(reservations);
@@ -32,5 +32,24 @@ router.get('/getAllReservations', (_, res) => {
         res.json(err);
     })
 })
+
+// DELETE reservation by reservation_id
+router.delete('/deleteReservation', (req, res) => {
+    if (!req.body.reservation_id) {
+        res.status(400).send({
+            message: 'Must provide a reservation_id!'
+        });
+    } else {
+        reservationServer.deleteReservation(req)
+            .then((status: any) => {
+                res.json(status);
+            })
+            .catch((err: any) => {
+                res.json(err);
+            })
+    }
+})
+
+
 
 export default router
