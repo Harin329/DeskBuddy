@@ -8,7 +8,7 @@
 .DatePicker__calendarContainer {
     position: absolute;
     top: calc(100% + 20px);
-    left: 50%;
+    left: 30%;
     transform: translateX(-50%);
 }
 
@@ -19,6 +19,7 @@
 
 .Calendar,
 .Calendar * {
+    left: 0;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -26,7 +27,7 @@
 }
 
 .bookedDay:not(.-selectedStart):not(.-selectedBetween):not(.-selectedEnd):not(.-selected) {
-    border: solid #E94257 !important;
+    border: solid #00adef 5px !important;
     border-radius: 20%;
 }
 
@@ -53,8 +54,8 @@
     --cl-color-black: #444444;
     --cl-color-disabled: #d4d4d4;
     --cl-color-error: #ff2929;
-    font-size: 32px;
-    background: #666666;
+    font-size: 18px;
+    background: white;
     box-shadow: 0 1em 4em rgba(0, 0, 0, 0.07);
     border-radius: 1em;
     position: relative;
@@ -207,7 +208,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    transform: translateX(0) scale(0.95);
+    /*transform: translateX(0) scale(0.95);*/
     will-change: transform;
     border-radius: 5px;
 }
@@ -364,7 +365,7 @@
 }
 
 .Calendar__yearSelectorText {
-    color: white;
+    color: black;
     border: none;
     font-size: 1.4em;
     min-width: 85%;
@@ -415,7 +416,7 @@
 
 .Calendar__monthSelectorItem.-active .Calendar__monthSelectorItemText,
 .Calendar__yearSelectorItem.-active .Calendar__yearSelectorText {
-    background-color: #E94257;
+    background-color: #00ADEF;
     color: #fff;
 }
 
@@ -500,7 +501,7 @@
     transition: 0.2s;
     border: 1px solid transparent;
     margin-bottom: 0.3em;
-    color: white;
+    color: black;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -532,7 +533,7 @@
 .Calendar__day.-selected,
 .Calendar__day.-selectedStart,
 .Calendar__day.-selectedEnd {
-    background: #E94257;
+    background: #00ADEF;
     color: #fff;
 }
 
@@ -580,7 +581,7 @@
 }
 .Calendar__day.-today:not(.-selectedStart):not(.-selectedEnd):not(.-selectedBetween) {
     font-weight: 600;
-    color: white;
+    color: black;
     position: relative;
 }
 
@@ -591,7 +592,7 @@
     display: block;
     width: 0.6em;
     height: 1px;
-    background: blue;
+    background: #00ADEF;
     left: 50%;
     opacity: 0.5;
     transform: translateX(-50%);

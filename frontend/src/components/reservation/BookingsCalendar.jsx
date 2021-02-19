@@ -1,6 +1,34 @@
-import React,  {useState} from 'react';
+import React,  {useState, useEffect} from 'react';
 import "./BookingsCalendar.css";
 import { Calendar, utils } from "react-modern-calendar-datepicker";
+import Endpoint from '../../config/Constants';
+
+const bookedDays = [];
+
+function formatReservations(res) {
+    let i;
+    for (i = 0; i < res.length; i++){
+        let year = res[i].start_date.substring(0, 4);
+        let month;
+        if (res[i].start_date.substring(5, 6) === "0"){
+           month =  res[i].start_date.substring(6, 7);
+        } else {
+            month = res[i].start_date.substring(5, 7);
+        } let day;
+        if (res[i].start_date.substring(8, 10) === "0"){
+            day = res[i].start_date.substring(9, 10);
+        } else {
+            day = res[i].start_date.substring(8, 10);
+        }
+        bookedDays.push({
+            year: Number(year),
+            month: Number(month),
+            day: Number(day),
+            className: 'bookedDay'
+        })
+
+    }
+}
 
 function BookingsCalendar() {
     const today = new Date();
@@ -11,6 +39,24 @@ function BookingsCalendar() {
         month: maxDate.getMonth(),
         day: maxDate.getDate()
     }
+
+    useEffect(() => {
+        const requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        fetch(Endpoint + "/reservation/getAllReservations", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                const res = JSON.parse(result)
+                console.log(res)
+                formatReservations(res);
+            })
+            .catch(error => console.log('error', error))
+    }, [])
+    console.log(bookedDays);
+
     return (
         <Calendar
             value={selectedDay}
@@ -19,9 +65,7 @@ function BookingsCalendar() {
             minimumDate={utils().getToday()}
             maximumDate={formattedMaxDate}
             // update this array onChange
-            customDaysClassName={[{year: 2021, month: 2, day: 21, className: 'bookedDay'},
-            {year: 2021, month: 2, day: 24, className: 'bookedDay'},
-            {year: 2021, month: 2, day: 25, className: 'bookedDay'}]}
+            customDaysClassName={bookedDays}
         />
     );
 }
