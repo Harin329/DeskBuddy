@@ -1,4 +1,5 @@
 import {Request, Response, NextFunction} from 'express';
+import {Office} from ''
 
 export default class LocationController {
     // tslint:disable-next-line:no-empty
@@ -11,5 +12,8 @@ export default class LocationController {
     */
     addLocation(req: Request): Promise<boolean> {
         const office: Office = JSON.parse(req.body);
+        return new Promise((resolve, reject) => {
+            resolve(true);
+        })
     }
 }
