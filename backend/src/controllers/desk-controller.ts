@@ -23,6 +23,8 @@ export default class DeskController {
             fk_office_location: req.body.office_location,
             start_date: req.body.start_date,
             end_date: req.body.end_date,
+            startIndex: req.body.startIndex,
+            numOnPage: req.body.numOnPage,
         }
 
         if (req.body.office_location === '0') {

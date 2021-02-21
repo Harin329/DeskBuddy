@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Search from '../assets/search.png';
-import Floorplan from '../assets/Location1.jpg';
 import Endpoint from '../config/Constants';
 import BookingsCalendar from '../components/reservation/BookingsCalendar';
 
@@ -139,6 +138,8 @@ function Reservation() {
     const date = new Date();
     const formattedDate = date.getFullYear() + "-" + appendLeadingZeroes(date.getMonth() + 1) + "-" + appendLeadingZeroes(date.getDate());
 
+    const resultOnPage = 25;
+
     const classes = useStyles();
     const [officeList, setOfficeList] = useState([]);
     const [office, setOffice] = useState('All');
@@ -153,6 +154,9 @@ function Reservation() {
     const [floorplan, setFloorplan] = useState(false);
     const [officeDisabled, setOfficeDisabled] = useState(true);
     const [confirmationDesk, setConfirmationDesk] = useState();
+    const [floorplanSelected, setFloorplanSelected] = useState();
+    const [page, setPage] = useState(0);
+    const [more, setMore] = useState(true);
 
     function appendLeadingZeroes(n) {
         if (n <= 9) {
@@ -175,7 +179,7 @@ function Reservation() {
             })
             .catch(error => console.log('error', error));
 
-        search();
+        search(false, 0);
 
     }, []);
 
@@ -227,6 +231,7 @@ function Reservation() {
                     // console.log(res);
                     if (res.length > 0) {
                         setOfficeDisabled(false);
+                        setFloorplanSelected(res[0]);
                     } else {
                         setOfficeDisabled(true);
                     }
@@ -263,8 +268,7 @@ function Reservation() {
         }
     }
 
-    const search = () => {
-
+    const search = (append, pageStart) => {
         var deskParam = ['0', '0']
         var officeParam = ['0', '0']
 
@@ -278,7 +282,16 @@ function Reservation() {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        var raw = JSON.stringify({ "desk_id": String(deskParam[1]), "floor_num": Number(deskParam[0]), "office_id": Number(officeParam[1]), "office_location": String(officeParam[0]), "start_date": from, "end_date": to });
+        var raw = JSON.stringify({ 
+            "desk_id": String(deskParam[1]),
+            "floor_num": Number(deskParam[0]),
+            "office_id": Number(officeParam[1]),
+            "office_location": String(officeParam[0]),
+            "start_date": from,
+            "end_date": to,
+            "startIndex": pageStart,
+            "numOnPage": resultOnPage
+         });
 
         console.log(raw);
 
@@ -294,7 +307,15 @@ function Reservation() {
             .then(result => {
                 const res = JSON.parse(result)
                 console.log(res)
-                setDeskResults(res)
+                if (deskResults.length === 0 || !append) {
+                    setDeskResults(res);
+                } else {
+                    if (res[0] !== undefined) {
+                        setDeskResults((prev) => [...prev, ...res])
+                    }
+                }
+                setMore(((deskResults.length + res.length) % resultOnPage === 0 && res[0] !== undefined) || !append)
+                setPage(pageStart + resultOnPage);
             })
             .catch(error => console.log('error', error));
     }
@@ -328,7 +349,8 @@ function Reservation() {
                 .catch(error => console.log('error', error));
         }
         handleClose();
-        search();
+        // Replace this with promises followed by then one day... :)
+        setTimeout(() => search(false, 0), 3000);
     }
 
     const getEmployeeCount = (deskObj) => {
@@ -388,8 +410,8 @@ function Reservation() {
                     </Typography>
                     <Typography className={classes.deskSectionText}>
                         Estimated Number of People: <Typography className={classes.deskText}>
-                        {employeeCount}
-                                                </Typography>
+                            {employeeCount}
+                        </Typography>
                     </Typography>
                 </div>
                 <Typography className={classes.confirmationModalText}>
@@ -407,6 +429,8 @@ function Reservation() {
         const officeObj = officeList.find((item) => (item.office_location + "-" + item.office_id) === office);
         const officeName = officeObj !== undefined ? officeObj.name : '';
 
+        // setFloorplanSelected(floorList[0]);
+
         return (
             <div className={classes.floorplan}>
                 <div style={{ width: '102%', marginTop: '-25px', justifyContent: 'flex-end', display: 'flex' }}>
@@ -420,22 +444,25 @@ function Reservation() {
                 <div style={{ width: '100%', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
                     <div style={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                         {floorList.map((option) => (
-                            <Button className={classes.FloorText}>
+                            <Button className={classes.FloorText} onClick={() => {
+                                setFloorplanSelected(option)
+                            }}>
                                 Floor {option.floor_num}
                             </Button>
                         ))}
                     </div>
                     <div>
-                        <img src={Floorplan} alt="Floorplan" style={{ height: '45vh', marginLeft: '50px' }} />
+                        {floorplanSelected !== undefined && <img src={'data:image/png;base64,' + new Buffer(floorplanSelected.floor_plan, 'binary').toString('base64')} alt="Floorplan" style={{ height: '45vh' }} />}
                     </div>
                 </div>
             </div>)
     };
 
+
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
-                <BookingsCalendar/>
+                <BookingsCalendar />
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                     <Grid item xs={3} className={classes.titleLines} />
                     <Grid item xs={1}>
@@ -463,12 +490,12 @@ function Reservation() {
                                         <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                                             <Typography className={classes.deskSectionText}>
                                                 OFFICE: <Typography className={classes.deskText}>
-                                                {option.office_location} // TODO: Add full location
+                                                    {option.office_location} // TODO: Add full location
                                             </Typography>
                                             </Typography>
                                             <Typography className={classes.deskSectionText}>
                                                 DESK ID: <Typography className={classes.deskText}>
-                                                {option.desk_id} // TODO: Add real desk ID
+                                                    {option.desk_id} // TODO: Add real desk ID
                                             </Typography>
                                             </Typography>
                                         </div>
@@ -478,7 +505,7 @@ function Reservation() {
                                         <Button className={classes.cancelButton} onClick={() => {
                                             getEmployeeCount(option);
                                             handleOpen(option)
-                                            }}>Cancel</Button>
+                                        }}>Cancel</Button>
                                     </div>
                                     <Modal
                                         open={open}
@@ -559,7 +586,9 @@ function Reservation() {
                         <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleToChange} value={to} defaultValue={to} />
                     </Grid>
                     <Grid item xs={1}>
-                        <button onClick={search} style={{ backgroundColor: 'transparent', border: 'none' }}><img src={Search} alt="Search" style={{ height: '50px' }} /></button>
+                        <button onClick={() => {
+                            search(false, 0);
+                            }} style={{ backgroundColor: 'transparent', border: 'none' }}><img src={Search} alt="Search" style={{ height: '50px' }} /></button>
                     </Grid>
                 </Grid>
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
@@ -568,9 +597,7 @@ function Reservation() {
                             {deskResults.map((option) => (
                                 <ListItem style={{ backgroundColor: '#E5E5E5', height: '150px', marginBottom: '10px' }}>
                                     <div style={{ width: '25%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                        <ListItemIcon style={{ width: '100px', height: '100px', backgroundColor: '#00ADEF', alignItems: 'center', justifyContent: 'center', borderRadius: 100 }}>
-                                            <DesktopMacIcon />
-                                        </ListItemIcon>
+                                        <img src={'data:image/png;base64,' + new Buffer(option.office_photo, 'binary').toString('base64')} alt="OfficePicture" style={{ height: '100px', width: '100px', borderRadius: 100 }} />
                                         <Typography className={classes.officeText}>
                                             {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.desk_id}
                                         </Typography>
@@ -607,7 +634,7 @@ function Reservation() {
                                         <Button className={classes.reserveButton} onClick={() => {
                                             getEmployeeCount(option);
                                             handleOpen(option)
-                                            }}>Reserve Now</Button>
+                                        }}>Reserve Now</Button>
                                     </div>
                                     <Modal
                                         open={open}
@@ -617,14 +644,17 @@ function Reservation() {
                                     </Modal>
                                 </ListItem>
                             ))}
+                            <div style={{ justifyContent: 'center', display: 'flex', marginTop: '50px' }}>
+                                {deskResults.length <= 0 && <Typography className={classes.sectionText}>No Results Found</Typography>}
+                            </div>
                         </List>
                     </Grid>
                 </Grid>
-                {/* <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Button className={classes.actionButton} onClick={() => {
-                        console.log("Loading More!");
-                    }}>Load More</Button>
-                </Grid> */}
+                <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
+                    {deskResults.length > 0 && more && <Button className={classes.actionButton} onClick={() => {
+                        search(true, page);
+                    }}>Load More</Button>}
+                </Grid>
             </Grid>
         </div>
     );
