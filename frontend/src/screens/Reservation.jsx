@@ -217,16 +217,18 @@ function Reservation() {
     const [deskResults, setDeskResults] = useState([]);
     const [open, setOpen] = useState(false);
     const [employeeCount, setEmployeeCount] = useState(0);
-    const [employeeCountCancel, setEmployeeCountCancel] = useState(0);
     const [floorplan, setFloorplan] = useState(false);
     const [officeDisabled, setOfficeDisabled] = useState(true);
     const [confirmationDesk, setConfirmationDesk] = useState();
     const [floorplanSelected, setFloorplanSelected] = useState();
     const [page, setPage] = useState(0);
     const [more, setMore] = useState(true);
+
+    // UpcomingReservations state todo should probably be in a separate component..
     const [upcomingRes, setUpcomingRes] = useState([]);
     const [reservationToCancel, setReservationToCancel] = useState();
     const [openCancel, setOpenCancel] = useState(false);
+    const [employeeCountCancel, setEmployeeCountCancel] = useState("");
 
     function appendLeadingZeroes(n) {
         if (n <= 9) {
@@ -246,15 +248,6 @@ function Reservation() {
             .then(result => {
                 setOfficeList(JSON.parse(result));
                 // console.log(JSON.parse(result));
-            })
-            .catch(error => console.log('error', error));
-
-        fetch(Endpoint + "/reservation/getUpcomingReservations", requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                const res = JSON.parse(result)
-                console.log(res)
-                setUpcomingRes(res)
             })
             .catch(error => console.log('error', error));
 
@@ -296,6 +289,7 @@ function Reservation() {
     };
 
     const handleCloseCancel = () => {
+        setEmployeeCountCancel("");
         setOpenCancel(false);
     };
 
@@ -501,7 +495,7 @@ function Reservation() {
                 const res = JSON.parse(result)
                 console.log(res[0].avg)
                 if (res[0].avg == null) {
-                    setEmployeeCountCancel(0);
+                    setEmployeeCountCancel("0");
                 } else {
                     setEmployeeCountCancel(res[0].avg)
                 }
