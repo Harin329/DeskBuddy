@@ -1,9 +1,17 @@
-import React,  {useState, useEffect} from 'react';
+import React,  {useState, useEffect, Component} from 'react';
 import "./BookingsCalendar.css";
 import { Calendar, utils } from "react-modern-calendar-datepicker";
 import Endpoint from '../../config/Constants';
 
+let selectedDate = null;
 const bookedDays = [];
+const today = new Date();
+const maxDate = new Date(today.setMonth(today.getMonth() + 6));
+const formattedMaxDate = {
+    year: maxDate.getFullYear(),
+    month: maxDate.getMonth(),
+    day: maxDate.getDate()
+}
 
 function formatReservations(res) {
     let i;
@@ -30,44 +38,49 @@ function formatReservations(res) {
     }
 }
 
-function BookingsCalendar() {
-    const today = new Date();
-    const [selectedDay, setSelectedDay] = useState(utils().getToday());
-    const maxDate = new Date(today.setMonth(today.getMonth() + 6));
-    const formattedMaxDate = {
-        year: maxDate.getFullYear(),
-        month: maxDate.getMonth(),
-        day: maxDate.getDate()
+class BookingsCalendar extends React.Component {
+    constructor() {
+        super();
+        this.state = {selectedDay : utils().getToday()}
     }
 
-    useEffect(() => {
-        const requestOptions = {
+    componentDidMount() {
+        {const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
 
-        fetch(Endpoint + "/reservation/getAllReservations", requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                const res = JSON.parse(result)
-                console.log(res)
-                formatReservations(res);
-            })
-            .catch(error => console.log('error', error))
-    }, [])
-    console.log(bookedDays);
+            fetch(Endpoint + "/reservation/getAllReservations", requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    const res = JSON.parse(result)
+                    formatReservations(res);
+                })
+                .catch(error => console.log('error', error))
+        }
+    }
 
-    return (
-        <Calendar
-            value={selectedDay}
-            // update upcoming reservation view on selected day
-            onChange={setSelectedDay}
-            minimumDate={utils().getToday()}
-            maximumDate={formattedMaxDate}
-            // update this array onChange
-            customDaysClassName={bookedDays}
-        />
-    );
+    handleDatePickerChange = newValue => {
+        this.setState({ selectedDay: newValue });
+        let selectedYear = this.state.selectedDay.year;
+        let selectedMonth = this.state.selectedDay.month;
+        let selectedDay = this.state.selectedDay.day;
+        // Method for updating reservation details should be called with this date
+        selectedDate = selectedYear.toString() + "-" + selectedMonth.toString() + "-" + selectedDay.toString();
+
+    }
+
+    render() {
+        return (
+            <Calendar
+                value={this.state.selectedDay}
+                onChange = {this.handleDatePickerChange}
+                minimumDate={utils().getToday()}
+                maximumDate={formattedMaxDate}
+                customDaysClassName={bookedDays}
+            />
+        );
+    }
 }
 
 export default BookingsCalendar;

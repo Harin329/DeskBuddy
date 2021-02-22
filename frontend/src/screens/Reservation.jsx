@@ -171,7 +171,6 @@ function Reservation() {
             .then((response) => response.text())
             .then(result => {
                 setOfficeList(JSON.parse(result));
-                console.log("offices searched");
             })
             .catch(error => console.log('error', error));
 
@@ -510,11 +509,11 @@ function Reservation() {
                             <MenuItem key={'All'} value={'All'}>
                                 All
                                 </MenuItem>
-                            {officeList.map((option) => (
-                                <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
-                                    {option.name}
-                                </MenuItem>
-                            ))}
+                            {/*{officeList.map((option) => (*/}
+                            {/*    <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>*/}
+                            {/*        {option.name}*/}
+                            {/*    </MenuItem>*/}
+                            {/*))}*/}
                         </TextField>
                     </Grid>
                     <Grid item xs={3}>
