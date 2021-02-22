@@ -1,4 +1,5 @@
 import DB from '../config/db-handler';
+import { IDesk, IFloor, IOffice } from '../interfaces/location.interface';
 
 const con = DB.getCon();
 
@@ -10,6 +11,28 @@ export const Desk = function (this: any, desk: any) {
     this.capacity = desk.capacity;
 };
 
+Desk.addDesk = (id: number, desk: IDesk, floor: IFloor, office: IOffice, result: any) => {
+    con.query('CALL createDesk(?, ?, ?, ?, ?)',
+    [
+        desk.ID,
+        floor.floor_num,
+        id,
+        office.city,
+        desk.capacity
+    ],
+    (err: any, res: any) => {
+        if (err) {
+            console.log('Error: ', err);
+            result(err, null);
+        } else {
+            console.log(res);
+            result(null, res[0]);
+        }
+        console.log(res);
+    });
+}
+
+// tslint:disable-next-line:variable-name
 Desk.getDeskByOffice = (office_location: string, office_id: number, result: any) => {
     con.query('CALL getDeskByOffice(?,?)',
     [

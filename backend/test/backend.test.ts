@@ -42,6 +42,10 @@ describe("Miscellaneous tests", () => {
         expect(res.status).toBe(200);
         done();
     });
+
+    it("POST /location", async done => {
+        const res = await request.post();
+    });
 });
 
 
