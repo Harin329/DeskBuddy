@@ -564,11 +564,11 @@ function Reservation() {
                         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                             <Grid item xs={7}>
                                 <List>
-                                    {deskResults.map((option) => (
+                                    {upcomingRes.map((option) => (
                                         <ListItem className={classes.upcomingResBox}>
                                             <div className={classes.upcomingResBoxDate}>
                                                 <Typography className={classes.officeText}>
-                                                    {option.fk_office_location}
+                                                    {option.start_date}
                                                 </Typography>
                                             </div>
                                             <Divider orientation='vertical'
@@ -577,12 +577,12 @@ function Reservation() {
                                                 <div className={classes.upcomingResBoxCenterSection}>
                                                     <Typography className={classes.deskSectionText}>
                                                         OFFICE: <Typography className={classes.deskText}>
-                                                        {option.office_location}
+                                                        {option.fk_office_location}
                                                     </Typography>
                                                     </Typography>
                                                     <Typography className={classes.deskSectionText}>
                                                         DESK ID: <Typography className={classes.deskText}>
-                                                        {option.office_location + option.fk_floor_num + option.desk_id}
+                                                        {option.fk_office_location + option.fk_floor_num + option.fk_desk_id}
                                                     </Typography>
                                                     </Typography>
                                                 </div>
