@@ -191,7 +191,13 @@ const useStyles = makeStyles({
         display: 'flex',
         flexDirection: 'column'
     },
-
+    upcomingResBoxCenterSection: {
+        width: '50%',
+        height: '80px',
+        justifyContent: 'center',
+        display: 'flex',
+        flexDirection: 'column'
+    },
 });
 
 function Reservation() {
@@ -559,13 +565,7 @@ function Reservation() {
                                             <Divider orientation='vertical'
                                                      style={{backgroundColor: 'black', height: '80px', width: '1px'}}/>
                                             <div className={classes.upcomingResBoxOffice}>
-                                                <div style={{
-                                                    width: '40%',
-                                                    height: '80px',
-                                                    justifyContent: 'center',
-                                                    display: 'flex',
-                                                    flexDirection: 'column'
-                                                }}>
+                                                <div className={classes.upcomingResBoxCenterSection}>
                                                     <Typography className={classes.deskSectionText}>
                                                         OFFICE: <Typography className={classes.deskText}>
                                                         {option.office_location}
