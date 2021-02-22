@@ -224,11 +224,11 @@ function Reservation() {
     const [page, setPage] = useState(0);
     const [more, setMore] = useState(true);
 
-    // UpcomingReservations state todo should probably be in a separate component..
+    // UpcomingReservations state todo should probably be a separate component..
     const [upcomingRes, setUpcomingRes] = useState([]);
     const [reservationToCancel, setReservationToCancel] = useState();
-    const [openCancel, setOpenCancel] = useState(false);
-    const [employeeCountCancel, setEmployeeCountCancel] = useState("");
+    const [openCancelRes, setOpenCancelRes] = useState(false);
+    const [employeeCountUpcomingRes, setEmployeeCountUpcomingRes] = useState("");
 
     function appendLeadingZeroes(n) {
         if (n <= 9) {
@@ -283,14 +283,14 @@ function Reservation() {
         setOpen(false);
     };
 
-    const handleOpenCancel = (option) => {
+    const handleOpenUpcomingRes = (option) => {
         setReservationToCancel(option);
-        setOpenCancel(true);
+        setOpenCancelRes(true);
     };
 
-    const handleCloseCancel = () => {
-        setEmployeeCountCancel("");
-        setOpenCancel(false);
+    const handleCloseUpcomingRes = () => {
+        setEmployeeCountUpcomingRes("");
+        setOpenCancelRes(false);
     };
 
     const handleFloorplanOpen = () => {
@@ -483,7 +483,8 @@ function Reservation() {
         else setEmployeeCount(0); // just a placeholder else statement to account for to being earlier than from date
     };
 
-    const getEmployeeCountCancel = (reservationObj) => {
+    // todo combine with getEmployeeCount?
+    const getEmployeeCountUpcomingRes = (reservationObj) => {
         var requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -494,10 +495,9 @@ function Reservation() {
             .then(result => {
                 const res = JSON.parse(result)
                 console.log(res[0].avg)
+                setEmployeeCountUpcomingRes(res[0].avg)
                 if (res[0].avg == null) {
-                    setEmployeeCountCancel("0");
-                } else {
-                    setEmployeeCountCancel(res[0].avg)
+                    setEmployeeCountUpcomingRes("0");
                 }
             }).catch(error => console.log('error', error));
     };
@@ -544,11 +544,11 @@ function Reservation() {
             </div>)
     };
 
-    const confirmCancelBody = () => {
+    const confirmCancelResBody = () => {
         return (
             <div className={classes.paper}>
                 <div style={{width: '105%', marginTop: '-25px', justifyContent: 'flex-end', display: 'flex'}}>
-                    <IconButton size='small' onClick={handleCloseCancel}>
+                    <IconButton size='small' onClick={handleCloseUpcomingRes}>
                         <CancelIcon size="small"/>
                     </IconButton>
                 </div>
@@ -577,7 +577,7 @@ function Reservation() {
                     </Typography>
                     <Typography className={classes.deskSectionText}>
                         Estimated Number of People: <Typography className={classes.deskText}>
-                        {employeeCountCancel}
+                        {employeeCountUpcomingRes}
                     </Typography>
                     </Typography>
                 </div>
@@ -612,7 +612,7 @@ function Reservation() {
             .then(getUpcomingReservations)
             .catch(error => console.log('error', error));
 
-        handleCloseCancel();
+        handleCloseUpcomingRes();
     }
 
     const floorplanBody = () => {
@@ -706,16 +706,16 @@ function Reservation() {
                                                      style={{backgroundColor: 'black', height: '80px', width: '1px'}}/>
                                             <div className={classes.upcomingResBoxCancel}>
                                                 <Button className={classes.cancelButton} onClick={() => {
-                                                    getEmployeeCountCancel(option);
-                                                    handleOpenCancel(option)
+                                                    getEmployeeCountUpcomingRes(option);
+                                                    handleOpenUpcomingRes(option)
                                                 }}>Cancel</Button>
                                             </div>
                                         </ListItem>
                                     ))}
                                     <Modal
-                                        open={openCancel}
-                                        onClose={handleCloseCancel}>
-                                        {reservationToCancel !== undefined ? confirmCancelBody() : null}
+                                        open={openCancelRes}
+                                        onClose={handleCloseUpcomingRes}>
+                                        {reservationToCancel !== undefined ? confirmCancelResBody() : null}
                                     </Modal>
                                 </List>
                             </Grid>
