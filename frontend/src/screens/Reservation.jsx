@@ -549,11 +549,11 @@ function Reservation() {
                         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                             <Grid item xs={7}>
                                 <List>
-                                    {
+                                    {deskResults.map((option) => (
                                         <ListItem className={classes.upcomingResBox}>
                                             <div className={classes.upcomingResBoxDate}>
                                                 <Typography className={classes.officeText}>
-                                                    DATE
+                                                    {option.fk_office_location}
                                                 </Typography>
                                             </div>
                                             <Divider orientation='vertical'
@@ -568,12 +568,12 @@ function Reservation() {
                                                 }}>
                                                     <Typography className={classes.deskSectionText}>
                                                         OFFICE: <Typography className={classes.deskText}>
-                                                        {/*option.office_location*/}
+                                                        {option.office_location}
                                                     </Typography>
                                                     </Typography>
                                                     <Typography className={classes.deskSectionText}>
                                                         DESK ID: <Typography className={classes.deskText}>
-                                                        {/*option.office_location + option.fk_floor_num + option.desk_id*/}
+                                                        {option.office_location + option.fk_floor_num + option.desk_id}
                                                     </Typography>
                                                     </Typography>
                                                 </div>
@@ -582,7 +582,7 @@ function Reservation() {
                                                      style={{backgroundColor: 'black', height: '80px', width: '1px'}}/>
                                             <div className={classes.upcomingResBoxCancel}>
                                                 <Button className={classes.cancelButton} onClick={() => {
-                                                    handleClose(/*option*/)
+                                                    handleClose(option)
                                                 }}>Cancel</Button>
                                             </div>
                                             <Modal
@@ -592,7 +592,7 @@ function Reservation() {
                                                 {confirmationDesk !== undefined ? confirmationBody() : null}
                                             </Modal>
                                         </ListItem>
-                                    }
+                                    ))}
                                 </List>
                             </Grid>
                         </Grid>
