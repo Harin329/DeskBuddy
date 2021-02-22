@@ -21,6 +21,7 @@ export default class LocationController {
             const IDs: any[] = JSON.parse(JSON.stringify(unparsedIDs));
             const availableID = this.computeID(IDs);
             const officeRes = await this.addOffice(availableID, office);
+            console.log("pass");
             if (officeRes !== true) {
                 console.log(officeRes);
                 return Promise.reject(false);

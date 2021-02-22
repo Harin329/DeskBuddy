@@ -22,13 +22,10 @@ Desk.addDesk = (id: number, desk: IDesk, floor: IFloor, office: IOffice, result:
     ],
     (err: any, res: any) => {
         if (err) {
-            console.log('Error: ', err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res[0]);
         }
-        console.log(res);
     });
 }
 
