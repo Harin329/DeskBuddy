@@ -132,6 +132,66 @@ const useStyles = makeStyles({
         backgroundColor: 'white',
         padding: '30px',
     },
+    mainTitleText: {
+        color: 'white',
+        textAlign: 'center',
+        fontFamily: 'arial',
+        fontWeight: 'normal',
+        fontSize: 35,
+        textDecoration: 'underline',
+        marginBottom: '50px',
+        marginTop: '50px',
+        marginLeft: '-900px',
+    },
+    upcomingResSectionSpacing: {
+        width: '125%',
+        marginBottom: '29px',
+        marginLeft: '-200px'
+    },
+    titleSectionSpacing: {
+        marginBottom: '50px',
+        marginTop: '50px',
+        marginLeft: '30px',
+    },
+    sidebyside: {
+        width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        display: 'flex',
+        flexDirection: 'row'
+    },
+    upcomingResBox: {
+        backgroundColor: '#E5E5E5',
+        height: '80px',
+        marginBottom: '10px',
+        borderRadius: '10px'
+    },
+    upcomingResBoxDate: {
+        width: '25%',
+        height: '80px',
+        alignItems: 'center',
+        justifyContent: 'center',
+        display: 'flex',
+        flexDirection: 'column'
+    },
+    upcomingResBoxOffice: {
+        width: '60%',
+        height: '80px',
+        alignItems: 'center',
+        justifyContent: 'left',
+        display: 'flex',
+        flexDirection: 'row'
+    },
+    upcomingResBoxCancel: {
+        width: '30%',
+        height: '80px',
+        alignItems: 'center',
+        justifyContent: 'center',
+        display: 'flex',
+        flexDirection: 'column'
+    },
+
 });
 
 function Reservation() {
@@ -462,62 +522,86 @@ function Reservation() {
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
-                <BookingsCalendar />
-                <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={3} className={classes.titleLines} />
-                    <Grid item xs={1}>
-                        <Typography className={classes.titleText}>
-                            UPCOMING RESERVATIONS
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={3} className={classes.titleLines} />
+                <Grid item xs={1}>
+                    <Typography className={classes.mainTitleText}>
+                        RESERVATION
+                    </Typography>
                 </Grid>
-                <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={7}>
-                        <List>
-                            {deskResults.map((option) => (
-                                <ListItem style={{ backgroundColor: '#E5E5E5', height: '150px', marginBottom: '10px' }}>
-                                    <div style={{ width: '25%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                        <ListItemIcon style={{ width: '100px', height: '100px', backgroundColor: '#00ADEF', alignItems: 'center', justifyContent: 'center', borderRadius: 100 }}>
-                                            <DesktopMacIcon />
-                                        </ListItemIcon>
-                                        <Typography className={classes.officeText}>
-                                            {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.desk_id}
-                                        </Typography>
-                                    </div>
-                                    <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
-                                    <div style={{ width: '55%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
-                                        <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                            <Typography className={classes.deskSectionText}>
-                                                OFFICE: <Typography className={classes.deskText}>
-                                                    {option.office_location} // TODO: Add full location
-                                            </Typography>
-                                            </Typography>
-                                            <Typography className={classes.deskSectionText}>
-                                                DESK ID: <Typography className={classes.deskText}>
-                                                    {option.desk_id} // TODO: Add real desk ID
-                                            </Typography>
-                                            </Typography>
-                                        </div>
-                                    </div>
-                                    <Divider orientation='vertical' style={{ backgroundColor: 'black', height: '129px', width: '1px' }} />
-                                    <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                        <Button className={classes.cancelButton} onClick={() => {
-                                            getEmployeeCount(option);
-                                            handleOpen(option)
-                                        }}>Cancel</Button>
-                                    </div>
-                                    <Modal
-                                        open={open}
-                                        onClose={handleClose}
-                                    >
-                                        {confirmationDesk !== undefined ? confirmationBody() : null}
-                                    </Modal>
-                                </ListItem>
-                            ))}
-                        </List>
+
+                <div className={classes.sidebyside}>
+                    <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
+                        <BookingsCalendar>
+                            //TODO: Show details of reservation on calendar click
+                        </BookingsCalendar>
                     </Grid>
-                </Grid>
+
+                    <Grid container justify='center' alignItems='center' className={classes.upcomingResSectionSpacing}>
+                        <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
+                            <Grid item xs={3} className={classes.titleLines}/>
+                            <Grid item xs={1}>
+                                <Typography className={classes.titleText}>
+                                    UPCOMING RESERVATIONS
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={3} className={classes.titleLines}/>
+                        </Grid>
+
+                        <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
+                            <Grid item xs={7}>
+                                <List>
+                                    {
+                                        <ListItem className={classes.upcomingResBox}>
+                                            <div className={classes.upcomingResBoxDate}>
+                                                <Typography className={classes.officeText}>
+                                                    DATE
+                                                </Typography>
+                                            </div>
+                                            <Divider orientation='vertical'
+                                                     style={{backgroundColor: 'black', height: '80px', width: '1px'}}/>
+                                            <div className={classes.upcomingResBoxOffice}>
+                                                <div style={{
+                                                    width: '40%',
+                                                    height: '80px',
+                                                    justifyContent: 'center',
+                                                    display: 'flex',
+                                                    flexDirection: 'column'
+                                                }}>
+                                                    <Typography className={classes.deskSectionText}>
+                                                        OFFICE: <Typography className={classes.deskText}>
+                                                        {/*option.office_location*/}
+                                                    </Typography>
+                                                    </Typography>
+                                                    <Typography className={classes.deskSectionText}>
+                                                        DESK ID: <Typography className={classes.deskText}>
+                                                        {/*option.office_location + option.fk_floor_num + option.desk_id*/}
+                                                    </Typography>
+                                                    </Typography>
+                                                </div>
+                                            </div>
+                                            <Divider orientation='vertical'
+                                                     style={{backgroundColor: 'black', height: '80px', width: '1px'}}/>
+                                            <div className={classes.upcomingResBoxCancel}>
+                                                <Button className={classes.cancelButton} onClick={() => {
+                                                    handleClose(/*option*/)
+                                                }}>Cancel</Button>
+                                            </div>
+                                            <Modal
+                                                open={open}
+                                                onClose={handleClose}
+                                            >
+                                                {confirmationDesk !== undefined ? confirmationBody() : null}
+                                            </Modal>
+                                        </ListItem>
+                                    }
+                                </List>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
+                </div>
+
+
+
 
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                     <Grid item xs={3} className={classes.titleLines} />
