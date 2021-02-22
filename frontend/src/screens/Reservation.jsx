@@ -7,6 +7,7 @@ import Search from '../assets/search.png';
 import Floorplan from '../assets/Location1.jpg';
 import Endpoint from '../config/Constants';
 import BookingsCalendar from '../components/reservation/BookingsCalendar';
+import { mergeClasses } from '@material-ui/styles';
 
 const useStyles = makeStyles({
     background: {
@@ -151,6 +152,7 @@ function Reservation() {
     const [open, setOpen] = useState(false);
     const [employeeCount, setEmployeeCount] = useState(0);
     const [floorplan, setFloorplan] = useState(false);
+    const [addLocation, setAddLocation] = useState(false);
     const [officeDisabled, setOfficeDisabled] = useState(true);
     const [confirmationDesk, setConfirmationDesk] = useState();
 
@@ -193,9 +195,17 @@ function Reservation() {
         setFloorplan(true);
     };
 
+    const handleAddLocationOpen = () => {
+        setAddLocation(true);
+    }
+
     const handleFloorplanClose = () => {
         setFloorplan(false);
     };
+
+    const handleAddLocationClose = () => {
+        setAddLocation(false)
+    }
 
     const handleOfficeChange = (event) => {
         setOffice(event.target.value);
@@ -432,6 +442,13 @@ function Reservation() {
             </div>)
     };
 
+    const addLocationBody = () => {
+        return (
+            <div className={classes.floorplan}>
+                Hi
+            </div>);
+    }
+
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
@@ -535,13 +552,22 @@ function Reservation() {
                     <Grid item xs={1} />
                 </Grid>
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={7}>
+                    <Grid item xs={3}>
                         <Button className={classes.actionButton} onClick={handleFloorplanOpen} disabled={officeDisabled}>Floorplan</Button>
                         <Modal
                             open={floorplan}
                             onClose={handleFloorplanClose}
                         >
                             {floorplanBody()}
+                        </Modal>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Button className={classes.actionButton} onClick={handleAddLocationOpen} disabled={officeDisabled}>Add Location</Button>
+                        <Modal
+                            open={addLocation}
+                            onClose={handleAddLocationClose}
+                        >
+                            {addLocationBody()}
                         </Modal>
                     </Grid>
                 </Grid>
