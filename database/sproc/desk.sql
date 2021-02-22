@@ -52,3 +52,11 @@ WHERE CONCAT(`fk_office_location`, `fk_office_id`, `fk_floor_num`, `desk_id`) NO
 END$$
 
 DELIMITER ;
+
+CREATE PROCEDURE `createDesk` (IN `desk_id` VARCHAR(50), IN `floor_num` INT(8), IN `office_id` INT(8), IN `office_location` VARCHAR(50), IN `capacity` INT(8))
+BEGIN
+
+INSERT INTO `desk` (`desk_id`, `fk_floor_num`, `fk_office_id`, `fk_office_location`, `capacity`)
+	VALUES (`desk_id`, `floor_num`, `office_id`, `office_location`, `capacity`);
+
+END
