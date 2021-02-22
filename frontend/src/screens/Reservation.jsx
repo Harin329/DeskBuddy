@@ -217,6 +217,7 @@ function Reservation() {
     const [deskResults, setDeskResults] = useState([]);
     const [open, setOpen] = useState(false);
     const [employeeCount, setEmployeeCount] = useState(0);
+    const [employeeCountCancel, setEmployeeCountCancel] = useState(0);
     const [floorplan, setFloorplan] = useState(false);
     const [officeDisabled, setOfficeDisabled] = useState(true);
     const [confirmationDesk, setConfirmationDesk] = useState();
@@ -224,6 +225,8 @@ function Reservation() {
     const [page, setPage] = useState(0);
     const [more, setMore] = useState(true);
     const [upcomingRes, setUpcomingRes] = useState([]);
+    const [reservationToCancel, setReservationToCancel] = useState();
+    const [openCancel, setOpenCancel] = useState(false);
 
     function appendLeadingZeroes(n) {
         if (n <= 9) {
@@ -255,9 +258,27 @@ function Reservation() {
             })
             .catch(error => console.log('error', error));
 
+        getUpcomingReservations();
+
         search(false, 0);
 
     }, []);
+
+    const getUpcomingReservations = () => {
+        var requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        fetch(Endpoint + "/reservation/getUpcomingReservations", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                const res = JSON.parse(result)
+                console.log(res)
+                setUpcomingRes(res)
+            })
+            .catch(error => console.log('error', error));
+    }
 
 
     const handleOpen = (option) => {
@@ -267,6 +288,15 @@ function Reservation() {
 
     const handleClose = () => {
         setOpen(false);
+    };
+
+    const handleOpenCancel = (option) => {
+        setReservationToCancel(option);
+        setOpenCancel(true);
+    };
+
+    const handleCloseCancel = () => {
+        setOpenCancel(false);
     };
 
     const handleFloorplanOpen = () => {
@@ -422,6 +452,7 @@ function Reservation() {
             fetch(Endpoint + "/reservation", requestOptions)
                 .then(response => response.text())
                 .then(result => console.log(result))
+                .then(getUpcomingReservations)
                 .catch(error => console.log('error', error));
         }
         handleClose();
@@ -456,6 +487,25 @@ function Reservation() {
                 }).catch(error => console.log('error', error));
         }
         else setEmployeeCount(0); // just a placeholder else statement to account for to being earlier than from date
+    };
+
+    const getEmployeeCountCancel = (reservationObj) => {
+        var requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        fetch(Endpoint + "/reservation/getCount/" + reservationObj.fk_office_id + "/" + reservationObj.start_date.split("T")[0] + "/" + reservationObj.end_date.split("T")[0], requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                const res = JSON.parse(result)
+                console.log(res[0].avg)
+                if (res[0].avg == null) {
+                    setEmployeeCountCancel(0);
+                } else {
+                    setEmployeeCountCancel(res[0].avg)
+                }
+            }).catch(error => console.log('error', error));
     };
 
     const confirmationBody = () => {
@@ -499,6 +549,77 @@ function Reservation() {
                 </div>
             </div>)
     };
+
+    const confirmCancelBody = () => {
+        return (
+            <div className={classes.paper}>
+                <div style={{width: '105%', marginTop: '-25px', justifyContent: 'flex-end', display: 'flex'}}>
+                    <IconButton size='small' onClick={handleCloseCancel}>
+                        <CancelIcon size="small"/>
+                    </IconButton>
+                </div>
+                <Typography className={classes.sectionTextModal}>
+                    {reservationToCancel.start_date.split("T")[0]} RESERVATION
+                </Typography>
+                <div style={{
+                    width: '100%',
+                    height: '140px',
+                    justifyContent: 'center',
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}>
+                    <Typography className={classes.deskSectionText}>
+                        Office: <Typography className={classes.deskText}>
+                        {reservationToCancel.fk_office_location /*todo get full office name somehow*/ }
+                    </Typography>
+                    </Typography>
+                    <Typography className={classes.deskSectionText}>
+                        Floor Number: <Typography className={classes.deskText}> {reservationToCancel.fk_floor_num}
+                    </Typography>
+                    </Typography>
+                    <Typography className={classes.deskSectionText}>
+                        Desk Number: <Typography className={classes.deskText}> {reservationToCancel.fk_desk_id}
+                    </Typography>
+                    </Typography>
+                    <Typography className={classes.deskSectionText}>
+                        Estimated Number of People: <Typography className={classes.deskText}>
+                        {employeeCountCancel}
+                    </Typography>
+                    </Typography>
+                </div>
+                <Typography className={classes.confirmationModalText}>
+                    Are you sure you want to cancel this reservation?
+                </Typography>
+                <div style={{width: '100%', marginTop: '10px', justifyContent: 'center', display: 'flex'}}>
+                    <Button className={classes.cancelButton} onClick={() => {
+                        cancelReservation(reservationToCancel);
+                    }}>CANCEL</Button>
+                </div>
+            </div>)
+    };
+
+    const cancelReservation = (reservation) => {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({ "reservation_id": Number(reservation.reservation_id)});
+        console.log(raw);
+
+        var requestOptions = {
+            method: 'DELETE',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch(Endpoint + "/reservation/deleteReservation", requestOptions)
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .then(getUpcomingReservations)
+            .catch(error => console.log('error', error));
+
+        handleCloseCancel();
+    }
 
     const floorplanBody = () => {
         const officeObj = officeList.find((item) => (item.office_location + "-" + item.office_id) === office);
@@ -591,17 +712,17 @@ function Reservation() {
                                                      style={{backgroundColor: 'black', height: '80px', width: '1px'}}/>
                                             <div className={classes.upcomingResBoxCancel}>
                                                 <Button className={classes.cancelButton} onClick={() => {
-                                                    handleClose(option)
+                                                    getEmployeeCountCancel(option);
+                                                    handleOpenCancel(option)
                                                 }}>Cancel</Button>
                                             </div>
-                                            <Modal
-                                                open={open}
-                                                onClose={handleClose}
-                                            >
-                                                {confirmationDesk !== undefined ? confirmationBody() : null}
-                                            </Modal>
                                         </ListItem>
                                     ))}
+                                    <Modal
+                                        open={openCancel}
+                                        onClose={handleCloseCancel}>
+                                        {reservationToCancel !== undefined ? confirmCancelBody() : null}
+                                    </Modal>
                                 </List>
                             </Grid>
                         </Grid>
