@@ -223,6 +223,7 @@ function Reservation() {
     const [floorplanSelected, setFloorplanSelected] = useState();
     const [page, setPage] = useState(0);
     const [more, setMore] = useState(true);
+    const [upcomingRes, setUpcomingRes] = useState([]);
 
     function appendLeadingZeroes(n) {
         if (n <= 9) {
@@ -242,6 +243,15 @@ function Reservation() {
             .then(result => {
                 setOfficeList(JSON.parse(result));
                 // console.log(JSON.parse(result));
+            })
+            .catch(error => console.log('error', error));
+
+        fetch(Endpoint + "/reservation/getUpcomingReservations", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                const res = JSON.parse(result)
+                console.log(res)
+                setUpcomingRes(res)
             })
             .catch(error => console.log('error', error));
 
@@ -447,7 +457,6 @@ function Reservation() {
         }
         else setEmployeeCount(0); // just a placeholder else statement to account for to being earlier than from date
     };
-
 
     const confirmationBody = () => {
         return (
