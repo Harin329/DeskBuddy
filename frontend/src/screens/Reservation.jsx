@@ -7,6 +7,7 @@ import Search from '../assets/search.png';
 import Floorplan from '../assets/Location1.jpg';
 import Endpoint from '../config/Constants';
 import BookingsCalendar from '../components/reservation/BookingsCalendar';
+import AddLocationForm from '../components/reservation/AddLocationForm';
 import { mergeClasses } from '@material-ui/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -153,16 +154,9 @@ const useStyles = makeStyles((theme) => ({
         top: '20%',
         left: '30%',
         width: '40%',
-        height: '50%',
+        height: 'auto',
         background: '#FFFCF7',
         padding: '30px',
-    },
-    formInputField: {
-        position: 'relative',
-        width: "100%"
-    },
-    wideInputField: {
-        width: '25ch'
     }
 }));
 
@@ -473,77 +467,41 @@ function Reservation() {
     };
 
     const addLocationBody = () => {
-        return (
-            <div className={classes.addLocation}>
-                <Typography className={classes.sectionTextModal}>
-                    Add Location
-                </Typography>
-                <form>
-                    <div><TextField
-                        id="city"
-                        label="City"
-                        style={{ margin: 8 }}
-                        placeholder="NV"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    /></div>
-                    <div><TextField
-                        id="address"
-                        label="Address"
-                        style={{ margin: 8 }}
-                        placeholder="1234 Test Road"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    /></div>
-                    <div>
-                        <div><TextField
-                            id="some-id-we-dont-want-to-use"
-                            label="Floor Number"
-                            style={{ margin: 8 }}
-                            placeholder="1234 Test Road"
-                            variant="outlined"
-                            margin="normal"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                        />
-                        <Button className={classes.actionButton}>
-                            Attach Image
-                        </Button>
-                        </div>
-                        <div><TextField
-                            id="some-id-we-dont-want-to-use2"
-                            label="Semicolon-separated desk ID's with capacities"
-                            style={{ margin: 8 }}
-                            placeholder="01-1;02-4;03-11"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                        /></div>
-                    </div>
-                    <div>
-                        <Button className={classes.actionButtonCenter} >
-                            Publish
-                        </Button>
-                    </div>
-                </form>
-
-            </div>);
+        return <AddLocationForm />
     }
 
     const addFloor = () => {
-        // TODO
+        return (
+            <div>
+                <div><TextField
+                    id="some-id-we-dont-want-to-use"
+                    label="Floor Number"
+                    style={{ margin: 8 }}
+                    placeholder="1234 Test Road"
+                    variant="outlined"
+                    margin="normal"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+                    <Button className={classes.actionButton}>
+                        Attach Image
+                        </Button>
+                </div>
+                <div><TextField
+                    id="some-id-we-dont-want-to-use2"
+                    label="Semicolon-separated desk ID's with capacities"
+                    style={{ margin: 8 }}
+                    placeholder="01-1;02-4;03-11"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                /></div>
+            </div>
+        )
     }
 
     const removeFloor = () => {
