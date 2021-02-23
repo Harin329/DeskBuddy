@@ -54,8 +54,7 @@ Reservation.getAllReservations = (result: any) => {
 
 // Get upcoming reservations from the current date
 Reservation.getUpcomingReservations = (result: any) => {
-    const upcomingResQuery = "SELECT start_date, office_location, fk_floor_id, fk_desk_id FROM reservations " +
-        "WHERE start_date >= CURDATE()";
+    const upcomingResQuery = "SELECT reservation_id, start_date, end_date, fk_office_id, fk_office_location, fk_floor_num, fk_desk_id FROM reservation WHERE start_date >= CURDATE() ORDER BY start_date;";
 
     con.query(upcomingResQuery, (err: any, res: any) => {
         if (err) {
