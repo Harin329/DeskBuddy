@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider, Modal, IconButton } from '@material-ui/core';
+import { Button, FormControl, Input, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider, Modal, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import CancelIcon from '@material-ui/icons/Cancel';
@@ -9,7 +9,7 @@ import Endpoint from '../config/Constants';
 import BookingsCalendar from '../components/reservation/BookingsCalendar';
 import { mergeClasses } from '@material-ui/styles';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     background: {
         background: '#1E1E24',
         flexGrow: 1,
@@ -25,6 +25,20 @@ const useStyles = makeStyles({
         fontFamily: 'Lato',
         fontWeight: 'bolder',
         fontSize: 18
+    },
+    actionButtonCenter: {
+        background: '#00ADEF',
+        borderRadius: 20,
+        color: 'white',
+        height: '50px',
+        padding: '0 30px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 18,
+        justifyContent: "center",
+        alignItems: "center"
     },
     reserveButton: {
         background: '#00ADEF',
@@ -134,7 +148,23 @@ const useStyles = makeStyles({
         backgroundColor: 'white',
         padding: '30px',
     },
-});
+    addLocation: {
+        position: 'fixed',
+        top: '20%',
+        left: '30%',
+        width: '40%',
+        height: '50%',
+        background: '#FFFCF7',
+        padding: '30px',
+    },
+    formInputField: {
+        position: 'relative',
+        width: "100%"
+    },
+    wideInputField: {
+        width: '25ch'
+    }
+}));
 
 function Reservation() {
     const date = new Date();
@@ -398,8 +428,8 @@ function Reservation() {
                     </Typography>
                     <Typography className={classes.deskSectionText}>
                         Estimated Number of People: <Typography className={classes.deskText}>
-                        {employeeCount}
-                                                </Typography>
+                            {employeeCount}
+                        </Typography>
                     </Typography>
                 </div>
                 <Typography className={classes.confirmationModalText}>
@@ -444,15 +474,86 @@ function Reservation() {
 
     const addLocationBody = () => {
         return (
-            <div className={classes.floorplan}>
-                Hi
+            <div className={classes.addLocation}>
+                <Typography className={classes.sectionTextModal}>
+                    Add Location
+                </Typography>
+                <form>
+                    <div><TextField
+                        id="city"
+                        label="City"
+                        style={{ margin: 8 }}
+                        placeholder="NV"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                    /></div>
+                    <div><TextField
+                        id="address"
+                        label="Address"
+                        style={{ margin: 8 }}
+                        placeholder="1234 Test Road"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                    /></div>
+                    <div>
+                        <div><TextField
+                            id="some-id-we-dont-want-to-use"
+                            label="Floor Number"
+                            style={{ margin: 8 }}
+                            placeholder="1234 Test Road"
+                            variant="outlined"
+                            margin="normal"
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        />
+                        <Button className={classes.actionButton}>
+                            Attach Image
+                        </Button>
+                        </div>
+                        <div><TextField
+                            id="some-id-we-dont-want-to-use2"
+                            label="Semicolon-separated desk ID's with capacities"
+                            style={{ margin: 8 }}
+                            placeholder="01-1;02-4;03-11"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        /></div>
+                    </div>
+                    <div>
+                        <Button className={classes.actionButtonCenter} >
+                            Publish
+                        </Button>
+                    </div>
+                </form>
+
             </div>);
+    }
+
+    const addFloor = () => {
+        // TODO
+    }
+
+    const removeFloor = () => {
+        // TODO
     }
 
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
-                <BookingsCalendar/>
+                <BookingsCalendar />
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                     <Grid item xs={3} className={classes.titleLines} />
                     <Grid item xs={1}>
@@ -480,12 +581,12 @@ function Reservation() {
                                         <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                                             <Typography className={classes.deskSectionText}>
                                                 OFFICE: <Typography className={classes.deskText}>
-                                                {option.office_location} // TODO: Add full location
+                                                    {option.office_location} // TODO: Add full location
                                             </Typography>
                                             </Typography>
                                             <Typography className={classes.deskSectionText}>
                                                 DESK ID: <Typography className={classes.deskText}>
-                                                {option.desk_id} // TODO: Add real desk ID
+                                                    {option.desk_id} // TODO: Add real desk ID
                                             </Typography>
                                             </Typography>
                                         </div>
@@ -495,7 +596,7 @@ function Reservation() {
                                         <Button className={classes.cancelButton} onClick={() => {
                                             getEmployeeCount(option);
                                             handleOpen(option)
-                                            }}>Cancel</Button>
+                                        }}>Cancel</Button>
                                     </div>
                                     <Modal
                                         open={open}
@@ -562,7 +663,7 @@ function Reservation() {
                         </Modal>
                     </Grid>
                     <Grid item xs={4}>
-                        <Button className={classes.actionButton} onClick={handleAddLocationOpen} disabled={officeDisabled}>Add Location</Button>
+                        <Button className={classes.actionButton} onClick={handleAddLocationOpen}>Add Location</Button>
                         <Modal
                             open={addLocation}
                             onClose={handleAddLocationClose}
@@ -633,7 +734,7 @@ function Reservation() {
                                         <Button className={classes.reserveButton} onClick={() => {
                                             getEmployeeCount(option);
                                             handleOpen(option)
-                                            }}>Reserve Now</Button>
+                                        }}>Reserve Now</Button>
                                     </div>
                                     <Modal
                                         open={open}
