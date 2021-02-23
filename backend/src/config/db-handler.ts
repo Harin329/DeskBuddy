@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 export default class DBCon {
     private static con: mysql.Connection;
     // tslint:disable-next-line:no-empty
-    constructor() {}
+    constructor() { }
 
     public static async createCon(): Promise<boolean> {
         dotenv.config();

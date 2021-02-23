@@ -1,4 +1,5 @@
 import DB from '../config/db-handler';
+import { IFloor, IOffice } from '../interfaces/location.interface';
 
 const con = DB.getCon();
 
@@ -9,6 +10,23 @@ export const Floor = function (this: any, floor: any) {
     this.num_desks = floor.num_desks;
     this.floor_plan = floor.floor_plan;
 };
+
+Floor.addFloor = (id: number, floor: IFloor, office: IOffice, result: any) => {
+    con.query('CALL createFloor(?, ?, ?, ?)',
+    [
+        floor.floor_num,
+        id,
+        office.city,
+        floor.image
+    ],
+    (err: any, res: any) => {
+        if (err) {
+            result(err, null);
+        } else {
+            result(null, res[0]);
+        }
+    });
+}
 
 Floor.getFloorByOffice = (office_location: string, office_id: number, result: any) => {
     con.query('CALL getFloorByOffice(?,?)',
