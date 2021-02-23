@@ -1,8 +1,8 @@
-import React,  {useState, useEffect, Component} from 'react';
+import React from 'react';
 import "./BookingsCalendar.css";
 import { Calendar, utils } from "react-modern-calendar-datepicker";
 import Endpoint from '../../config/Constants';
-
+import Reservation from "../../screens/Reservation";
 let selectedDate = null;
 const bookedDays = [];
 const today = new Date();
@@ -38,6 +38,23 @@ function formatReservations(res) {
     }
 }
 
+function getReservationForDate(selectedDate) {
+    {const requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+    };
+
+        fetch(Endpoint + "/reservation/getReservationByDate/" + selectedDate, requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                const res = JSON.parse(result)
+                // TODO: Call method for upcoming reservations with res
+            })
+            .catch(error => console.log('error', error))
+    }
+
+}
+
 class BookingsCalendar extends React.Component {
     constructor() {
         super();
@@ -62,13 +79,16 @@ class BookingsCalendar extends React.Component {
 
     handleDatePickerChange = newValue => {
         this.setState({ selectedDay: newValue });
-        let selectedYear = this.state.selectedDay.year;
-        let selectedMonth = this.state.selectedDay.month;
-        let selectedDay = this.state.selectedDay.day;
-        // Method for updating reservation details should be called with this date
-        selectedDate = selectedYear.toString() + "-" + selectedMonth.toString() + "-" + selectedDay.toString();
-
+        setTimeout(() => {
+            let selectedYear = this.state.selectedDay.year;
+            let selectedMonth = this.state.selectedDay.month;
+            let selectedDay = this.state.selectedDay.day;
+            selectedDate = selectedYear.toString() + "-" + selectedMonth.toString() + "-" + selectedDay.toString();
+            getReservationForDate(selectedDate);
+        }, 800);
     }
+
+
 
     render() {
         return (

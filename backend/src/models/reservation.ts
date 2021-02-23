@@ -87,7 +87,7 @@ Reservation.getEmployeeCountForOffice = (params: any, result: any) => {
 };
 
 Reservation.getReservationByDate = (params: any, result: any) => {
-    con.query("SELECT * reservation " +
+    con.query("SELECT * FROM reservation r " +
         "WHERE r.start_date = ?", [
         String(params.date),
     ], (err: any, res: any) => {

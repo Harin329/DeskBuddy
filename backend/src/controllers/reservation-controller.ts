@@ -78,7 +78,7 @@ export default class ReservationController {
     }
 
     getReservationByDate(req: any) {
-        const date = req.date;
+        const date = req;
         return new Promise((resolve, reject) => {
             Reservation.getReservationByDate(date,(err: any, res: any) => {
                 if (err) {
