@@ -651,6 +651,56 @@ function Reservation() {
             </div>)
     };
 
+    // Converts MySQL date format to day and month
+    const convertStartDate = (sqlStartDate) => {
+        const month = sqlStartDate.substring(5, 7);
+        const day = sqlStartDate.substring(8, 10);
+        var dayMonth = day.concat(" ");
+        var monthStr;
+
+        switch(month) {
+            case "01":
+                monthStr = "Jan"
+                break;
+            case "02":
+                monthStr = "Feb"
+                break;
+            case "03":
+                monthStr = "Mar"
+                break;
+            case "04":
+                monthStr = "Apr"
+                break;
+            case "05":
+                monthStr = "May"
+                break;
+            case "06":
+                monthStr = "June"
+                break;
+            case "07":
+                monthStr = "July"
+                break;
+            case "08":
+                monthStr = "Aug"
+                break;
+            case "09":
+                monthStr = "Sept"
+                break;
+            case "10":
+                monthStr = "Oct"
+                break;
+            case "11":
+                monthStr = "Nov"
+                break;
+            case "12":
+                monthStr = "Dec"
+                break;
+        }
+
+        dayMonth = dayMonth.concat(monthStr);
+        return (dayMonth);
+    };
+
 
     return (
         <div className={classes.background}>
@@ -686,7 +736,7 @@ function Reservation() {
                                         <ListItem className={classes.upcomingResBox}>
                                             <div className={classes.upcomingResBoxDate}>
                                                 <Typography className={classes.officeText}>
-                                                    {option.start_date}
+                                                    {convertStartDate(option.start_date)}
                                                 </Typography>
                                             </div>
                                             <Divider orientation='vertical'
