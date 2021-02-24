@@ -75,7 +75,7 @@ const useStyles = makeStyles({
         height: '3px',
     },
     sectionSpacing: {
-        marginBottom: '29px'
+        marginBottom: '29px',
     },
     inputBoxes: {
         width: '90%',
@@ -144,9 +144,9 @@ const useStyles = makeStyles({
         marginLeft: '-900px',
     },
     upcomingResSectionSpacing: {
-        width: '125%',
+        width: '60%',
         marginBottom: '29px',
-        marginLeft: '-200px'
+        marginLeft: '-76vw'
     },
     titleSectionSpacing: {
         marginBottom: '50px',
@@ -159,7 +159,7 @@ const useStyles = makeStyles({
         alignItems: 'center',
         justifyContent: 'center',
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     upcomingResBox: {
         backgroundColor: '#E5E5E5',
@@ -273,6 +273,9 @@ function Reservation() {
             .catch(error => console.log('error', error));
     }
 
+    const expandSelectedReservation = (reservation) =>  {
+
+    }
 
     const handleOpen = (option) => {
         setConfirmationDesk(option);
