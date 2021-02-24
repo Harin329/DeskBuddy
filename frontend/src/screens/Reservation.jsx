@@ -326,6 +326,10 @@ function Reservation() {
         setAddLocation(false)
     }
 
+    const addLocationBody = () => {
+        return <AddLocationForm />
+    }
+
     const handleOfficeChange = (event) => {
         setOffice(event.target.value);
 
@@ -673,101 +677,10 @@ function Reservation() {
             </div>)
     };
 
-<<<<<<< HEAD
-    const addLocationBody = () => {
-        return <AddLocationForm />
-    }
-
-    const addFloor = () => {
-        return (
-            <div>
-                <div><TextField
-                    id="some-id-we-dont-want-to-use"
-                    label="Floor Number"
-                    style={{ margin: 8 }}
-                    placeholder="1234 Test Road"
-                    variant="outlined"
-                    margin="normal"
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                />
-                    <Button className={classes.actionButton}>
-                        Attach Image
-                        </Button>
-                </div>
-                <div><TextField
-                    id="some-id-we-dont-want-to-use2"
-                    label="Semicolon-separated desk ID's with capacities"
-                    style={{ margin: 8 }}
-                    placeholder="01-1;02-4;03-11"
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                /></div>
-            </div>
-        )
-    }
-
-    const removeFloor = () => {
-        // TODO
-    }
-=======
->>>>>>> master
 
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
-<<<<<<< HEAD
-                <BookingsCalendar />
-                <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={3} className={classes.titleLines} />
-                    <Grid item xs={1}>
-                        <Typography className={classes.titleText}>
-                            UPCOMING RESERVATIONS
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={3} className={classes.titleLines} />
-                </Grid>
-                <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={7}>
-                        <List>
-                            {deskResults.map((option) => (
-                                <ListItem style={{ backgroundColor: '#E5E5E5', height: '150px', marginBottom: '10px' }}>
-                                    <div style={{ width: '25%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                        <ListItemIcon style={{ width: '100px', height: '100px', backgroundColor: '#00ADEF', alignItems: 'center', justifyContent: 'center', borderRadius: 100 }}>
-                                            <DesktopMacIcon />
-                                        </ListItemIcon>
-                                        <Typography className={classes.officeText}>
-                                            {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.desk_id}
-                                        </Typography>
-                                    </div>
-                                    <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
-                                    <div style={{ width: '55%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
-                                        <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                            <Typography className={classes.deskSectionText}>
-                                                OFFICE: <Typography className={classes.deskText}>
-                                                    {option.office_location} // TODO: Add full location
-                                            </Typography>
-                                            </Typography>
-                                            <Typography className={classes.deskSectionText}>
-                                                DESK ID: <Typography className={classes.deskText}>
-                                                    {option.desk_id} // TODO: Add real desk ID
-                                            </Typography>
-                                            </Typography>
-                                        </div>
-                                    </div>
-                                    <Divider orientation='vertical' style={{ backgroundColor: 'black', height: '129px', width: '1px' }} />
-                                    <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                        <Button className={classes.cancelButton} onClick={() => {
-                                            getEmployeeCount(option);
-                                            handleOpen(option)
-                                        }}>Cancel</Button>
-                                    </div>
-=======
                 <Grid item xs={1}>
                     <Typography className={classes.mainTitleText}>
                         RESERVATION
@@ -828,7 +741,6 @@ function Reservation() {
                                             </div>
                                         </ListItem>
                                     ))}
->>>>>>> master
                                     <Modal
                                         open={openCancelRes}
                                         onClose={handleCloseUpcomingRes}>
