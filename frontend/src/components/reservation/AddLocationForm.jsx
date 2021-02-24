@@ -1,6 +1,7 @@
 import React from 'react';
-import { Button, FormControl, Input, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider, Modal, IconButton } from '@material-ui/core';
+import { Button, Typography, TextField } from '@material-ui/core';
 import { withStyles } from "@material-ui/core/styles";
+import Endpoint from '../../config/Constants';
 
 const styles = theme => ({
     actionButton: {
@@ -54,6 +55,8 @@ class AddLocationForm extends React.Component {
         super(props);
 
         this.state = {
+            city: "",
+            address: "",
             visible: false,
             inputFloors: []
         }
@@ -82,24 +85,68 @@ class AddLocationForm extends React.Component {
     deleteFloor(id) {
         this.setState(prevState => ({
             inputFloors: prevState.inputFloors.filter((floor) => {
-                return floor.floor_id != id;
+                return floor.floor_id !== id;
             })
         }));
     }
 
-    handleSubmit(id) {
+    handleSubmit(event) {
+        if (this.state.city === null) {
+            alert("city is still null");
+        } else {
+            const jsonBody = {
+                city: this.state.city,
+                address: this.state.address
+            }
 
+            const requestOptions = {
+                method: 'POST',
+                redirect: 'follow',
+                body: jsonBody
+            };
+
+            fetch(Endpoint + "/location", requestOptions)
+                .then((response) => response.text())
+                .then(result => {
+                    alert(result);
+                })
+                .catch(error => console.log('error', error));
+        }
+        event.preventDefault();
     }
 
-    handleDeskInput(id) {
+    handleFloorNumberInput(id, input) {
         this.setState(prevState => ({
             inputFloors: prevState.inputFloors.map((floor) => {
                 if (floor.floor_id === id) {
-                    
+                    floor.floor_num = input.target.value;
                 }
                 return floor;
             })
         }));
+    }
+
+    handleDeskInput(id, input) {
+        this.setState(prevState => ({
+            inputFloors: prevState.inputFloors.map((floor) => {
+                if (floor.floor_id === id) {
+                    floor.floor_desks = input.target.value;
+                }
+                return floor;
+            })
+        }));
+    }
+
+    handleCityInput(input) {
+        this.setState({
+            city: input.target.value
+        });
+    }
+
+    handleAddressInput(input) {
+        this.setState({
+            address: input.target.value
+        });
     }
 
 
@@ -119,6 +166,7 @@ class AddLocationForm extends React.Component {
                         InputLabelProps={{
                             shrink: true,
                         }}
+                        onChange={this.handleFloorNumberInput.bind(this, floor.floor_id)}
                     />
                     <Button className={classes.actionButton}>
                         Attach Image
@@ -139,7 +187,7 @@ class AddLocationForm extends React.Component {
                         InputLabelProps={{
                             shrink: true,
                         }}
-                        onChange={this.handleDeskInput.bind(this)}
+                        onChange={this.handleDeskInput.bind(this, floor.floor_id)}
                     /></div>
             </div>);
 
@@ -167,6 +215,7 @@ class AddLocationForm extends React.Component {
                         InputLabelProps={{
                             shrink: true,
                         }}
+                        onChange={this.handleCityInput.bind(this)}
                     /></div>
                     <div><TextField
                         id="address"
@@ -179,6 +228,7 @@ class AddLocationForm extends React.Component {
                         InputLabelProps={{
                             shrink: true,
                         }}
+                        onChange={this.handleCityInput.bind(this)}
                     /></div>
                     <div>
                         <Button className={classes.actionButton} onClick={this.addFloor.bind(this)}>
@@ -187,7 +237,7 @@ class AddLocationForm extends React.Component {
                     </div>
                     {this.renderFloors.bind(this)()}
                     <div>
-                        <Button className={classes.actionButtonCenter}>
+                        <Button className={classes.actionButtonCenter} onClick={this.handleSubmit.bind(this)}>
                             Publish
                         </Button>
                     </div>
