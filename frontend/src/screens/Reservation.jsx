@@ -119,7 +119,7 @@ const useStyles = makeStyles({
         top: '30%',
         left: '35%',
         width: '20%',
-        height: '30%',
+        height: 'auto',
         backgroundColor: 'white',
         padding: '30px',
     },
