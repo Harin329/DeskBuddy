@@ -7,7 +7,7 @@ END
 
 DELIMITER $$
 
-CREATE PROCEDURE `getOpenDesks` (IN `officeid` INT(8), IN `officelocation` VARCHAR(50), IN `desk_id` VARCHAR(50), IN `floor_num` INT(8), IN `from` DATE, IN `to` DATE)
+CREATE PROCEDURE `getOpenDesks` (IN `officeid` INT(8), IN `officelocation` VARCHAR(50), IN `desk_id` VARCHAR(50), IN `floor_num` INT(8), IN `from` DATE, IN `to` DATE, IN `startindex` INT(8), IN `numOnPage` INT(8))
 BEGIN
 
 SELECT * FROM `desk` 
@@ -17,7 +17,8 @@ WHERE CONCAT(`fk_office_location`, `fk_office_id`, `fk_floor_num`, `desk_id`) NO
     AND desk.desk_id=`desk_id`
     AND desk.fk_floor_num=`floor_num`
     AND desk.fk_office_id=`officeid`
-    AND desk.fk_office_location=`officelocation`;
+    AND desk.fk_office_location=`officelocation`
+LIMIT `startindex`, `numOnPage`;
 
 END$$
 
@@ -25,7 +26,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE PROCEDURE `getOpenDesksAtOffice` (IN `officeid` INT(8), IN `officelocation` VARCHAR(50), IN `from` DATE, IN `to` DATE)
+CREATE PROCEDURE `getOpenDesksAtOffice` (IN `officeid` INT(8), IN `officelocation` VARCHAR(50), IN `from` DATE, IN `to` DATE, IN `startindex` INT(8), IN `numOnPage` INT(8))
 BEGIN
 
 SELECT * FROM `desk` 
@@ -33,7 +34,8 @@ JOIN `office` ON `fk_office_id`=`office_id` AND `fk_office_location`=`office_loc
 WHERE CONCAT(`fk_office_location`, `fk_office_id`, `fk_floor_num`, `desk_id`) NOT IN
 	(SELECT CONCAT(`fk_office_location`, `fk_office_id`, `fk_floor_num`, `fk_desk_id`) AS `deskKey` FROM `reservation` WHERE `start_date` BETWEEN `from` and `to`)
     AND desk.fk_office_id=`officeid`
-    AND desk.fk_office_location=`officelocation`;
+    AND desk.fk_office_location=`officelocation`
+LIMIT `startindex`, `numOnPage`;
 
 END$$
 
@@ -41,13 +43,14 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE PROCEDURE `getAllOpenDesks` (IN `from` DATE, IN `to` DATE)
+CREATE PROCEDURE `getAllOpenDesks` (IN `from` DATE, IN `to` DATE, IN `startindex` INT(8), IN `numOnPage` INT(8))
 BEGIN
 
 SELECT * FROM `desk` 
 JOIN `office` ON `fk_office_id`=`office_id` AND `fk_office_location`=`office_location`
 WHERE CONCAT(`fk_office_location`, `fk_office_id`, `fk_floor_num`, `desk_id`) NOT IN
-	(SELECT CONCAT(`fk_office_location`, `fk_office_id`, `fk_floor_num`, `fk_desk_id`) AS `deskKey` FROM `reservation` WHERE `start_date` BETWEEN `from` and `to`);
+	(SELECT CONCAT(`fk_office_location`, `fk_office_id`, `fk_floor_num`, `fk_desk_id`) AS `deskKey` FROM `reservation` WHERE `start_date` BETWEEN `from` and `to`)
+LIMIT `startindex`, `numOnPage`;
 
 END$$
 

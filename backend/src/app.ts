@@ -1,5 +1,8 @@
 import { DeskbuddyServer } from "./server";
-const PORT = 3000;
+import dotenv from 'dotenv';
+dotenv.config()
+let PORT = Number(process.env.SERVER_PORT);
+
 
 export class App {
     public initialize(port: number) {

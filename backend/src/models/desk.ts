@@ -49,7 +49,7 @@ Desk.getDeskByOffice = (office_location: string, office_id: number, result: any)
 };
 
 Desk.getOpenDesks = (reservationQuery: any, result: any) => {
-    con.query('CALL getOpenDesks(?,?,?,?,?,?)',
+    con.query('CALL getOpenDesks(?,?,?,?,?,?,?,?)',
     [
         reservationQuery.fk_office_id,
         reservationQuery.fk_office_location,
@@ -57,6 +57,8 @@ Desk.getOpenDesks = (reservationQuery: any, result: any) => {
         reservationQuery.fk_floor_num,
         reservationQuery.start_date,
         reservationQuery.end_date,
+        reservationQuery.startIndex,
+        reservationQuery.numOnPage
     ],
     (err: any, res: any) => {
         if (err) {
@@ -71,12 +73,14 @@ Desk.getOpenDesks = (reservationQuery: any, result: any) => {
 };
 
 Desk.getOpenDesksAtOffice = (reservationQuery: any, result: any) => {
-    con.query('CALL getOpenDesksAtOffice(?,?,?,?)',
+    con.query('CALL getOpenDesksAtOffice(?,?,?,?,?,?)',
     [
         reservationQuery.fk_office_id,
         reservationQuery.fk_office_location,
         reservationQuery.start_date,
         reservationQuery.end_date,
+        reservationQuery.startIndex,
+        reservationQuery.numOnPage
     ],
     (err: any, res: any) => {
         if (err) {
@@ -91,10 +95,12 @@ Desk.getOpenDesksAtOffice = (reservationQuery: any, result: any) => {
 };
 
 Desk.getAllOpenDesks = (reservationQuery: any, result: any) => {
-    con.query('CALL getAllOpenDesks(?,?)',
+    con.query('CALL getAllOpenDesks(?,?,?,?)',
     [
         reservationQuery.start_date,
         reservationQuery.end_date,
+        reservationQuery.startIndex,
+        reservationQuery.numOnPage
     ],
     (err: any, res: any) => {
         if (err) {
