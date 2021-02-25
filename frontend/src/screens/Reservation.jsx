@@ -89,6 +89,13 @@ const useStyles = makeStyles({
         fontSize: 16,
         textAlign: 'center'
     },
+    dateText: {
+        color: 'black',
+        fontFamily: 'Lato',
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center'
+    },
     deskSectionText: {
         color: 'black',
         fontFamily: 'Lato',
@@ -735,7 +742,7 @@ function Reservation() {
                                     {upcomingRes.map((option) => (
                                         <ListItem className={classes.upcomingResBox}>
                                             <div className={classes.upcomingResBoxDate}>
-                                                <Typography className={classes.officeText}>
+                                                <Typography className={classes.dateText}>
                                                     {convertStartDate(option.start_date)}
                                                 </Typography>
                                             </div>
