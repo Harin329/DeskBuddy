@@ -7,7 +7,7 @@ export interface IOffice {
 
 export interface IFloor {
     floor_num: number,
-    image: HTMLImageElement,
+    image: Buffer,
     desks: IDesk[]
 }
 
