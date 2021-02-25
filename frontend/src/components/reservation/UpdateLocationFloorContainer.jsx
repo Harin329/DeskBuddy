@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Button, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import UpdateLocationFloor from './UpdateLocationFloor';
 
@@ -100,38 +100,12 @@ const useStyles = makeStyles({
   }
 });
 
-
-const floors = [
-  {
-      value: 1,
-      label: '1',
-  },
-  {
-      value: 2,
-      label: '2',
-  },
-  {
-      value: 3,
-      label: '3',
-  },
-  {
-      value: 4,
-      label: '4',
-  },
-];
-
 function UpdateLocationFloorContainer () {
     const classes = useStyles();
-    const [updateLocationFloor, setUpdateLocationFloor] = useState('');
     const [updateLocationFloorAddition, setUpdateLocationFloorAddition] = useState([0]);
 
-    const handleUpdateLocationFloorChange = (event) => {
-        setUpdateLocationFloor(event.target.value);
-    }
-    
     const handleUpdateLocationFloorAddition = () => {
         updateLocationFloorAddition.push(0);
-        console.log('~~~~~~~~~ ' + updateLocationFloorAddition);
         setUpdateLocationFloorAddition([...updateLocationFloorAddition]);
     }
 

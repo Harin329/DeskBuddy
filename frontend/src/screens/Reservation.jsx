@@ -2,14 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Button, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InboxIcon from '@material-ui/icons/Inbox';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import UpdateLocationFloorContainer from '../components/reservation/UpdateLocationFloorContainer';
+import UpdateLocationPopup from './UpdateLocationPopup';
 import Search from '../assets/search.png';
 import Endpoint from '../config/Constants'
-import { light } from '@material-ui/core/styles/createPalette';
 
 const useStyles = makeStyles({
     background: {
@@ -139,7 +134,6 @@ function Reservation() {
     const [deskResults, setDeskResults] = useState([]);
     const [isUpdateLocationClosed, setIsUpdateLocationClosed] = useState(false);
     const [updateLocationFloor, setUpdateLocationFloor] = useState('');
-    const [updateLocationFloorAddition, setUpdateLocationFloorAddition] = useState([0]);
 
     useEffect(() => {
         var requestOptions = {
@@ -191,26 +185,9 @@ function Reservation() {
         setTo(event.target.value);
     }
 
-    //TODO: remove enclosing function
-
     const handleUpdateLocationClosed = () => {
         setIsUpdateLocationClosed(true);
     }
-
-    const handleUpdateLocationClose = () => {
-        setIsUpdateLocationClosed(false);
-    }
-
-    const handleUpdateLocationFloorChange = (event) => {
-        setUpdateLocationFloor(event.target.value);
-    }
-
-    // const handleUpdateLocationFloorAddition = () => {
-    //     updateLocationFloorAddition.push(1);
-    //     console.log('~~~~~~~~~ ' + updateLocationFloorAddition);
-    //     let newArray = updateLocationFloorAddition
-    //     setUpdateLocationFloorAddition(newArray);
-    // }
 
     const search = () => {
         console.log(office);
@@ -264,7 +241,8 @@ function Reservation() {
                             console.log("Loading More!");
                         }}>Floorplan
                         </Button>
-                        <Dialog open={isUpdateLocationClosed} onClose={handleUpdateLocationClose} fullWidth={true} maxWidth={"md"}>
+                        <UpdateLocationPopup isOpen={isUpdateLocationClosed} whatToDoWhenClosed={(bool) => {setIsUpdateLocationClosed(bool)}}></UpdateLocationPopup>
+                        {/* <Dialog open={isUpdateLocationClosed} onClose={handleUpdateLocationClose} fullWidth={true} maxWidth={"md"}>
                             <DialogTitle>UPDATE LOCATION</DialogTitle>
                             <DialogContent>
                                 <Grid container justify='center' className={classes.dialogLineContainer}>
@@ -322,7 +300,7 @@ function Reservation() {
                                 </Grid>
                                 <UpdateLocationFloorContainer></UpdateLocationFloorContainer>
                             </DialogContent>
-                        </Dialog>
+                        </Dialog> */}
                     </Grid>
                     <Grid item xs={7}>
                         <Button className={classes.actionButton} onClick={handleUpdateLocationClosed}>Update Location</Button>

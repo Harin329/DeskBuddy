@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ImageUploader from 'react-images-upload';
-import { Button, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider } from '@material-ui/core';
+import { Button, Grid, Typography, TextField, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
@@ -144,7 +144,6 @@ const floors = [
 
 function UpdateLocationFloor (props) {
     const classes = useStyles();
-    const {updateLocationFloorAddition} = props;
     const [updateLocationFloor, setUpdateLocationFloor] = useState('');
     const [pictures, setPictures] = useState({pictures: []});
     const [isExistingFloorPlanRemoved, setIsExistingFloorPlanRemoved] = useState(false);
