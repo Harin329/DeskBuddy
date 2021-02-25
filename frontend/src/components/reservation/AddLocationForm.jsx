@@ -2,6 +2,8 @@ import React from 'react';
 import { Button, Typography, TextField } from '@material-ui/core';
 import { withStyles } from "@material-ui/core/styles";
 import Endpoint from '../../config/Constants';
+import fs from 'fs';
+import { throws } from 'assert';
 
 const styles = theme => ({
     actionButton: {
@@ -57,6 +59,7 @@ class AddLocationForm extends React.Component {
         this.state = {
             city: "",
             address: "",
+            image: null,
             visible: false,
             inputFloors: []
         }
@@ -94,25 +97,55 @@ class AddLocationForm extends React.Component {
         if (this.state.city === null) {
             alert("city is still null");
         } else {
+            const floors = [];
+            for (const floor of this.state.inputFloors) {
+                floors.push(this.parseFloorFromInputFloor(floor));
+            }
+
             const jsonBody = {
                 city: this.state.city,
-                address: this.state.address
+                address: this.state.address,
+                image: this.state.image,
+                floors: floors
             }
 
             const requestOptions = {
                 method: 'POST',
-                redirect: 'follow',
-                body: jsonBody
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(jsonBody)
             };
 
             fetch(Endpoint + "/location", requestOptions)
                 .then((response) => response.text())
                 .then(result => {
-                    alert(result);
+                    //
                 })
                 .catch(error => console.log('error', error));
         }
-        event.preventDefault();
+    }
+
+    parseFloorFromInputFloor(input) {
+        const floor = {
+            floor_num: input.floor_num,
+            image: null,
+            desks: this.parseDesksFromString(input.floor_desks)
+        }
+        return floor
+    }
+
+    parseDesksFromString(input) {
+        const parsedDesks = [];
+        const tokens = input.split(";");
+        for (const token of tokens) {
+            const parts = token.split("-");
+            const ID = parts[0];
+            const capacity = parts[1];
+            parsedDesks.push({
+                ID: ID,
+                capacity: capacity
+            });
+        }
+        return parsedDesks;
     }
 
     handleFloorNumberInput(id, input) {
@@ -228,11 +261,14 @@ class AddLocationForm extends React.Component {
                         InputLabelProps={{
                             shrink: true,
                         }}
-                        onChange={this.handleCityInput.bind(this)}
+                        onChange={this.handleAddressInput.bind(this)}
                     /></div>
                     <div>
                         <Button className={classes.actionButton} onClick={this.addFloor.bind(this)}>
                             Add Floor
+                        </Button>
+                        <Button className={classes.actionButton}>
+                            Attach Image
                         </Button>
                     </div>
                     {this.renderFloors.bind(this)()}
