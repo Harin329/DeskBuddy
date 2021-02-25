@@ -3,6 +3,7 @@ import { IOffice, IFloor, IDesk } from '../interfaces/location.interface';
 import { Desk } from '../models/desk';
 import { Floor } from '../models/floor';
 import { Office } from '../models/office';
+import fs from 'fs';
 
 
 export default class LocationController {
@@ -17,6 +18,9 @@ export default class LocationController {
     public async addLocation(req: Request): Promise<boolean> {
         try {
             const office: IOffice = req.body;
+            if (office.image === null) {
+                office.image = fs.readFileSync("src/images/defaultBuildingImage.jpg");
+            }
             const unparsedIDs = await this.getOfficeIDs(office.city);
             const IDs: any[] = JSON.parse(JSON.stringify(unparsedIDs));
             const availableID = this.computeID(IDs);

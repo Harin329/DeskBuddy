@@ -1,6 +1,7 @@
 export interface IOffice {
     city: string,
     address: string,
+    image: Buffer,
     floors: IFloor[]
 }
 

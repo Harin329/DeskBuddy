@@ -12,11 +12,12 @@ export const Office = function (this: any, office: any) {
 };
 
 Office.addOffice = (id: number, office: IOffice, result: any) => {
-    con.query('CALL createOffice(?, ?, ?)',
+    con.query('CALL createOffice(?, ?, ?, ?)',
     [
         id,
         office.city,
-        office.address
+        office.address,
+        office.image
     ],
     (err: any, res: any) => {
         if (err) {

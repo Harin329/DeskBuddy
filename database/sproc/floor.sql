@@ -12,3 +12,12 @@ INSERT INTO `floor` (`floor_num`, `fk_office_id`, `fk_office_location`, `floor_p
 	VALUES (`floor_num`, `office_id`, `office_location`, `floor_plan`);
 
 END
+
+CREATE PROCEDURE `getFloors` (IN `office_id` INT(8), IN `office_location` VARCHAR(50))
+BEGIN
+
+SELECT *
+FROM `floor`
+WHERE `fk_office_id`=`office_id` AND `fk_office_location`=`office_location`;
+
+END

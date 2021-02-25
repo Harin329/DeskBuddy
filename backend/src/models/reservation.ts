@@ -54,7 +54,11 @@ Reservation.getAllReservations = (result: any) => {
 
 // Get upcoming reservations from the current date
 Reservation.getUpcomingReservations = (result: any) => {
-    const upcomingResQuery = "SELECT reservation_id, start_date, end_date, fk_office_id, fk_office_location, fk_floor_num, fk_desk_id FROM reservation WHERE start_date >= CURDATE() ORDER BY start_date;";
+    const upcomingResQuery =    "SELECT reservation.reservation_id, reservation.start_date, reservation.end_date, reservation.fk_office_id, reservation.fk_office_location, reservation.fk_floor_num, reservation.fk_desk_id, office.name " +
+                                "FROM reservation " +
+                                "INNER JOIN office ON office.office_id=reservation.fk_office_id AND office.office_location=reservation.fk_office_location " +
+                                "WHERE reservation.start_date >= CURDATE() " +
+                                "ORDER BY reservation.start_date;";
 
     con.query(upcomingResQuery, (err: any, res: any) => {
         if (err) {
@@ -84,7 +88,21 @@ Reservation.getEmployeeCountForOffice = (params: any, result: any) => {
             result(null, res);
         }
     })
-}
+};
+
+Reservation.getReservationByDate = (params: any, result: any) => {
+    con.query("SELECT * FROM reservation r " +
+        "WHERE r.start_date = ?", [
+        String(params.date),
+    ], (err: any, res: any) => {
+        if (err) {
+            console.log('Error: ', err);
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    })
+};
 
 Reservation.deleteReservation = (reservationID: any, result: any) => {
     con.query("CALL deleteReservation(?)", [reservationID], (err: any, res: any) => {
