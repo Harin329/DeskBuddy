@@ -106,6 +106,13 @@ const useStyles = makeStyles((theme) => ({
         fontSize: 16,
         textAlign: 'center'
     },
+    dateText: {
+        color: 'black',
+        fontFamily: 'Lato',
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center'
+    },
     deskSectionText: {
         color: 'black',
         fontFamily: 'Lato',
@@ -209,7 +216,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column'
     },
     upcomingResBoxCenterSection: {
-        width: '50%',
+        padding: '7px',
         height: '80px',
         justifyContent: 'center',
         display: 'flex',
@@ -527,7 +534,7 @@ function Reservation() {
             .then(result => {
                 const res = JSON.parse(result)
                 console.log(res[0].avg)
-                setEmployeeCountUpcomingRes(res[0].avg)
+                setEmployeeCountUpcomingRes(Math.ceil(res[0].avg))
                 if (res[0].avg == null) {
                     setEmployeeCountUpcomingRes("0");
                 }
@@ -596,7 +603,7 @@ function Reservation() {
                 }}>
                     <Typography className={classes.deskSectionText}>
                         Office: <Typography className={classes.deskText}>
-                        {reservationToCancel.fk_office_location /*todo get full office name somehow*/ }
+                        {reservationToCancel.name}
                     </Typography>
                     </Typography>
                     <Typography className={classes.deskSectionText}>
@@ -680,6 +687,14 @@ function Reservation() {
             </div>)
     };
 
+    // Converts MySQL date format to day and month
+    const convertStartDate = (sqlStartDate) => {
+        const date = new Date(sqlStartDate);
+        const day = date.getDate();
+        const month = date.toLocaleString('default', { month: 'short' });
+        return (day + " " + month);
+    };
+
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
@@ -713,8 +728,8 @@ function Reservation() {
                                     {upcomingRes.map((option) => (
                                         <ListItem className={classes.upcomingResBox}>
                                             <div className={classes.upcomingResBoxDate}>
-                                                <Typography className={classes.officeText}>
-                                                    {option.start_date}
+                                                <Typography className={classes.dateText}>
+                                                    {convertStartDate(option.start_date)}
                                                 </Typography>
                                             </div>
                                             <Divider orientation='vertical'
@@ -723,12 +738,12 @@ function Reservation() {
                                                 <div className={classes.upcomingResBoxCenterSection}>
                                                     <Typography className={classes.deskSectionText}>
                                                         OFFICE: <Typography className={classes.deskText}>
-                                                        {option.fk_office_location}
+                                                        {option.name}
                                                     </Typography>
                                                     </Typography>
                                                     <Typography className={classes.deskSectionText}>
                                                         DESK ID: <Typography className={classes.deskText}>
-                                                        {option.fk_office_location + option.fk_floor_num + option.fk_desk_id}
+                                                        {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.fk_desk_id}
                                                     </Typography>
                                                     </Typography>
                                                 </div>
