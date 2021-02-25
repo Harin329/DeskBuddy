@@ -105,7 +105,7 @@ class MapPopup extends React.Component {
           <LevelContainer>{this.all_levels()}</LevelContainer>
           <ImageContainer>
             <HeaderContainer>
-              <MapTitle>{this.props.locationID}</MapTitle>
+              <MapTitle>{this.props.officeName.name}</MapTitle>
               <IconButton size="small" onClick={this.props.closeHandler}>
                 <CancelIcon size="small" />
               </IconButton>

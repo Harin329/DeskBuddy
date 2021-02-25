@@ -775,7 +775,11 @@ function Reservation() {
                             open={floorplan}
                             onClose={handleFloorplanClose}
                         >
-                            <MapPopup locationID={office} closeHandler={ handleFloorplanClose }/>
+                            <MapPopup
+                                locationID={office}
+                                closeHandler={handleFloorplanClose} 
+                                officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === office)}
+                                />
                             {/* {floorplanBody()} */}
                         </Modal>
                     </Grid>
