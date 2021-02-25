@@ -199,7 +199,7 @@ const useStyles = makeStyles({
         flexDirection: 'column'
     },
     upcomingResBoxCenterSection: {
-        width: '50%',
+        padding: '7px',
         height: '80px',
         justifyContent: 'center',
         display: 'flex',
@@ -574,7 +574,7 @@ function Reservation() {
                 }}>
                     <Typography className={classes.deskSectionText}>
                         Office: <Typography className={classes.deskText}>
-                        {reservationToCancel.fk_office_location /*todo get full office name somehow*/ }
+                        {reservationToCancel.name}
                     </Typography>
                     </Typography>
                     <Typography className={classes.deskSectionText}>
@@ -752,12 +752,12 @@ function Reservation() {
                                                 <div className={classes.upcomingResBoxCenterSection}>
                                                     <Typography className={classes.deskSectionText}>
                                                         OFFICE: <Typography className={classes.deskText}>
-                                                        {option.fk_office_location}
+                                                        {option.name}
                                                     </Typography>
                                                     </Typography>
                                                     <Typography className={classes.deskSectionText}>
                                                         DESK ID: <Typography className={classes.deskText}>
-                                                        {option.fk_office_location + option.fk_floor_num + option.fk_desk_id}
+                                                        {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.fk_desk_id}
                                                     </Typography>
                                                     </Typography>
                                                 </div>
