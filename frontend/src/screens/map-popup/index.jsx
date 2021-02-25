@@ -7,23 +7,22 @@ import { IconButton } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Spinner from './spinner/spinner';
 
-// stub data
-// import { FLOOR_INFORMATION } from './data';
-
 class MapPopup extends React.Component {
   state = {
-    curr_level: 1,
+    curr_index: 0,
+    curr_level: 0,
     loaded: false,
+    error: false
   };
 
   constructor(props) {
     super();
     this.wrapper = React.createRef();
     this.FLOOR_INFORMATION = null;
-    this.loadFloors(props.locationID);
+    this.getFloors(props.locationID);
   }
 
-  loadFloors = (id) => {
+  getFloors = (id) => {
     const params = id.split('-');
 
     let requestOptions = {
@@ -37,19 +36,32 @@ class MapPopup extends React.Component {
     )
       .then((response) => response.text())
       .then((result) => {
-        console.log(JSON.parse(result));
+        // console.log(JSON.parse(result));
         this.FLOOR_INFORMATION = JSON.parse(result);
-        this.setState({ loaded: true });
+        this.initFloor();
       })
-      .catch((error) => console.log('ERROR:', error));
+      .catch((error) => this.setState({ error: true }));
   };
+
+  initFloor = () => {
+    if (this.FLOOR_INFORMATION.length > 0)
+      this.setState({
+        loaded: true,
+        curr_level: this.FLOOR_INFORMATION[0].floor_num
+      });
+    else
+      this.setState({ loaded: true });
+  }
 
   /**
    * Event handlers
    */
 
-  levelHandler = (id) => {
-    this.setState({ curr_level: id });
+  levelHandler = (level, index) => {
+    this.setState({
+      curr_level: level,
+      curr_index: index
+    });
   };
 
   /**
@@ -57,13 +69,13 @@ class MapPopup extends React.Component {
    */
 
   all_levels = () => {
-    return this.FLOOR_INFORMATION.map((el) => {
+    return this.FLOOR_INFORMATION.map((el, index) => {
       return (
         <LevelButton
           key={el.floor_num}
-          onClick={() => this.levelHandler(el.floor_num)}
+          onClick={() => this.levelHandler(el.floor_num, index)}
           ref={this.wrapper}
-          className={this.state.curr_level === el.floor_num ? 'active' : ''}
+          className={this.state.curr_index === index ? 'active' : ''}
         >
           {`Level ${el.floor_num}`}
         </LevelButton>
@@ -72,9 +84,10 @@ class MapPopup extends React.Component {
   };
 
   curr_map = () => {
+
     return (
       <MapImage
-        src={this.FLOOR_INFORMATION[this.state.curr_level - 1].floor_plan}
+        src={'data:image/png;base64,' + new Buffer(this.FLOOR_INFORMATION[this.state.curr_index].floor_plan, 'binary').toString('base64')}
         alt={`Floormap for ${this.props.locationID} floor ${this.state.curr_level}`}
       />
     );
@@ -84,9 +97,9 @@ class MapPopup extends React.Component {
 
     let body = null;
 
-    if (!this.state.loaded)
+    if (!this.state.loaded && !this.state.error)
       body = <Spinner />
-    else {
+    else if (this.state.loaded && !this.state.error) {
       body = (
         <React.Fragment>
           <LevelContainer>{this.all_levels()}</LevelContainer>
@@ -101,6 +114,10 @@ class MapPopup extends React.Component {
           </ImageContainer>
         </React.Fragment>
       );
+    } else if (this.state.error) {
+      body = (
+        <h2>Couldn't load the floorplan...</h2>
+      )
     }
 
     return <MapContainer>
