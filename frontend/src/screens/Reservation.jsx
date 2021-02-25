@@ -855,27 +855,12 @@ function Reservation() {
                     <Grid item xs={1} />
                 </Grid>
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={7}>
+                    
                         <UpdateLocationPopup isOpen={isUpdateLocationClosed} whatToDoWhenClosed={(bool) => {setIsUpdateLocationClosed(bool)}}></UpdateLocationPopup>
-                    </Grid>
-                    <Grid item xs={7}>
-                        <Button className={classes.actionButton} onClick={handleUpdateLocationClosed}>Update Location</Button>
-                    </Grid>
+                    
                     <Grid item xs={3}>
-                        <Button className={classes.actionButton} onClick={handleFloorplanOpen} disabled={officeDisabled}>Floorplan</Button>
-                        <Modal
-                            open={floorplan}
-                            onClose={handleFloorplanClose}
-                        >
-                            <MapPopup
-                                locationID={office}
-                                closeHandler={handleFloorplanClose} 
-                                officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === office)}
-                                />
-                            {/* {floorplanBody()} */}
-                        </Modal>
-                    </Grid>
-                    <Grid item xs={4}>
+                        <Button className={classes.actionButton} onClick={handleUpdateLocationClosed}>Update Location</Button>
+                    <Grid item xs={3}>
                         <Button className={classes.actionButton} onClick={handleAddLocationOpen}>Add Location</Button>
                         <Modal
                             open={addLocation}
@@ -883,6 +868,21 @@ function Reservation() {
                         >
                             {addLocationBody()}
                         </Modal>
+                    </Grid>
+                     </Grid>
+                    <Grid item xs={4}>
+                        <Button className={classes.actionButton} onClick={handleFloorplanOpen} disabled={officeDisabled}>Floorplan</Button>
+                            <Modal
+                                open={floorplan}
+                                onClose={handleFloorplanClose}
+                            >
+                                <MapPopup
+                                    locationID={office}
+                                    closeHandler={handleFloorplanClose} 
+                                    officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === office)}
+                                    />
+                                {/* {floorplanBody()} */}
+                            </Modal>
                     </Grid>
                 </Grid>
                 <Grid container justify='center' alignItems='flex-end' className={classes.sectionSpacing}>
