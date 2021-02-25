@@ -327,7 +327,7 @@ function Reservation() {
     }
 
     const addLocationBody = () => {
-        return <AddLocationForm />
+        return <AddLocationForm closeModal={handleAddLocationClose}/>
     }
 
     const handleOfficeChange = (event) => {

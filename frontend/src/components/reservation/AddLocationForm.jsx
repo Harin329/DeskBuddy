@@ -2,8 +2,6 @@ import React from 'react';
 import { Button, Typography, TextField } from '@material-ui/core';
 import { withStyles } from "@material-ui/core/styles";
 import Endpoint from '../../config/Constants';
-import fs from 'fs';
-import { throws } from 'assert';
 
 const styles = theme => ({
     actionButton: {
@@ -118,7 +116,7 @@ class AddLocationForm extends React.Component {
             fetch(Endpoint + "/location", requestOptions)
                 .then((response) => response.text())
                 .then(result => {
-                    //
+                    this.props.closeModal();
                 })
                 .catch(error => console.log('error', error));
         }
