@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Button, FormControl, Input, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider, Modal, IconButton } from '@material-ui/core';
+import { Button, List, ListItem, Grid, Typography, TextField, MenuItem, Divider, Modal, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import InboxIcon from '@material-ui/icons/Inbox';
 import UpdateLocationPopup from './UpdateLocationPopup';
-import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Search from '../assets/search.png';
 import Endpoint from '../config/Constants';
 import BookingsCalendar from '../components/reservation/BookingsCalendar';
 import MapPopup from './map-popup/index';
 import AddLocationForm from '../components/reservation/AddLocationForm';
-import { mergeClasses } from '@material-ui/styles';
 
 const useStyles = makeStyles((theme) => ({
     background: {
@@ -687,7 +684,10 @@ function Reservation() {
         fetch(Endpoint + "/reservation/deleteReservation", requestOptions)
             .then(response => response.text())
             .then(result => console.log(result))
-            .then(getUpcomingReservations)
+            .then(() => {
+                getUpcomingReservations()
+                search(false, 0);
+            })
             .catch(error => console.log('error', error));
 
         handleCloseUpcomingRes();
@@ -752,13 +752,13 @@ function Reservation() {
 
                     <Grid container justify='center' alignItems='center' className={classes.upcomingResSectionSpacing}>
                         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                            <Grid item xs={3} className={classes.titleLines}/>
-                            <Grid item xs={1}>
+                            <Grid item xs={1} className={classes.titleLines}/>
+                            <Grid item xs={4}>
                                 <Typography className={classes.titleText}>
                                     UPCOMING RESERVATIONS
                                 </Typography>
                             </Grid>
-                            <Grid item xs={3} className={classes.titleLines}/>
+                            <Grid item xs={1} className={classes.titleLines}/>
                         </Grid>
 
                         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
@@ -860,7 +860,7 @@ function Reservation() {
                     
                     <Grid item xs={3}>
                         <Button className={classes.actionButton} onClick={handleUpdateLocationClosed}>Update Location</Button>
-                    <Grid item xs={3}>
+                    <Grid item xs={8}>
                         <Button className={classes.actionButton} onClick={handleAddLocationOpen}>Add Location</Button>
                         <Modal
                             open={addLocation}
