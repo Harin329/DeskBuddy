@@ -1,4 +1,5 @@
 import DB from '../config/db-handler';
+import { IOffice } from '../interfaces/location.interface';
 
 const con = DB.getCon();
 
@@ -9,6 +10,33 @@ export const Office = function (this: any, office: any) {
     this.address = office.address;
     this.office_photo = office.office_photo;
 };
+
+Office.addOffice = (id: number, office: IOffice, result: any) => {
+    con.query('CALL createOffice(?, ?, ?, ?)',
+    [
+        id,
+        office.city,
+        office.address,
+        office.image
+    ],
+    (err: any, res: any) => {
+        if (err) {
+            result(err, null);
+        } else {
+            result(null, res[0]);
+        }
+    });
+}
+
+Office.getAllOfficeIDs = (city: string, result: any) => {
+    con.query(`SELECT office_id FROM office WHERE office_location = "${city}"`, (err: any, res: any) => {
+        if (err) {
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    });
+}
 
 Office.getAllOffices = (result: any) => {
     con.query("SELECT * FROM office", (err: any, res: any) => {

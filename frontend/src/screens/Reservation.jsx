@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Button, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider, Modal, IconButton } from '@material-ui/core';
+import { Button, FormControl, Input, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider, Modal, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Search from '../assets/search.png';
 import Endpoint from '../config/Constants';
 import BookingsCalendar from '../components/reservation/BookingsCalendar';
+import MapPopup from './map-popup/index';
+import AddLocationForm from '../components/reservation/AddLocationForm';
+import { mergeClasses } from '@material-ui/styles';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     background: {
         background: '#1E1E24',
         flexGrow: 1,
@@ -23,6 +26,20 @@ const useStyles = makeStyles({
         fontFamily: 'Lato',
         fontWeight: 'bolder',
         fontSize: 18
+    },
+    actionButtonCenter: {
+        background: '#00ADEF',
+        borderRadius: 20,
+        color: 'white',
+        height: '50px',
+        padding: '0 30px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 18,
+        justifyContent: "center",
+        alignItems: "center"
     },
     reserveButton: {
         background: '#00ADEF',
@@ -126,7 +143,7 @@ const useStyles = makeStyles({
         top: '30%',
         left: '35%',
         width: '20%',
-        height: '30%',
+        height: 'auto',
         backgroundColor: 'white',
         padding: '30px',
     },
@@ -204,8 +221,8 @@ const useStyles = makeStyles({
         justifyContent: 'center',
         display: 'flex',
         flexDirection: 'column'
-    },
-});
+    }
+}));
 
 function Reservation() {
     const date = new Date();
@@ -225,6 +242,7 @@ function Reservation() {
     const [open, setOpen] = useState(false);
     const [employeeCount, setEmployeeCount] = useState(0);
     const [floorplan, setFloorplan] = useState(false);
+    const [addLocation, setAddLocation] = useState(false);
     const [officeDisabled, setOfficeDisabled] = useState(true);
     const [confirmationDesk, setConfirmationDesk] = useState();
     const [floorplanSelected, setFloorplanSelected] = useState();
@@ -307,11 +325,24 @@ function Reservation() {
         setFloorplan(true);
     };
 
+    const handleAddLocationOpen = () => {
+        setAddLocation(true);
+    }
+
     const handleFloorplanClose = () => {
         setFloorplan(false);
     };
 
+    const handleAddLocationClose = () => {
+        setAddLocation(false)
+    }
+
+    const addLocationBody = () => {
+        return <AddLocationForm closeModal={handleAddLocationClose}/>
+    }
+
     const handleOfficeChange = (event) => {
+
         setOffice(event.target.value);
 
         if (event.target.value !== 'All') {
@@ -472,8 +503,6 @@ function Reservation() {
         //console.log(startDate);
         //console.log(endDate);
         if (to >= from) {
-            //const startFullDate = startDate.getFullYear() + "-" + appendLeadingZeroes(startDate.getMonth() + 1) + "-" + appendLeadingZeroes(startDate.getDay());
-            //const endFullDate = endDate.getFullYear() + "-" + appendLeadingZeroes(endDate.getMonth() + 1) + "-" + appendLeadingZeroes(endDate.getDay());
             var requestOptions = {
                 method: 'GET',
                 redirect: 'follow'
@@ -483,8 +512,8 @@ function Reservation() {
                 .then(response => response.text())
                 .then(result => {
                     const res = JSON.parse(result)
-                    console.log(res[0].avg)
-                    setEmployeeCount(res[0].avg)
+                    //console.log(res[0].avg)
+                    setEmployeeCount(Math.ceil(res[0].avg))
                     if (res[0].avg == null) {
                         setEmployeeCount(0);
                     }
@@ -666,7 +695,6 @@ function Reservation() {
         return (day + " " + month);
     };
 
-
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
@@ -788,13 +816,27 @@ function Reservation() {
                     <Grid item xs={1} />
                 </Grid>
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={7}>
+                    <Grid item xs={3}>
                         <Button className={classes.actionButton} onClick={handleFloorplanOpen} disabled={officeDisabled}>Floorplan</Button>
                         <Modal
                             open={floorplan}
                             onClose={handleFloorplanClose}
                         >
-                            {floorplanBody()}
+                            <MapPopup
+                                locationID={office}
+                                closeHandler={handleFloorplanClose} 
+                                officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === office)}
+                                />
+                            {/* {floorplanBody()} */}
+                        </Modal>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Button className={classes.actionButton} onClick={handleAddLocationOpen}>Add Location</Button>
+                        <Modal
+                            open={addLocation}
+                            onClose={handleAddLocationClose}
+                        >
+                            {addLocationBody()}
                         </Modal>
                     </Grid>
                 </Grid>
@@ -862,14 +904,13 @@ function Reservation() {
                                             handleOpen(option)
                                         }}>Reserve Now</Button>
                                     </div>
-                                    <Modal
-                                        open={open}
-                                        onClose={handleClose}
-                                    >
-                                        {confirmationDesk !== undefined ? confirmationBody() : null}
-                                    </Modal>
                                 </ListItem>
                             ))}
+                            <Modal
+                                open={open}
+                                onClose={handleClose}>
+                                {confirmationDesk !== undefined ? confirmationBody() : null}
+                            </Modal>
                             <div style={{ justifyContent: 'center', display: 'flex', marginTop: '50px' }}>
                                 {deskResults.length <= 0 && <Typography className={classes.sectionText}>No Results Found</Typography>}
                             </div>
