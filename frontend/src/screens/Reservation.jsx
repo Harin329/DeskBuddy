@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider, Modal, IconButton } from '@material-ui/core';
+import { Button, FormControl, Input, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider, Modal, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import CancelIcon from '@material-ui/icons/Cancel';
@@ -7,8 +7,10 @@ import Search from '../assets/search.png';
 import Endpoint from '../config/Constants';
 import BookingsCalendar from '../components/reservation/BookingsCalendar';
 import MapPopup from './map-popup/index';
+import AddLocationForm from '../components/reservation/AddLocationForm';
+import { mergeClasses } from '@material-ui/styles';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     background: {
         background: '#1E1E24',
         flexGrow: 1,
@@ -24,6 +26,20 @@ const useStyles = makeStyles({
         fontFamily: 'Lato',
         fontWeight: 'bolder',
         fontSize: 18
+    },
+    actionButtonCenter: {
+        background: '#00ADEF',
+        borderRadius: 20,
+        color: 'white',
+        height: '50px',
+        padding: '0 30px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 18,
+        justifyContent: "center",
+        alignItems: "center"
     },
     reserveButton: {
         background: '#00ADEF',
@@ -76,7 +92,7 @@ const useStyles = makeStyles({
         height: '3px',
     },
     sectionSpacing: {
-        marginBottom: '29px'
+        marginBottom: '29px',
     },
     inputBoxes: {
         width: '90%',
@@ -145,9 +161,9 @@ const useStyles = makeStyles({
         marginLeft: '-900px',
     },
     upcomingResSectionSpacing: {
-        width: '125%',
+        width: '60%',
         marginBottom: '29px',
-        marginLeft: '-200px'
+        marginLeft: '-76vw'
     },
     titleSectionSpacing: {
         marginBottom: '50px',
@@ -160,7 +176,7 @@ const useStyles = makeStyles({
         alignItems: 'center',
         justifyContent: 'center',
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     upcomingResBox: {
         backgroundColor: '#E5E5E5',
@@ -198,8 +214,8 @@ const useStyles = makeStyles({
         justifyContent: 'center',
         display: 'flex',
         flexDirection: 'column'
-    },
-});
+    }
+}));
 
 function Reservation() {
     const date = new Date();
@@ -219,6 +235,7 @@ function Reservation() {
     const [open, setOpen] = useState(false);
     const [employeeCount, setEmployeeCount] = useState(0);
     const [floorplan, setFloorplan] = useState(false);
+    const [addLocation, setAddLocation] = useState(false);
     const [officeDisabled, setOfficeDisabled] = useState(true);
     const [confirmationDesk, setConfirmationDesk] = useState();
     const [floorplanSelected, setFloorplanSelected] = useState();
@@ -274,6 +291,9 @@ function Reservation() {
             .catch(error => console.log('error', error));
     }
 
+    const expandSelectedReservation = (reservation) =>  {
+
+    }
 
     const handleOpen = (option) => {
         setConfirmationDesk(option);
@@ -298,9 +318,21 @@ function Reservation() {
         setFloorplan(true);
     };
 
+    const handleAddLocationOpen = () => {
+        setAddLocation(true);
+    }
+
     const handleFloorplanClose = () => {
         setFloorplan(false);
     };
+
+    const handleAddLocationClose = () => {
+        setAddLocation(false)
+    }
+
+    const addLocationBody = () => {
+        return <AddLocationForm closeModal={handleAddLocationClose}/>
+    }
 
     const handleOfficeChange = (event) => {
 
@@ -769,7 +801,7 @@ function Reservation() {
                     <Grid item xs={1} />
                 </Grid>
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={7}>
+                    <Grid item xs={3}>
                         <Button className={classes.actionButton} onClick={handleFloorplanOpen} disabled={officeDisabled}>Floorplan</Button>
                         <Modal
                             open={floorplan}
@@ -781,6 +813,15 @@ function Reservation() {
                                 officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === office)}
                                 />
                             {/* {floorplanBody()} */}
+                        </Modal>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Button className={classes.actionButton} onClick={handleAddLocationOpen}>Add Location</Button>
+                        <Modal
+                            open={addLocation}
+                            onClose={handleAddLocationClose}
+                        >
+                            {addLocationBody()}
                         </Modal>
                     </Grid>
                 </Grid>
