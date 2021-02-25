@@ -119,7 +119,7 @@ const useStyles = makeStyles({
         top: '30%',
         left: '35%',
         width: '20%',
-        height: '30%',
+        height: 'auto',
         backgroundColor: 'white',
         padding: '30px',
     },
@@ -842,14 +842,13 @@ function Reservation() {
                                             handleOpen(option)
                                         }}>Reserve Now</Button>
                                     </div>
-                                    <Modal
-                                        open={open}
-                                        onClose={handleClose}
-                                    >
-                                        {confirmationDesk !== undefined ? confirmationBody() : null}
-                                    </Modal>
                                 </ListItem>
                             ))}
+                            <Modal
+                                open={open}
+                                onClose={handleClose}>
+                                {confirmationDesk !== undefined ? confirmationBody() : null}
+                            </Modal>
                             <div style={{ justifyContent: 'center', display: 'flex', marginTop: '50px' }}>
                                 {deskResults.length <= 0 && <Typography className={classes.sectionText}>No Results Found</Typography>}
                             </div>
