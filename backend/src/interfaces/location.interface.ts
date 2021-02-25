@@ -1,5 +1,6 @@
 export interface IOffice {
     city: string,
+    name: string,
     address: string,
     image: Buffer,
     floors: IFloor[]
@@ -7,7 +8,7 @@ export interface IOffice {
 
 export interface IFloor {
     floor_num: number,
-    image: HTMLImageElement,
+    image: Buffer,
     desks: IDesk[]
 }
 
