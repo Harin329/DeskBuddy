@@ -6,6 +6,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import Search from '../assets/search.png';
 import Endpoint from '../config/Constants';
 import BookingsCalendar from '../components/reservation/BookingsCalendar';
+import MapPopup from './map-popup/index';
 
 const useStyles = makeStyles({
     background: {
@@ -202,6 +203,7 @@ function Reservation() {
     };
 
     const handleOfficeChange = (event) => {
+
         setOffice(event.target.value);
 
         if (event.target.value !== 'All') {
@@ -458,7 +460,6 @@ function Reservation() {
             </div>)
     };
 
-
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
@@ -568,7 +569,8 @@ function Reservation() {
                             open={floorplan}
                             onClose={handleFloorplanClose}
                         >
-                            {floorplanBody()}
+                            <MapPopup locationID={office} closeHandler={ handleFloorplanClose }/>
+                            {/* {floorplanBody()} */}
                         </Modal>
                     </Grid>
                 </Grid>
