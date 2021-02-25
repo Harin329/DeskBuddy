@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button, FormControl, Input, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider, Modal, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import InboxIcon from '@material-ui/icons/Inbox';
+import UpdateLocationPopup from './UpdateLocationPopup';
 import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Search from '../assets/search.png';
@@ -53,6 +55,19 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bolder',
         fontSize: 14,
         boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    },
+    attachmentButton: {
+        background: '#C4C4C4',
+        radius: '5px',
+        color: 'white',
+        height: '50px',
+        padding: '0 30px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 12,
+        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
     },
     cancelButton: {
         background: '#ba0000',
@@ -224,6 +239,25 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const floors = [
+    {
+        value: 1,
+        label: '1',
+    },
+    {
+        value: 2,
+        label: '2',
+    },
+    {
+        value: 3,
+        label: '3',
+    },
+    {
+        value: 4,
+        label: '4',
+    },
+];
+
 function Reservation() {
     const date = new Date();
     const formattedDate = date.getFullYear() + "-" + appendLeadingZeroes(date.getMonth() + 1) + "-" + appendLeadingZeroes(date.getDate());
@@ -239,6 +273,7 @@ function Reservation() {
     const [from, setFrom] = useState(formattedDate);
     const [to, setTo] = useState(formattedDate);
     const [deskResults, setDeskResults] = useState([]);
+    const [isUpdateLocationClosed, setIsUpdateLocationClosed] = useState(false);
     const [open, setOpen] = useState(false);
     const [employeeCount, setEmployeeCount] = useState(0);
     const [floorplan, setFloorplan] = useState(false);
@@ -493,6 +528,10 @@ function Reservation() {
         handleClose();
         // Replace this with promises followed by then one day... :)
         setTimeout(() => search(false, 0), 3000);
+    }
+
+    const handleUpdateLocationClosed = () => {
+        setIsUpdateLocationClosed(true);
     }
 
     const getEmployeeCount = (deskObj) => {
@@ -816,21 +855,12 @@ function Reservation() {
                     <Grid item xs={1} />
                 </Grid>
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
+                    
+                        <UpdateLocationPopup isOpen={isUpdateLocationClosed} whatToDoWhenClosed={(bool) => {setIsUpdateLocationClosed(bool)}}></UpdateLocationPopup>
+                    
                     <Grid item xs={3}>
-                        <Button className={classes.actionButton} onClick={handleFloorplanOpen} disabled={officeDisabled}>Floorplan</Button>
-                        <Modal
-                            open={floorplan}
-                            onClose={handleFloorplanClose}
-                        >
-                            <MapPopup
-                                locationID={office}
-                                closeHandler={handleFloorplanClose} 
-                                officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === office)}
-                                />
-                            {/* {floorplanBody()} */}
-                        </Modal>
-                    </Grid>
-                    <Grid item xs={4}>
+                        <Button className={classes.actionButton} onClick={handleUpdateLocationClosed}>Update Location</Button>
+                    <Grid item xs={3}>
                         <Button className={classes.actionButton} onClick={handleAddLocationOpen}>Add Location</Button>
                         <Modal
                             open={addLocation}
@@ -838,6 +868,21 @@ function Reservation() {
                         >
                             {addLocationBody()}
                         </Modal>
+                    </Grid>
+                     </Grid>
+                    <Grid item xs={4}>
+                        <Button className={classes.actionButton} onClick={handleFloorplanOpen} disabled={officeDisabled}>Floorplan</Button>
+                            <Modal
+                                open={floorplan}
+                                onClose={handleFloorplanClose}
+                            >
+                                <MapPopup
+                                    locationID={office}
+                                    closeHandler={handleFloorplanClose} 
+                                    officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === office)}
+                                    />
+                                {/* {floorplanBody()} */}
+                            </Modal>
                     </Grid>
                 </Grid>
                 <Grid container justify='center' alignItems='flex-end' className={classes.sectionSpacing}>
