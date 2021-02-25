@@ -14,12 +14,4 @@ export default class OfficeController {
             })
         })
     }
-
-    getAllFloors() {
-        //
-    }
-
-    getOfficeByName(name: string) {
-
-    }
 }
