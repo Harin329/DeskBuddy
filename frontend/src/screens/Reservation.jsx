@@ -2,8 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Button, List, ListItem, ListItemIcon, Grid, Typography, TextField, MenuItem, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InboxIcon from '@material-ui/icons/Inbox';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import UpdateLocationFloorContainer from '../components/reservation/UpdateLocationFloorContainer';
 import Search from '../assets/search.png';
 import Endpoint from '../config/Constants'
+import { light } from '@material-ui/core/styles/createPalette';
 
 const useStyles = makeStyles({
     background: {
@@ -34,6 +40,19 @@ const useStyles = makeStyles({
         fontWeight: 'bolder',
         fontSize: 14,
         boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    },
+    attachmentButton: {
+        background: '#C4C4C4',
+        radius: '5px',
+        color: 'white',
+        height: '50px',
+        padding: '0 30px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 12,
+        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
     },
     titleText: {
         color: 'white',
@@ -79,6 +98,14 @@ const useStyles = makeStyles({
         fontSize: 14,
         display: 'inline'
     },
+    dialogLineContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'stretch'
+    },
+    dialogLineLabel: {
+        paddingTop: '20px'
+    }
 });
 
 
@@ -110,6 +137,9 @@ function Reservation() {
     const [from, setFrom] = useState();
     const [to, setTo] = useState();
     const [deskResults, setDeskResults] = useState([]);
+    const [isUpdateLocationClosed, setIsUpdateLocationClosed] = useState(false);
+    const [updateLocationFloor, setUpdateLocationFloor] = useState('');
+    const [updateLocationFloorAddition, setUpdateLocationFloorAddition] = useState([0]);
 
     useEffect(() => {
         var requestOptions = {
@@ -161,6 +191,27 @@ function Reservation() {
         setTo(event.target.value);
     }
 
+    //TODO: remove enclosing function
+
+    const handleUpdateLocationClosed = () => {
+        setIsUpdateLocationClosed(true);
+    }
+
+    const handleUpdateLocationClose = () => {
+        setIsUpdateLocationClosed(false);
+    }
+
+    const handleUpdateLocationFloorChange = (event) => {
+        setUpdateLocationFloor(event.target.value);
+    }
+
+    // const handleUpdateLocationFloorAddition = () => {
+    //     updateLocationFloorAddition.push(1);
+    //     console.log('~~~~~~~~~ ' + updateLocationFloorAddition);
+    //     let newArray = updateLocationFloorAddition
+    //     setUpdateLocationFloorAddition(newArray);
+    // }
+
     const search = () => {
         console.log(office);
         console.log(desk)
@@ -211,7 +262,70 @@ function Reservation() {
                     <Grid item xs={7}>
                         <Button className={classes.actionButton} onClick={() => {
                             console.log("Loading More!");
-                        }}>Floorplan</Button>
+                        }}>Floorplan
+                        </Button>
+                        <Dialog open={isUpdateLocationClosed} onClose={handleUpdateLocationClose} fullWidth={true} maxWidth={"md"}>
+                            <DialogTitle>UPDATE LOCATION</DialogTitle>
+                            <DialogContent>
+                                <Grid container justify='center' className={classes.dialogLineContainer}>
+                                    <Grid item xs={2} className={classes.dialogLineLabel}>
+                                        <Typography>
+                                            Location
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={9}>
+                                    <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
+                                            {officeList.map((option) => (
+                                                <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
+                                                {option.name}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
+                                </Grid>
+                                <DialogContentText>
+                                    Please choose one or more of the following to update for the selected location
+                                </DialogContentText>
+                                <Grid container justify='center' className={classes.dialogLineContainer}>
+                                    <Grid item xs={2} className={classes.dialogLineLabel}>
+                                        <Typography>
+                                            New Town/City
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={9}>
+                                        <TextField id="outlined-basic" variant="outlined" className={classes.inputBoxes}>
+                                        </TextField>
+                                    </Grid>
+                                </Grid>
+                                <Grid container justify='center' className={classes.dialogLineContainer}>
+                                    <Grid item xs={2} className={classes.dialogLineLabel}>
+                                        <Typography>
+                                            Address
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={9}>
+                                        <TextField id="outlined-basic" variant="outlined" className={classes.inputBoxes}>
+                                        </TextField>
+                                    </Grid>
+                                </Grid>
+                                <Grid container justify='center' className={classes.dialogLineContainer}>
+                                    <Grid item xs={2} className={classes.dialogLineLabel}>
+                                        <Typography>
+                                        Photo of Location
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={9}>
+                                        <Button className={classes.attachmentButton} onClick={() => {}}>
+                                        Update Location Photo
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                                <UpdateLocationFloorContainer></UpdateLocationFloorContainer>
+                            </DialogContent>
+                        </Dialog>
+                    </Grid>
+                    <Grid item xs={7}>
+                        <Button className={classes.actionButton} onClick={handleUpdateLocationClosed}>Update Location</Button>
                     </Grid>
                 </Grid>
                 <Grid container justify='center' alignItems='flex-end' className={classes.sectionSpacing}>
