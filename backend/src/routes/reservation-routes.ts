@@ -33,6 +33,17 @@ router.get('/getAllReservations', (_, res: Response) => {
     })
 })
 
+// GET upcoming reservations from current date
+router.get('/getUpcomingReservations', (_, res: Response) => {
+    reservationServer.findUpcomingReservations()
+        .then((reservations: any) => {
+            res.json(reservations);
+        })
+        .catch((err: any) => {
+            res.json(err);
+        })
+})
+
 // COUNT # of reservations for an office
 router.get("/getCount/:officeID/:startDate/:endDate", (req, res: Response) => {
     reservationServer.countEmployees(req.params)

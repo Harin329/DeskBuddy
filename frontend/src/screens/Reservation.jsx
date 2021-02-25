@@ -120,7 +120,7 @@ const useStyles = makeStyles({
         top: '30%',
         left: '35%',
         width: '20%',
-        height: '30%',
+        height: 'auto',
         backgroundColor: 'white',
         padding: '30px',
     },
@@ -132,6 +132,72 @@ const useStyles = makeStyles({
         height: '50%',
         backgroundColor: 'white',
         padding: '30px',
+    },
+    mainTitleText: {
+        color: 'white',
+        textAlign: 'center',
+        fontFamily: 'arial',
+        fontWeight: 'normal',
+        fontSize: 35,
+        textDecoration: 'underline',
+        marginBottom: '50px',
+        marginTop: '50px',
+        marginLeft: '-900px',
+    },
+    upcomingResSectionSpacing: {
+        width: '125%',
+        marginBottom: '29px',
+        marginLeft: '-200px'
+    },
+    titleSectionSpacing: {
+        marginBottom: '50px',
+        marginTop: '50px',
+        marginLeft: '30px',
+    },
+    sidebyside: {
+        width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        display: 'flex',
+        flexDirection: 'row'
+    },
+    upcomingResBox: {
+        backgroundColor: '#E5E5E5',
+        height: '80px',
+        marginBottom: '10px',
+        borderRadius: '10px'
+    },
+    upcomingResBoxDate: {
+        width: '25%',
+        height: '80px',
+        alignItems: 'center',
+        justifyContent: 'center',
+        display: 'flex',
+        flexDirection: 'column'
+    },
+    upcomingResBoxOffice: {
+        width: '60%',
+        height: '80px',
+        alignItems: 'center',
+        justifyContent: 'left',
+        display: 'flex',
+        flexDirection: 'row'
+    },
+    upcomingResBoxCancel: {
+        width: '30%',
+        height: '80px',
+        alignItems: 'center',
+        justifyContent: 'center',
+        display: 'flex',
+        flexDirection: 'column'
+    },
+    upcomingResBoxCenterSection: {
+        width: '50%',
+        height: '80px',
+        justifyContent: 'center',
+        display: 'flex',
+        flexDirection: 'column'
     },
 });
 
@@ -159,6 +225,12 @@ function Reservation() {
     const [page, setPage] = useState(0);
     const [more, setMore] = useState(true);
 
+    // UpcomingReservations state todo should probably be a separate component..
+    const [upcomingRes, setUpcomingRes] = useState([]);
+    const [reservationToCancel, setReservationToCancel] = useState();
+    const [openCancelRes, setOpenCancelRes] = useState(false);
+    const [employeeCountUpcomingRes, setEmployeeCountUpcomingRes] = useState("");
+
     function appendLeadingZeroes(n) {
         if (n <= 9) {
             return "0" + n;
@@ -180,9 +252,27 @@ function Reservation() {
             })
             .catch(error => console.log('error', error));
 
+        getUpcomingReservations();
+
         search(false, 0);
 
     }, []);
+
+    const getUpcomingReservations = () => {
+        var requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        fetch(Endpoint + "/reservation/getUpcomingReservations", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                const res = JSON.parse(result)
+                console.log(res)
+                setUpcomingRes(res)
+            })
+            .catch(error => console.log('error', error));
+    }
 
 
     const handleOpen = (option) => {
@@ -192,6 +282,16 @@ function Reservation() {
 
     const handleClose = () => {
         setOpen(false);
+    };
+
+    const handleOpenUpcomingRes = (option) => {
+        setReservationToCancel(option);
+        setOpenCancelRes(true);
+    };
+
+    const handleCloseUpcomingRes = () => {
+        setEmployeeCountUpcomingRes("");
+        setOpenCancelRes(false);
     };
 
     const handleFloorplanOpen = () => {
@@ -348,6 +448,7 @@ function Reservation() {
             fetch(Endpoint + "/reservation", requestOptions)
                 .then(response => response.text())
                 .then(result => console.log(result))
+                .then(getUpcomingReservations)
                 .catch(error => console.log('error', error));
         }
         handleClose();
@@ -363,8 +464,6 @@ function Reservation() {
         //console.log(startDate);
         //console.log(endDate);
         if (to >= from) {
-            //const startFullDate = startDate.getFullYear() + "-" + appendLeadingZeroes(startDate.getMonth() + 1) + "-" + appendLeadingZeroes(startDate.getDay());
-            //const endFullDate = endDate.getFullYear() + "-" + appendLeadingZeroes(endDate.getMonth() + 1) + "-" + appendLeadingZeroes(endDate.getDay());
             var requestOptions = {
                 method: 'GET',
                 redirect: 'follow'
@@ -374,8 +473,8 @@ function Reservation() {
                 .then(response => response.text())
                 .then(result => {
                     const res = JSON.parse(result)
-                    console.log(res[0].avg)
-                    setEmployeeCount(res[0].avg)
+                    //console.log(res[0].avg)
+                    setEmployeeCount(Math.ceil(res[0].avg))
                     if (res[0].avg == null) {
                         setEmployeeCount(0);
                     }
@@ -384,6 +483,24 @@ function Reservation() {
         else setEmployeeCount(0); // just a placeholder else statement to account for to being earlier than from date
     };
 
+    // todo combine with getEmployeeCount?
+    const getEmployeeCountUpcomingRes = (reservationObj) => {
+        var requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        fetch(Endpoint + "/reservation/getCount/" + reservationObj.fk_office_id + "/" + reservationObj.start_date.split("T")[0] + "/" + reservationObj.end_date.split("T")[0], requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                const res = JSON.parse(result)
+                console.log(res[0].avg)
+                setEmployeeCountUpcomingRes(res[0].avg)
+                if (res[0].avg == null) {
+                    setEmployeeCountUpcomingRes("0");
+                }
+            }).catch(error => console.log('error', error));
+    };
 
     const confirmationBody = () => {
         return (
@@ -427,6 +544,77 @@ function Reservation() {
             </div>)
     };
 
+    const confirmCancelResBody = () => {
+        return (
+            <div className={classes.paper}>
+                <div style={{width: '105%', marginTop: '-25px', justifyContent: 'flex-end', display: 'flex'}}>
+                    <IconButton size='small' onClick={handleCloseUpcomingRes}>
+                        <CancelIcon size="small"/>
+                    </IconButton>
+                </div>
+                <Typography className={classes.sectionTextModal}>
+                    {reservationToCancel.start_date.split("T")[0]} RESERVATION
+                </Typography>
+                <div style={{
+                    width: '100%',
+                    height: '140px',
+                    justifyContent: 'center',
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}>
+                    <Typography className={classes.deskSectionText}>
+                        Office: <Typography className={classes.deskText}>
+                        {reservationToCancel.fk_office_location /*todo get full office name somehow*/ }
+                    </Typography>
+                    </Typography>
+                    <Typography className={classes.deskSectionText}>
+                        Floor Number: <Typography className={classes.deskText}> {reservationToCancel.fk_floor_num}
+                    </Typography>
+                    </Typography>
+                    <Typography className={classes.deskSectionText}>
+                        Desk Number: <Typography className={classes.deskText}> {reservationToCancel.fk_desk_id}
+                    </Typography>
+                    </Typography>
+                    <Typography className={classes.deskSectionText}>
+                        Estimated Number of People: <Typography className={classes.deskText}>
+                        {employeeCountUpcomingRes}
+                    </Typography>
+                    </Typography>
+                </div>
+                <Typography className={classes.confirmationModalText}>
+                    Are you sure you want to cancel this reservation?
+                </Typography>
+                <div style={{width: '100%', marginTop: '10px', justifyContent: 'center', display: 'flex'}}>
+                    <Button className={classes.cancelButton} onClick={() => {
+                        cancelReservation(reservationToCancel);
+                    }}>CANCEL</Button>
+                </div>
+            </div>)
+    };
+
+    const cancelReservation = (reservation) => {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({ "reservation_id": Number(reservation.reservation_id)});
+        console.log(raw);
+
+        var requestOptions = {
+            method: 'DELETE',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        fetch(Endpoint + "/reservation/deleteReservation", requestOptions)
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .then(getUpcomingReservations)
+            .catch(error => console.log('error', error));
+
+        handleCloseUpcomingRes();
+    }
+
     const floorplanBody = () => {
         const officeObj = officeList.find((item) => (item.office_location + "-" + item.office_id) === office);
         const officeName = officeObj !== undefined ? officeObj.name : '';
@@ -463,62 +651,80 @@ function Reservation() {
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
-                <BookingsCalendar />
-                <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={3} className={classes.titleLines} />
-                    <Grid item xs={1}>
-                        <Typography className={classes.titleText}>
-                            UPCOMING RESERVATIONS
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={3} className={classes.titleLines} />
+                <Grid item xs={1}>
+                    <Typography className={classes.mainTitleText}>
+                        RESERVATION
+                    </Typography>
                 </Grid>
-                <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={7}>
-                        <List>
-                            {deskResults.map((option) => (
-                                <ListItem style={{ backgroundColor: '#E5E5E5', height: '150px', marginBottom: '10px' }}>
-                                    <div style={{ width: '25%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                        <ListItemIcon style={{ width: '100px', height: '100px', backgroundColor: '#00ADEF', alignItems: 'center', justifyContent: 'center', borderRadius: 100 }}>
-                                            <DesktopMacIcon />
-                                        </ListItemIcon>
-                                        <Typography className={classes.officeText}>
-                                            {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.desk_id}
-                                        </Typography>
-                                    </div>
-                                    <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
-                                    <div style={{ width: '55%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
-                                        <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                            <Typography className={classes.deskSectionText}>
-                                                OFFICE: <Typography className={classes.deskText}>
-                                                    {option.office_location} // TODO: Add full location
-                                            </Typography>
-                                            </Typography>
-                                            <Typography className={classes.deskSectionText}>
-                                                DESK ID: <Typography className={classes.deskText}>
-                                                    {option.desk_id} // TODO: Add real desk ID
-                                            </Typography>
-                                            </Typography>
-                                        </div>
-                                    </div>
-                                    <Divider orientation='vertical' style={{ backgroundColor: 'black', height: '129px', width: '1px' }} />
-                                    <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                        <Button className={classes.cancelButton} onClick={() => {
-                                            getEmployeeCount(option);
-                                            handleOpen(option)
-                                        }}>Cancel</Button>
-                                    </div>
+
+                <div className={classes.sidebyside}>
+                    <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
+                        <BookingsCalendar>
+                            //TODO: Show details of reservation on calendar click
+                        </BookingsCalendar>
+                    </Grid>
+
+                    <Grid container justify='center' alignItems='center' className={classes.upcomingResSectionSpacing}>
+                        <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
+                            <Grid item xs={3} className={classes.titleLines}/>
+                            <Grid item xs={1}>
+                                <Typography className={classes.titleText}>
+                                    UPCOMING RESERVATIONS
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={3} className={classes.titleLines}/>
+                        </Grid>
+
+                        <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
+                            <Grid item xs={7}>
+                                <List>
+                                    {upcomingRes.map((option) => (
+                                        <ListItem className={classes.upcomingResBox}>
+                                            <div className={classes.upcomingResBoxDate}>
+                                                <Typography className={classes.officeText}>
+                                                    {option.start_date}
+                                                </Typography>
+                                            </div>
+                                            <Divider orientation='vertical'
+                                                     style={{backgroundColor: 'black', height: '80px', width: '1px'}}/>
+                                            <div className={classes.upcomingResBoxOffice}>
+                                                <div className={classes.upcomingResBoxCenterSection}>
+                                                    <Typography className={classes.deskSectionText}>
+                                                        OFFICE: <Typography className={classes.deskText}>
+                                                        {option.fk_office_location}
+                                                    </Typography>
+                                                    </Typography>
+                                                    <Typography className={classes.deskSectionText}>
+                                                        DESK ID: <Typography className={classes.deskText}>
+                                                        {option.fk_office_location + option.fk_floor_num + option.fk_desk_id}
+                                                    </Typography>
+                                                    </Typography>
+                                                </div>
+                                            </div>
+                                            <Divider orientation='vertical'
+                                                     style={{backgroundColor: 'black', height: '80px', width: '1px'}}/>
+                                            <div className={classes.upcomingResBoxCancel}>
+                                                <Button className={classes.cancelButton} onClick={() => {
+                                                    getEmployeeCountUpcomingRes(option);
+                                                    handleOpenUpcomingRes(option)
+                                                }}>Cancel</Button>
+                                            </div>
+                                        </ListItem>
+                                    ))}
                                     <Modal
-                                        open={open}
-                                        onClose={handleClose}
-                                    >
-                                        {confirmationDesk !== undefined ? confirmationBody() : null}
+                                        open={openCancelRes}
+                                        onClose={handleCloseUpcomingRes}>
+                                        {reservationToCancel !== undefined ? confirmCancelResBody() : null}
                                     </Modal>
-                                </ListItem>
-                            ))}
-                        </List>
+                                </List>
+                            </Grid>
+                        </Grid>
                     </Grid>
-                </Grid>
+
+                </div>
+
+
+
 
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                     <Grid item xs={3} className={classes.titleLines} />
@@ -638,14 +844,13 @@ function Reservation() {
                                             handleOpen(option)
                                         }}>Reserve Now</Button>
                                     </div>
-                                    <Modal
-                                        open={open}
-                                        onClose={handleClose}
-                                    >
-                                        {confirmationDesk !== undefined ? confirmationBody() : null}
-                                    </Modal>
                                 </ListItem>
                             ))}
+                            <Modal
+                                open={open}
+                                onClose={handleClose}>
+                                {confirmationDesk !== undefined ? confirmationBody() : null}
+                            </Modal>
                             <div style={{ justifyContent: 'center', display: 'flex', marginTop: '50px' }}>
                                 {deskResults.length <= 0 && <Typography className={classes.sectionText}>No Results Found</Typography>}
                             </div>
