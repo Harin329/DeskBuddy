@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button, List, ListItem, Grid, Typography, TextField, MenuItem, Divider, Modal, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { isMobile } from "react-device-detect";
+import { useSelector, useDispatch } from 'react-redux'
+import { fetchReservations } from '../actions/reservationActions';
 import UpdateLocationPopup from './UpdateLocationPopup';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Search from '../assets/search.png';
@@ -8,6 +11,9 @@ import Endpoint from '../config/Constants';
 import BookingsCalendar from '../components/reservation/BookingsCalendar';
 import MapPopup from './map-popup/index';
 import AddLocationForm from '../components/reservation/AddLocationForm';
+import Title from '../components/global/Title';
+import Subheader from '../components/reservation/Subheader';
+import UpcomingReservations from '../components/reservation/UpcomingReservations';
 
 const useStyles = makeStyles((theme) => ({
     background: {
@@ -66,19 +72,6 @@ const useStyles = makeStyles((theme) => ({
         fontSize: 12,
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
     },
-    cancelButton: {
-        background: '#ba0000',
-        borderRadius: 30,
-        color: 'white',
-        height: '30px',
-        padding: '0 15px',
-        marginTop: '5px',
-        marginBottom: '5px',
-        fontFamily: 'Lato',
-        fontWeight: 'bolder',
-        fontSize: 14,
-        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-    },
     titleText: {
         color: 'white',
         textAlign: 'center',
@@ -116,13 +109,6 @@ const useStyles = makeStyles((theme) => ({
         color: 'black',
         fontFamily: 'Lato',
         fontSize: 16,
-        textAlign: 'center'
-    },
-    dateText: {
-        color: 'black',
-        fontFamily: 'Lato',
-        fontSize: 20,
-        fontWeight: 'bold',
         textAlign: 'center'
     },
     deskSectionText: {
@@ -168,92 +154,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: 'white',
         padding: '30px',
     },
-    mainTitleText: {
-        color: 'white',
-        textAlign: 'center',
-        fontFamily: 'arial',
-        fontWeight: 'normal',
-        fontSize: 35,
-        textDecoration: 'underline',
-        marginBottom: '50px',
-        marginTop: '50px',
-        marginLeft: '-900px',
-    },
-    upcomingResSectionSpacing: {
-        width: '60%',
-        marginBottom: '29px',
-        marginLeft: '-76vw'
-    },
-    titleSectionSpacing: {
-        marginBottom: '50px',
-        marginTop: '50px',
-        marginLeft: '30px',
-    },
-    sidebyside: {
-        width: '100%',
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        display: 'flex',
-        flexDirection: 'row',
-    },
-    upcomingResBox: {
-        backgroundColor: '#E5E5E5',
-        height: '80px',
-        marginBottom: '10px',
-        borderRadius: '10px'
-    },
-    upcomingResBoxDate: {
-        width: '25%',
-        height: '80px',
-        alignItems: 'center',
-        justifyContent: 'center',
-        display: 'flex',
-        flexDirection: 'column'
-    },
-    upcomingResBoxOffice: {
-        width: '60%',
-        height: '80px',
-        alignItems: 'center',
-        justifyContent: 'left',
-        display: 'flex',
-        flexDirection: 'row'
-    },
-    upcomingResBoxCancel: {
-        width: '30%',
-        height: '80px',
-        alignItems: 'center',
-        justifyContent: 'center',
-        display: 'flex',
-        flexDirection: 'column'
-    },
-    upcomingResBoxCenterSection: {
-        padding: '7px',
-        height: '80px',
-        justifyContent: 'center',
-        display: 'flex',
-        flexDirection: 'column'
-    }
 }));
-
-const floors = [
-    {
-        value: 1,
-        label: '1',
-    },
-    {
-        value: 2,
-        label: '2',
-    },
-    {
-        value: 3,
-        label: '3',
-    },
-    {
-        value: 4,
-        label: '4',
-    },
-];
 
 function Reservation() {
     const date = new Date();
@@ -265,7 +166,6 @@ function Reservation() {
     const [officeList, setOfficeList] = useState([]);
     const [office, setOffice] = useState('All');
     const [deskList, setDeskList] = useState([]);
-    const [floorList, setFloorList] = useState([]);
     const [desk, setDesk] = useState('All');
     const [from, setFrom] = useState(formattedDate);
     const [to, setTo] = useState(formattedDate);
@@ -277,15 +177,10 @@ function Reservation() {
     const [addLocation, setAddLocation] = useState(false);
     const [officeDisabled, setOfficeDisabled] = useState(true);
     const [confirmationDesk, setConfirmationDesk] = useState();
-    const [floorplanSelected, setFloorplanSelected] = useState();
     const [page, setPage] = useState(0);
     const [more, setMore] = useState(true);
 
-    // UpcomingReservations state todo should probably be a separate component..
-    const [upcomingRes, setUpcomingRes] = useState([]);
-    const [reservationToCancel, setReservationToCancel] = useState();
-    const [openCancelRes, setOpenCancelRes] = useState(false);
-    const [employeeCountUpcomingRes, setEmployeeCountUpcomingRes] = useState("");
+    const dispatch = useDispatch()
 
     function appendLeadingZeroes(n) {
         if (n <= 9) {
@@ -308,31 +203,9 @@ function Reservation() {
             })
             .catch(error => console.log('error', error));
 
-        getUpcomingReservations();
-
         search(false, 0);
 
     }, []);
-
-    const getUpcomingReservations = () => {
-        var requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        fetch(Endpoint + "/reservation/getUpcomingReservations", requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                const res = JSON.parse(result)
-                console.log(res)
-                setUpcomingRes(res)
-            })
-            .catch(error => console.log('error', error));
-    }
-
-    const expandSelectedReservation = (reservation) =>  {
-
-    }
 
     const handleOpen = (option) => {
         setConfirmationDesk(option);
@@ -341,16 +214,6 @@ function Reservation() {
 
     const handleClose = () => {
         setOpen(false);
-    };
-
-    const handleOpenUpcomingRes = (option) => {
-        setReservationToCancel(option);
-        setOpenCancelRes(true);
-    };
-
-    const handleCloseUpcomingRes = () => {
-        setEmployeeCountUpcomingRes("");
-        setOpenCancelRes(false);
     };
 
     const handleFloorplanOpen = () => {
@@ -370,7 +233,7 @@ function Reservation() {
     }
 
     const addLocationBody = () => {
-        return <AddLocationForm closeModal={handleAddLocationClose}/>
+        return <AddLocationForm closeModal={handleAddLocationClose} />
     }
 
     const handleOfficeChange = (event) => {
@@ -400,11 +263,9 @@ function Reservation() {
                 .then((response) => response.text())
                 .then(result => {
                     const res = JSON.parse(result)
-                    setFloorList(res);
                     // console.log(res);
                     if (res.length > 0) {
                         setOfficeDisabled(false);
-                        setFloorplanSelected(res[0]);
                     } else {
                         setOfficeDisabled(true);
                     }
@@ -412,7 +273,6 @@ function Reservation() {
                 .catch(error => console.log('error', error));
         } else {
             setOfficeDisabled(true);
-            setFloorList([]);
             setDeskList([]);
         }
     };
@@ -455,7 +315,7 @@ function Reservation() {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        var raw = JSON.stringify({ 
+        var raw = JSON.stringify({
             "desk_id": String(deskParam[1]),
             "floor_num": Number(deskParam[0]),
             "office_id": Number(officeParam[1]),
@@ -464,7 +324,7 @@ function Reservation() {
             "end_date": to,
             "startIndex": pageStart,
             "numOnPage": resultOnPage
-         });
+        });
 
         console.log(raw);
 
@@ -519,7 +379,9 @@ function Reservation() {
             fetch(Endpoint + "/reservation", requestOptions)
                 .then(response => response.text())
                 .then(result => console.log(result))
-                .then(getUpcomingReservations)
+                .then(() => {
+                    dispatch(fetchReservations())
+                })
                 .catch(error => console.log('error', error));
         }
         handleClose();
@@ -556,25 +418,6 @@ function Reservation() {
                 }).catch(error => console.log('error', error));
         }
         else setEmployeeCount(0); // just a placeholder else statement to account for to being earlier than from date
-    };
-
-    // todo combine with getEmployeeCount?
-    const getEmployeeCountUpcomingRes = (reservationObj) => {
-        var requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        fetch(Endpoint + "/reservation/getCount/" + reservationObj.fk_office_id + "/" + reservationObj.start_date.split("T")[0] + "/" + reservationObj.end_date.split("T")[0], requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                const res = JSON.parse(result)
-                console.log(res[0].avg)
-                setEmployeeCountUpcomingRes(Math.ceil(res[0].avg))
-                if (res[0].avg == null) {
-                    setEmployeeCountUpcomingRes("0");
-                }
-            }).catch(error => console.log('error', error));
     };
 
     const confirmationBody = () => {
@@ -619,197 +462,37 @@ function Reservation() {
             </div>)
     };
 
-    const confirmCancelResBody = () => {
-        return (
-            <div className={classes.paper}>
-                <div style={{width: '105%', marginTop: '-25px', justifyContent: 'flex-end', display: 'flex'}}>
-                    <IconButton size='small' onClick={handleCloseUpcomingRes}>
-                        <CancelIcon size="small"/>
-                    </IconButton>
-                </div>
-                <Typography className={classes.sectionTextModal}>
-                    {reservationToCancel.start_date.split("T")[0]} RESERVATION
-                </Typography>
-                <div style={{
-                    width: '100%',
-                    height: '140px',
-                    justifyContent: 'center',
-                    display: 'flex',
-                    flexDirection: 'column'
-                }}>
-                    <Typography className={classes.deskSectionText}>
-                        Office: <Typography className={classes.deskText}>
-                        {reservationToCancel.name}
-                    </Typography>
-                    </Typography>
-                    <Typography className={classes.deskSectionText}>
-                        Floor Number: <Typography className={classes.deskText}> {reservationToCancel.fk_floor_num}
-                    </Typography>
-                    </Typography>
-                    <Typography className={classes.deskSectionText}>
-                        Desk Number: <Typography className={classes.deskText}> {reservationToCancel.fk_desk_id}
-                    </Typography>
-                    </Typography>
-                    <Typography className={classes.deskSectionText}>
-                        Estimated Number of People: <Typography className={classes.deskText}>
-                        {employeeCountUpcomingRes}
-                    </Typography>
-                    </Typography>
-                </div>
-                <Typography className={classes.confirmationModalText}>
-                    Are you sure you want to cancel this reservation?
-                </Typography>
-                <div style={{width: '100%', marginTop: '10px', justifyContent: 'center', display: 'flex'}}>
-                    <Button className={classes.cancelButton} onClick={() => {
-                        cancelReservation(reservationToCancel);
-                    }}>CANCEL</Button>
-                </div>
-            </div>)
-    };
-
-    const cancelReservation = (reservation) => {
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-
-        var raw = JSON.stringify({ "reservation_id": Number(reservation.reservation_id)});
-        console.log(raw);
-
-        var requestOptions = {
-            method: 'DELETE',
-            headers: myHeaders,
-            body: raw,
-            redirect: 'follow'
-        };
-
-        fetch(Endpoint + "/reservation/deleteReservation", requestOptions)
-            .then(response => response.text())
-            .then(result => console.log(result))
-            .then(() => {
-                getUpcomingReservations()
-                search(false, 0);
-            })
-            .catch(error => console.log('error', error));
-
-        handleCloseUpcomingRes();
-    }
-
-    const floorplanBody = () => {
-        const officeObj = officeList.find((item) => (item.office_location + "-" + item.office_id) === office);
-        const officeName = officeObj !== undefined ? officeObj.name : '';
-
-        // setFloorplanSelected(floorList[0]);
-
-        return (
-            <div className={classes.floorplan}>
-                <div style={{ width: '102%', marginTop: '-25px', justifyContent: 'flex-end', display: 'flex' }}>
-                    <IconButton size='small' onClick={handleFloorplanClose}>
-                        <CancelIcon size="small" />
-                    </IconButton>
-                </div>
-                <Typography className={classes.sectionTextModal}>
-                    {officeName}
-                </Typography>
-                <div style={{ width: '100%', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
-                    <div style={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                        {floorList.map((option) => (
-                            <Button className={classes.FloorText} onClick={() => {
-                                setFloorplanSelected(option)
-                            }}>
-                                Floor {option.floor_num}
-                            </Button>
-                        ))}
-                    </div>
-                    <div>
-                        {floorplanSelected !== undefined && <img src={'data:image/png;base64,' + new Buffer(floorplanSelected.floor_plan, 'binary').toString('base64')} alt="Floorplan" style={{ height: '45vh' }} />}
-                    </div>
-                </div>
-            </div>)
-    };
-
-    // Converts MySQL date format to day and month
-    const convertStartDate = (sqlStartDate) => {
-        const date = new Date(sqlStartDate);
-        const day = date.getDate();
-        const month = date.toLocaleString('default', { month: 'short' });
-        return (day + " " + month);
-    };
 
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
-                <Grid item xs={1}>
-                    <Typography className={classes.mainTitleText}>
-                        RESERVATION
-                    </Typography>
-                </Grid>
+                {Title('RESERVATION')}
 
-                <div className={classes.sidebyside}>
-                    <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                        <BookingsCalendar>
-                            //TODO: Show details of reservation on calendar click
-                        </BookingsCalendar>
+                {window.innerWidth > 1500 && <Grid container>
+                    <Grid item xs={2} />
+                    <Grid item xs={3} >
+                        <BookingsCalendar />
                     </Grid>
-
-                    <Grid container justify='center' alignItems='center' className={classes.upcomingResSectionSpacing}>
-                        <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                            <Grid item xs={1} className={classes.titleLines}/>
-                            <Grid item xs={4}>
-                                <Typography className={classes.titleText}>
-                                    UPCOMING RESERVATIONS
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={1} className={classes.titleLines}/>
-                        </Grid>
-
-                        <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                            <Grid item xs={7}>
-                                <List>
-                                    {upcomingRes.map((option) => (
-                                        <ListItem className={classes.upcomingResBox}>
-                                            <div className={classes.upcomingResBoxDate}>
-                                                <Typography className={classes.dateText}>
-                                                    {convertStartDate(option.start_date)}
-                                                </Typography>
-                                            </div>
-                                            <Divider orientation='vertical'
-                                                     style={{backgroundColor: 'black', height: '80px', width: '1px'}}/>
-                                            <div className={classes.upcomingResBoxOffice}>
-                                                <div className={classes.upcomingResBoxCenterSection}>
-                                                    <Typography className={classes.deskSectionText}>
-                                                        OFFICE: <Typography className={classes.deskText}>
-                                                        {option.name}
-                                                    </Typography>
-                                                    </Typography>
-                                                    <Typography className={classes.deskSectionText}>
-                                                        DESK ID: <Typography className={classes.deskText}>
-                                                        {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.fk_desk_id}
-                                                    </Typography>
-                                                    </Typography>
-                                                </div>
-                                            </div>
-                                            <Divider orientation='vertical'
-                                                     style={{backgroundColor: 'black', height: '80px', width: '1px'}}/>
-                                            <div className={classes.upcomingResBoxCancel}>
-                                                <Button className={classes.cancelButton} onClick={() => {
-                                                    getEmployeeCountUpcomingRes(option);
-                                                    handleOpenUpcomingRes(option)
-                                                }}>Cancel</Button>
-                                            </div>
-                                        </ListItem>
-                                    ))}
-                                    <Modal
-                                        open={openCancelRes}
-                                        onClose={handleCloseUpcomingRes}>
-                                        {reservationToCancel !== undefined ? confirmCancelResBody() : null}
-                                    </Modal>
-                                </List>
-                            </Grid>
-                        </Grid>
+                    <Grid item xs={5}>
+                        {Subheader('UPCOMING RESERVATIONS', 3, 6, 3)}
+                        {UpcomingReservations()}
                     </Grid>
+                    <Grid item xs={2} />
+                </Grid>}
 
-                </div>
-
-
+                {window.innerWidth <= 1500 && <Grid container justify='center'>
+                    <Grid item xs={11} >
+                        <BookingsCalendar />
+                    </Grid>
+                </Grid>}
+                {window.innerWidth <= 1500 && <Grid container>
+                    <Grid item xs={2}/>
+                    <Grid item xs={5}>
+                        {Subheader('UPCOMING RESERVATIONS', 0, 12, 0)}
+                        {UpcomingReservations()}
+                    </Grid>
+                    <Grid item xs={2}/>
+                </Grid>}
 
 
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
@@ -855,34 +538,34 @@ function Reservation() {
                     <Grid item xs={1} />
                 </Grid>
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    
-                        <UpdateLocationPopup isOpen={isUpdateLocationClosed} whatToDoWhenClosed={(bool) => {setIsUpdateLocationClosed(bool)}}></UpdateLocationPopup>
-                    
+
+                    <UpdateLocationPopup isOpen={isUpdateLocationClosed} whatToDoWhenClosed={(bool) => { setIsUpdateLocationClosed(bool) }}></UpdateLocationPopup>
+
                     <Grid item xs={3}>
                         <Button className={classes.actionButton} onClick={handleUpdateLocationClosed}>Update Location</Button>
-                    <Grid item xs={8}>
-                        <Button className={classes.actionButton} onClick={handleAddLocationOpen}>Add Location</Button>
-                        <Modal
-                            open={addLocation}
-                            onClose={handleAddLocationClose}
-                        >
-                            {addLocationBody()}
-                        </Modal>
+                        <Grid item xs={8}>
+                            <Button className={classes.actionButton} onClick={handleAddLocationOpen}>Add Location</Button>
+                            <Modal
+                                open={addLocation}
+                                onClose={handleAddLocationClose}
+                            >
+                                {addLocationBody()}
+                            </Modal>
+                        </Grid>
                     </Grid>
-                     </Grid>
                     <Grid item xs={4}>
                         <Button className={classes.actionButton} onClick={handleFloorplanOpen} disabled={officeDisabled}>Floorplan</Button>
-                            <Modal
-                                open={floorplan}
-                                onClose={handleFloorplanClose}
-                            >
-                                <MapPopup
-                                    locationID={office}
-                                    closeHandler={handleFloorplanClose} 
-                                    officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === office)}
-                                    />
-                                {/* {floorplanBody()} */}
-                            </Modal>
+                        <Modal
+                            open={floorplan}
+                            onClose={handleFloorplanClose}
+                        >
+                            <MapPopup
+                                locationID={office}
+                                closeHandler={handleFloorplanClose}
+                                officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === office)}
+                            />
+                            {/* {floorplanBody()} */}
+                        </Modal>
                     </Grid>
                 </Grid>
                 <Grid container justify='center' alignItems='flex-end' className={classes.sectionSpacing}>
@@ -901,7 +584,7 @@ function Reservation() {
                     <Grid item xs={1}>
                         <button onClick={() => {
                             search(false, 0);
-                            }} style={{ backgroundColor: 'transparent', border: 'none' }}><img src={Search} alt="Search" style={{ height: '50px' }} /></button>
+                        }} style={{ backgroundColor: 'transparent', border: 'none' }}><img src={Search} alt="Search" style={{ height: '50px' }} /></button>
                     </Grid>
                 </Grid>
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
