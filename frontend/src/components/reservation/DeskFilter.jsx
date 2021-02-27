@@ -152,29 +152,37 @@ function DeskFilter(title, f1, f2, f3) {
     }
 
     const handleFromChange = (event) => {
-        var oldFilter = filter;
-        oldFilter['from'] = event.target.value;
-        dispatch({ type: GET_FILTER, payload: oldFilter });
+        var newFilter = {
+            desk: filter.desk,
+            office: filter.office,
+            from: event.target.value,
+            to: filter.to,
+        };
+        dispatch({ type: GET_FILTER, payload: newFilter });
 
 
         const day = new Date(event.target.value)
         const toDay = new Date(filter.to)
         if (day > toDay) {
-            oldFilter['to'] = event.target.value;
-            dispatch({ type: GET_FILTER, payload: oldFilter });
+            newFilter['to'] = event.target.value;
+            dispatch({ type: GET_FILTER, payload: newFilter });
         }
     }
 
     const handleToChange = (event) => {
-        var oldFilter = filter;
-        oldFilter['to'] = event.target.value;
-        dispatch({ type: GET_FILTER, payload: oldFilter });
+        var newFilter = {
+            desk: filter.desk,
+            office: filter.office,
+            from: filter.to,
+            to: event.target.value,
+        };
+        dispatch({ type: GET_FILTER, payload: newFilter });
 
         const day = new Date(filter.from)
         const toDay = new Date(event.target.value)
         if (day > toDay) {
-            oldFilter['from'] = event.target.value;
-            dispatch({ type: GET_FILTER, payload: oldFilter });
+            newFilter['from'] = event.target.value;
+            dispatch({ type: GET_FILTER, payload: newFilter });
         }
     }
 
@@ -185,7 +193,7 @@ function DeskFilter(title, f1, f2, f3) {
                     <Typography className={classes.sectionText}>
                         OFFICE
                         </Typography>
-                    <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
+                    <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleOfficeChange} value={filter.office} className={classes.inputBoxes}>
                         <MenuItem key={'All'} value={'All'}>
                             All
                                 </MenuItem>
@@ -200,7 +208,7 @@ function DeskFilter(title, f1, f2, f3) {
                     <Typography className={classes.sectionText}>
                         DESK NUMBER
                         </Typography>
-                    <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleDeskChange} value={desk} className={classes.inputBoxes}>
+                    <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleDeskChange} value={filter.desk} className={classes.inputBoxes}>
                         <MenuItem key={'All'} value={'All'}>
                             All
                                 </MenuItem>
