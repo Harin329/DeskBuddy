@@ -5,8 +5,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import { Button, Grid, Typography, TextField, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import UpdateLocationFloorContainer from '../components/reservation/UpdateLocationFloorContainer';
-import Endpoint from '../config/Constants'
+import UpdateLocationFloorContainer from '../../components/reservation/UpdateLocationFloorContainer';
+import Endpoint from '../../config/Constants'
 
 const useStyles = makeStyles({
   background: {

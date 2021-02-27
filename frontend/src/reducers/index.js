@@ -1,4 +1,4 @@
 // import { combineReducers } from "redux";
-import upcomingReservations from "./reservations";
+import reservations from "./reservations";
 
-export default upcomingReservations;
+export default reservations;

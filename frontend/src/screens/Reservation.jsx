@@ -3,17 +3,15 @@ import { Button, List, ListItem, Grid, Typography, TextField, MenuItem, Divider,
 import { makeStyles } from '@material-ui/core/styles';
 import { isMobile } from "react-device-detect";
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchReservations } from '../actions/reservationActions';
-import UpdateLocationPopup from './UpdateLocationPopup';
+import { fetchDesks, fetchReservations } from '../actions/reservationActions';
 import CancelIcon from '@material-ui/icons/Cancel';
-import Search from '../assets/search.png';
 import Endpoint from '../config/Constants';
 import BookingsCalendar from '../components/reservation/BookingsCalendar';
-import MapPopup from './map-popup/index';
-import AddLocationForm from '../components/reservation/AddLocationForm';
+
 import Title from '../components/global/Title';
 import Subheader from '../components/reservation/Subheader';
 import UpcomingReservations from '../components/reservation/UpcomingReservations';
+import DeskFilter from '../components/reservation/DeskFilter';
 
 const useStyles = makeStyles((theme) => ({
     background: {
@@ -157,30 +155,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Reservation() {
-    const date = new Date();
-    const formattedDate = date.getFullYear() + "-" + appendLeadingZeroes(date.getMonth() + 1) + "-" + appendLeadingZeroes(date.getDate());
-
-    const resultOnPage = 25;
-
     const classes = useStyles();
-    const [officeList, setOfficeList] = useState([]);
-    const [office, setOffice] = useState('All');
-    const [deskList, setDeskList] = useState([]);
-    const [desk, setDesk] = useState('All');
-    const [from, setFrom] = useState(formattedDate);
-    const [to, setTo] = useState(formattedDate);
-    const [deskResults, setDeskResults] = useState([]);
-    const [isUpdateLocationClosed, setIsUpdateLocationClosed] = useState(false);
     const [open, setOpen] = useState(false);
     const [employeeCount, setEmployeeCount] = useState(0);
-    const [floorplan, setFloorplan] = useState(false);
-    const [addLocation, setAddLocation] = useState(false);
-    const [officeDisabled, setOfficeDisabled] = useState(true);
     const [confirmationDesk, setConfirmationDesk] = useState();
-    const [page, setPage] = useState(0);
-    const [more, setMore] = useState(true);
 
     const dispatch = useDispatch()
+    const filter = useSelector(state => state.searchFilter);
+    const deskResults = useSelector(state => state.deskResults);
+    const more = useSelector(state => state.hasMore);
 
     function appendLeadingZeroes(n) {
         if (n <= 9) {
@@ -190,21 +173,7 @@ function Reservation() {
     }
 
     useEffect(() => {
-        var requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        fetch(Endpoint + "/office/getAllOffices", requestOptions)
-            .then((response) => response.text())
-            .then(result => {
-                setOfficeList(JSON.parse(result));
-                // console.log(JSON.parse(result));
-            })
-            .catch(error => console.log('error', error));
-
-        search(false, 0);
-
+        dispatch(fetchDesks(filter, false, 0, deskResults));
     }, []);
 
     const handleOpen = (option) => {
@@ -216,147 +185,10 @@ function Reservation() {
         setOpen(false);
     };
 
-    const handleFloorplanOpen = () => {
-        setFloorplan(true);
-    };
-
-    const handleAddLocationOpen = () => {
-        setAddLocation(true);
-    }
-
-    const handleFloorplanClose = () => {
-        setFloorplan(false);
-    };
-
-    const handleAddLocationClose = () => {
-        setAddLocation(false)
-    }
-
-    const addLocationBody = () => {
-        return <AddLocationForm closeModal={handleAddLocationClose} />
-    }
-
-    const handleOfficeChange = (event) => {
-
-        setOffice(event.target.value);
-
-        if (event.target.value !== 'All') {
-            const params = event.target.value.split(['-']);
-
-            console.log(params[0])
-            console.log(params[1])
-
-            var requestOptions = {
-                method: 'GET',
-                redirect: 'follow'
-            };
-
-            fetch(Endpoint + "/desk/getDesksByOffice/" + params[0] + "/" + params[1], requestOptions)
-                .then((response) => response.text())
-                .then(result => {
-                    setDeskList(JSON.parse(result));
-                    // console.log(JSON.parse(result));
-                })
-                .catch(error => console.log('error', error));
-
-            fetch(Endpoint + "/floor/getFloorsByOffice/" + params[0] + "/" + params[1], requestOptions)
-                .then((response) => response.text())
-                .then(result => {
-                    const res = JSON.parse(result)
-                    // console.log(res);
-                    if (res.length > 0) {
-                        setOfficeDisabled(false);
-                    } else {
-                        setOfficeDisabled(true);
-                    }
-                })
-                .catch(error => console.log('error', error));
-        } else {
-            setOfficeDisabled(true);
-            setDeskList([]);
-        }
-    };
-
-    const handleDeskChange = (event) => {
-        setDesk(event.target.value);
-    }
-
-    const handleFromChange = (event) => {
-        setFrom(event.target.value);
-
-        const day = new Date(event.target.value)
-        const toDay = new Date(to)
-        if (day > toDay) {
-            setTo(event.target.value)
-        }
-    }
-
-    const handleToChange = (event) => {
-        setTo(event.target.value);
-
-        const day = new Date(from)
-        const toDay = new Date(event.target.value)
-        if (day > toDay) {
-            setFrom(event.target.value)
-        }
-    }
-
-    const search = (append, pageStart) => {
-        var deskParam = ['0', '0']
-        var officeParam = ['0', '0']
-
-        if (desk.includes('-')) {
-            deskParam = desk.split(['-']);
-        }
-        if (office.includes('-')) {
-            officeParam = office.split(['-']);
-        }
-
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-
-        var raw = JSON.stringify({
-            "desk_id": String(deskParam[1]),
-            "floor_num": Number(deskParam[0]),
-            "office_id": Number(officeParam[1]),
-            "office_location": String(officeParam[0]),
-            "start_date": from,
-            "end_date": to,
-            "startIndex": pageStart,
-            "numOnPage": resultOnPage
-        });
-
-        console.log(raw);
-
-        var requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: raw,
-            redirect: 'follow'
-        };
-
-        fetch(Endpoint + "/desk/getOpenDesks", requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                const res = JSON.parse(result)
-                console.log(res)
-                if (deskResults.length === 0 || !append) {
-                    setDeskResults(res);
-                } else {
-                    if (res[0] !== undefined) {
-                        setDeskResults((prev) => [...prev, ...res])
-                    }
-                }
-                setMore(((deskResults.length + res.length) % resultOnPage === 0 && res[0] !== undefined) || !append)
-                setPage(pageStart + resultOnPage);
-            })
-            .catch(error => console.log('error', error));
-    }
-
     // TODO GET EMPLOYEE ID
     const makeReservation = (deskObj) => {
-        var day = new Date(from)
-        var toDay = new Date(to)
+        var day = new Date(filter.from)
+        var toDay = new Date(filter.to)
         while (day <= toDay) {
             const newDay = day.setDate(day.getDate() + 1);
             day = new Date(newDay)
@@ -386,27 +218,17 @@ function Reservation() {
         }
         handleClose();
         // Replace this with promises followed by then one day... :)
-        setTimeout(() => search(false, 0), 3000);
-    }
-
-    const handleUpdateLocationClosed = () => {
-        setIsUpdateLocationClosed(true);
+        // setTimeout(() => search(false, 0), 3000);
     }
 
     const getEmployeeCount = (deskObj) => {
-        console.log(from);
-        console.log(to);
-        //var startDate = new Date(from);
-        //var endDate = new Date(to);
-        //console.log(startDate);
-        //console.log(endDate);
-        if (to >= from) {
+        if (filter.to >= filter.from) {
             var requestOptions = {
                 method: 'GET',
                 redirect: 'follow'
             };
 
-            fetch(Endpoint + "/reservation/getCount/" + deskObj.office_id + "/" + from + "/" + to, requestOptions)
+            fetch(Endpoint + "/reservation/getCount/" + deskObj.office_id + "/" + filter.from + "/" + filter.to, requestOptions)
                 .then(response => response.text())
                 .then(result => {
                     const res = JSON.parse(result)
@@ -429,7 +251,7 @@ function Reservation() {
                     </IconButton>
                 </div>
                 <Typography className={classes.sectionTextModal}>
-                    {from} TO {to} RESERVATION
+                    {filter.from} TO {filter.to} RESERVATION
                         </Typography>
                 <div style={{ width: '100%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                     <Typography className={classes.deskSectionText}>
@@ -462,7 +284,6 @@ function Reservation() {
             </div>)
     };
 
-
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
@@ -486,109 +307,20 @@ function Reservation() {
                     </Grid>
                 </Grid>}
                 {window.innerWidth <= 1500 && <Grid container>
-                    <Grid item xs={2}/>
+                    <Grid item xs={2} />
                     <Grid item xs={5}>
                         {Subheader('UPCOMING RESERVATIONS', 0, 12, 0)}
                         {UpcomingReservations()}
                     </Grid>
-                    <Grid item xs={2}/>
+                    <Grid item xs={2} />
                 </Grid>}
 
+                {Subheader('RESERVE', 3, 2, 3)}
+
+                {DeskFilter()}
 
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={3} className={classes.titleLines} />
-                    <Grid item xs={1}>
-                        <Typography className={classes.titleText}>
-                            RESERVE
-                    </Typography>
-                    </Grid>
-                    <Grid item xs={3} className={classes.titleLines} />
-                </Grid>
-                <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={3}>
-                        <Typography className={classes.sectionText}>
-                            OFFICE
-                        </Typography>
-                        <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
-                            <MenuItem key={'All'} value={'All'}>
-                                All
-                                </MenuItem>
-                            {officeList.map((option) => (
-                                <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
-                                    {option.name}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </Grid>
-                    <Grid item xs={3}>
-                        <Typography className={classes.sectionText}>
-                            DESK NUMBER
-                        </Typography>
-                        <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleDeskChange} value={desk} className={classes.inputBoxes}>
-                            <MenuItem key={'All'} value={'All'}>
-                                All
-                                </MenuItem>
-                            {deskList.map((option) => (
-                                <MenuItem key={option.fk_floor_num + "-" + option.desk_id} value={option.fk_floor_num + "-" + option.desk_id}>
-                                    {option.fk_floor_num + "-" + option.desk_id}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </Grid>
-                    <Grid item xs={1} />
-                </Grid>
-                <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-
-                    <UpdateLocationPopup isOpen={isUpdateLocationClosed} whatToDoWhenClosed={(bool) => { setIsUpdateLocationClosed(bool) }}></UpdateLocationPopup>
-
-                    <Grid item xs={3}>
-                        <Button className={classes.actionButton} onClick={handleUpdateLocationClosed}>Update Location</Button>
-                        <Grid item xs={8}>
-                            <Button className={classes.actionButton} onClick={handleAddLocationOpen}>Add Location</Button>
-                            <Modal
-                                open={addLocation}
-                                onClose={handleAddLocationClose}
-                            >
-                                {addLocationBody()}
-                            </Modal>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <Button className={classes.actionButton} onClick={handleFloorplanOpen} disabled={officeDisabled}>Floorplan</Button>
-                        <Modal
-                            open={floorplan}
-                            onClose={handleFloorplanClose}
-                        >
-                            <MapPopup
-                                locationID={office}
-                                closeHandler={handleFloorplanClose}
-                                officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === office)}
-                            />
-                            {/* {floorplanBody()} */}
-                        </Modal>
-                    </Grid>
-                </Grid>
-                <Grid container justify='center' alignItems='flex-end' className={classes.sectionSpacing}>
-                    <Grid item xs={3}>
-                        <Typography className={classes.sectionText}>
-                            FROM
-                        </Typography>
-                        <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleFromChange} value={from} defaultValue={from} />
-                    </Grid>
-                    <Grid item xs={3}>
-                        <Typography className={classes.sectionText}>
-                            TO
-                        </Typography>
-                        <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleToChange} value={to} defaultValue={to} />
-                    </Grid>
-                    <Grid item xs={1}>
-                        <button onClick={() => {
-                            search(false, 0);
-                        }} style={{ backgroundColor: 'transparent', border: 'none' }}><img src={Search} alt="Search" style={{ height: '50px' }} /></button>
-                    </Grid>
-                </Grid>
-                <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={7}>
+                    <Grid item xs={8}>
                         <List>
                             {deskResults.map((option) => (
                                 <ListItem style={{ backgroundColor: '#E5E5E5', height: '150px', marginBottom: '10px' }}>
@@ -647,7 +379,7 @@ function Reservation() {
                 </Grid>
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                     {deskResults.length > 0 && more && <Button className={classes.actionButton} onClick={() => {
-                        search(true, page);
+                        // search(true, page);
                     }}>Load More</Button>}
                 </Grid>
             </Grid>
