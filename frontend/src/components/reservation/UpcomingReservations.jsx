@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, List, ListItem, Grid, Typography, Divider, Modal, IconButton } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchReservations, cancelReservations, getEmployeeCountUpcomingRes } from '../../actions/reservationActions'
-import { GET_EMPLOYEE_COUNT } from "../../actions/actionTypes";
+import { SET_EMPLOYEE_COUNT } from "../../actions/actionTypes";
 import { makeStyles } from '@material-ui/core/styles';
 import CancelIcon from '@material-ui/icons/Cancel';
 
@@ -112,6 +112,7 @@ function UpcomingReservations() {
     const [openCancelRes, setOpenCancelRes] = useState(false);
 
     const dispatch = useDispatch();
+    const filter = useSelector(state => state.searchFilter);
     const upcomingReservation = useSelector(state => state.upcomingReservations);
     const employeeCountUpcomingRes = useSelector(state => state.deskEmployeeCount);
 
@@ -121,7 +122,7 @@ function UpcomingReservations() {
 
     const cancelReservation = (reservation) => {
         const rawBody = JSON.stringify({ "reservation_id": Number(reservation.reservation_id) });
-        dispatch(cancelReservations(rawBody));
+        dispatch(cancelReservations(rawBody, filter));
         handleCloseUpcomingRes();
     }
 
@@ -139,7 +140,7 @@ function UpcomingReservations() {
     };
 
     const handleCloseUpcomingRes = () => {
-        dispatch({ type: GET_EMPLOYEE_COUNT, payload: "" })
+        dispatch({ type: SET_EMPLOYEE_COUNT, payload: "" })
         setOpenCancelRes(false);
     };
 

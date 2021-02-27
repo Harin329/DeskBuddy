@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Button, List, ListItem, Grid, Typography, TextField, MenuItem, Divider, Modal, IconButton } from '@material-ui/core';
+import { Button, List, ListItem, Grid, Typography, Divider, Modal, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { isMobile } from "react-device-detect";
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchDesks, fetchReservations } from '../actions/reservationActions';
+import { fetchDesks, makeReservation, getEmployeeCount } from '../actions/reservationActions';
 import CancelIcon from '@material-ui/icons/Cancel';
-import Endpoint from '../config/Constants';
 import BookingsCalendar from '../components/reservation/BookingsCalendar';
 
 import Title from '../components/global/Title';
 import Subheader from '../components/reservation/Subheader';
 import UpcomingReservations from '../components/reservation/UpcomingReservations';
 import DeskFilter from '../components/reservation/DeskFilter';
+import { SET_EMPLOYEE_COUNT } from '../actions/actionTypes';
 
 const useStyles = makeStyles((theme) => ({
     background: {
@@ -30,20 +30,6 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bolder',
         fontSize: 18
     },
-    actionButtonCenter: {
-        background: '#00ADEF',
-        borderRadius: 20,
-        color: 'white',
-        height: '50px',
-        padding: '0 30px',
-        marginTop: '10px',
-        marginBottom: '10px',
-        fontFamily: 'Lato',
-        fontWeight: 'bolder',
-        fontSize: 18,
-        justifyContent: "center",
-        alignItems: "center"
-    },
     reserveButton: {
         background: '#00ADEF',
         borderRadius: 20,
@@ -56,26 +42,6 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bolder',
         fontSize: 14,
         boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-    },
-    attachmentButton: {
-        background: '#C4C4C4',
-        radius: '5px',
-        color: 'white',
-        height: '50px',
-        padding: '0 30px',
-        marginTop: '10px',
-        marginBottom: '10px',
-        fontFamily: 'Lato',
-        fontWeight: 'bolder',
-        fontSize: 12,
-        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
-    },
-    titleText: {
-        color: 'white',
-        textAlign: 'center',
-        fontFamily: 'Lato',
-        fontWeight: 'bold',
-        fontSize: 25
     },
     sectionText: {
         color: 'white',
@@ -90,18 +56,8 @@ const useStyles = makeStyles((theme) => ({
         fontSize: 20,
         textAlign: 'center',
     },
-    titleLines: {
-        backgroundColor: 'white',
-        height: '3px',
-    },
     sectionSpacing: {
         marginBottom: '29px',
-    },
-    inputBoxes: {
-        width: '90%',
-        backgroundColor: 'white',
-        borderRadius: 20,
-        marginTop: '10px',
     },
     officeText: {
         color: 'black',
@@ -113,12 +69,6 @@ const useStyles = makeStyles((theme) => ({
         color: 'black',
         fontFamily: 'Lato',
         fontSize: 14,
-        fontWeight: 'bold',
-    },
-    FloorText: {
-        color: 'black',
-        fontFamily: 'Lato',
-        fontSize: 18,
         fontWeight: 'bold',
     },
     confirmationModalText: {
@@ -143,34 +93,19 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: 'white',
         padding: '30px',
     },
-    floorplan: {
-        position: 'fixed',
-        top: '20%',
-        left: '30%',
-        width: '40%',
-        height: '50%',
-        backgroundColor: 'white',
-        padding: '30px',
-    },
 }));
 
 function Reservation() {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
-    const [employeeCount, setEmployeeCount] = useState(0);
     const [confirmationDesk, setConfirmationDesk] = useState();
 
     const dispatch = useDispatch()
     const filter = useSelector(state => state.searchFilter);
     const deskResults = useSelector(state => state.deskResults);
     const more = useSelector(state => state.hasMore);
-
-    function appendLeadingZeroes(n) {
-        if (n <= 9) {
-            return "0" + n;
-        }
-        return n
-    }
+    const page = useSelector(state => state.pageCount);
+    const employeeCount = useSelector(state => state.deskEmployeeCount);
 
     useEffect(() => {
         dispatch(fetchDesks(filter, false, 0, deskResults));
@@ -186,60 +121,19 @@ function Reservation() {
     };
 
     // TODO GET EMPLOYEE ID
-    const makeReservation = (deskObj) => {
-        var day = new Date(filter.from)
-        var toDay = new Date(filter.to)
-        while (day <= toDay) {
-            const newDay = day.setDate(day.getDate() + 1);
-            day = new Date(newDay)
-
-            const thisDate = day.getFullYear() + "-" + appendLeadingZeroes(day.getMonth() + 1) + "-" + appendLeadingZeroes(day.getDate());
-            console.log(thisDate);
-
-            var myHeaders = new Headers();
-            myHeaders.append("Content-Type", "application/json");
-
-            var raw = JSON.stringify({ "employee_id": 329, "desk_id": String(deskObj.desk_id), "floor_num": Number(deskObj.fk_floor_num), "office_id": Number(deskObj.fk_office_id), "office_location": String(deskObj.fk_office_location), "date": thisDate });
-
-            var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: raw,
-                redirect: 'follow'
-            };
-
-            fetch(Endpoint + "/reservation", requestOptions)
-                .then(response => response.text())
-                .then(result => console.log(result))
-                .then(() => {
-                    dispatch(fetchReservations())
-                })
-                .catch(error => console.log('error', error));
-        }
+    const reserve = (deskObj) => {
+        dispatch(makeReservation(329, deskObj, filter))
         handleClose();
         // Replace this with promises followed by then one day... :)
-        // setTimeout(() => search(false, 0), 3000);
+        setTimeout(() => dispatch(fetchDesks(filter, false, 0, deskResults)), 3000);
     }
 
-    const getEmployeeCount = (deskObj) => {
+    const count = (deskObj) => {
         if (filter.to >= filter.from) {
-            var requestOptions = {
-                method: 'GET',
-                redirect: 'follow'
-            };
-
-            fetch(Endpoint + "/reservation/getCount/" + deskObj.office_id + "/" + filter.from + "/" + filter.to, requestOptions)
-                .then(response => response.text())
-                .then(result => {
-                    const res = JSON.parse(result)
-                    //console.log(res[0].avg)
-                    setEmployeeCount(Math.ceil(res[0].avg))
-                    if (res[0].avg == null) {
-                        setEmployeeCount(0);
-                    }
-                }).catch(error => console.log('error', error));
+            dispatch(getEmployeeCount(deskObj, filter));
+        } else {
+            dispatch({ type: SET_EMPLOYEE_COUNT, payload: 0 }) // just a placeholder else statement to account for to being earlier than from date
         }
-        else setEmployeeCount(0); // just a placeholder else statement to account for to being earlier than from date
     };
 
     const confirmationBody = () => {
@@ -278,7 +172,7 @@ function Reservation() {
                                             </Typography>
                 <div style={{ width: '100%', marginTop: '10px', justifyContent: 'center', display: 'flex' }}>
                     <Button className={classes.reserveButton} onClick={() => {
-                        makeReservation(confirmationDesk);
+                        reserve(confirmationDesk);
                     }}>Confirm</Button>
                 </div>
             </div>)
@@ -360,7 +254,7 @@ function Reservation() {
                                     <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
                                     <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                                         <Button className={classes.reserveButton} onClick={() => {
-                                            getEmployeeCount(option);
+                                            count(option);
                                             handleOpen(option)
                                         }}>Reserve Now</Button>
                                     </div>
@@ -379,7 +273,7 @@ function Reservation() {
                 </Grid>
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                     {deskResults.length > 0 && more && <Button className={classes.actionButton} onClick={() => {
-                        // search(true, page);
+                        dispatch(fetchDesks(filter, true, page, deskResults));
                     }}>Load More</Button>}
                 </Grid>
             </Grid>

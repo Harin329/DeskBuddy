@@ -5,11 +5,10 @@ import MapPopup from './map-popup/index';
 import AddLocationForm from '../../components/reservation/AddLocationForm';
 import { isMobile } from "react-device-detect";
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchReservations, fetchDesks } from '../../actions/reservationActions';
+import { fetchReservations, fetchDesks, fetchOffices, fetchDesksByOffice, hasFloorplan } from '../../actions/reservationActions';
 import UpdateLocationPopup from './UpdateLocationPopup';
 import Search from '../../assets/search.png';
-import Endpoint from '../../config/Constants';
-import { GET_FILTER } from '../../actions/actionTypes';
+import { SET_FILTER, SET_DESKS, SET_FLOORPLAN_AVAILABLE } from '../../actions/actionTypes';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -51,35 +50,21 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function DeskFilter(title, f1, f2, f3) {
+function DeskFilter() {
     const classes = useStyles();
-    const [officeList, setOfficeList] = useState([]);
-    const [office, setOffice] = useState('All');
-    const [desk, setDesk] = useState('All');
     const [floorplan, setFloorplan] = useState(false);
-    const [deskList, setDeskList] = useState([]);
     const [isUpdateLocationClosed, setIsUpdateLocationClosed] = useState(false);
     const [addLocation, setAddLocation] = useState(false);
-    const [officeDisabled, setOfficeDisabled] = useState(true);
 
     const dispatch = useDispatch()
     const filter = useSelector(state => state.searchFilter);
     const deskResults = useSelector(state => state.deskResults);
+    const officeList = useSelector(state => state.offices);
+    const deskList = useSelector(state => state.desks);
+    const officeDisabled = useSelector(state => state.hasFloorplan);
 
     useEffect(() => {
-        var requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        fetch(Endpoint + "/office/getAllOffices", requestOptions)
-            .then((response) => response.text())
-            .then(result => {
-                setOfficeList(JSON.parse(result));
-                // console.log(JSON.parse(result));
-            })
-            .catch(error => console.log('error', error));
-
+        dispatch(fetchOffices(filter, false, 0, deskResults));
     }, []);
 
     const handleFloorplanOpen = () => {
@@ -107,8 +92,13 @@ function DeskFilter(title, f1, f2, f3) {
     }
 
     const handleOfficeChange = (event) => {
-
-        setOffice(event.target.value);
+        var newFilter = {
+            desk: filter.desk,
+            office: event.target.value,
+            from: filter.from,
+            to: filter.to,
+        };
+        dispatch({ type: SET_FILTER, payload: newFilter });
 
         if (event.target.value !== 'All') {
             const params = event.target.value.split(['-']);
@@ -116,39 +106,23 @@ function DeskFilter(title, f1, f2, f3) {
             console.log(params[0])
             console.log(params[1])
 
-            var requestOptions = {
-                method: 'GET',
-                redirect: 'follow'
-            };
-
-            fetch(Endpoint + "/desk/getDesksByOffice/" + params[0] + "/" + params[1], requestOptions)
-                .then((response) => response.text())
-                .then(result => {
-                    setDeskList(JSON.parse(result));
-                    // console.log(JSON.parse(result));
-                })
-                .catch(error => console.log('error', error));
-
-            fetch(Endpoint + "/floor/getFloorsByOffice/" + params[0] + "/" + params[1], requestOptions)
-                .then((response) => response.text())
-                .then(result => {
-                    const res = JSON.parse(result)
-                    // console.log(res);
-                    if (res.length > 0) {
-                        setOfficeDisabled(false);
-                    } else {
-                        setOfficeDisabled(true);
-                    }
-                })
-                .catch(error => console.log('error', error));
+            dispatch(fetchDesksByOffice(params));
+            dispatch(hasFloorplan(params));
+            
         } else {
-            setOfficeDisabled(true);
-            setDeskList([]);
+            dispatch({ type: SET_FLOORPLAN_AVAILABLE, payload: true });
+            dispatch({ type: SET_DESKS, payload: [] })
         }
     };
 
     const handleDeskChange = (event) => {
-        setDesk(event.target.value);
+        var newFilter = {
+            desk: event.target.value,
+            office: filter.office,
+            from: filter.from,
+            to: filter.to,
+        };
+        dispatch({ type: SET_FILTER, payload: newFilter });
     }
 
     const handleFromChange = (event) => {
@@ -158,14 +132,14 @@ function DeskFilter(title, f1, f2, f3) {
             from: event.target.value,
             to: filter.to,
         };
-        dispatch({ type: GET_FILTER, payload: newFilter });
+        dispatch({ type: SET_FILTER, payload: newFilter });
 
 
         const day = new Date(event.target.value)
         const toDay = new Date(filter.to)
         if (day > toDay) {
             newFilter['to'] = event.target.value;
-            dispatch({ type: GET_FILTER, payload: newFilter });
+            dispatch({ type: SET_FILTER, payload: newFilter });
         }
     }
 
@@ -176,13 +150,13 @@ function DeskFilter(title, f1, f2, f3) {
             from: filter.to,
             to: event.target.value,
         };
-        dispatch({ type: GET_FILTER, payload: newFilter });
+        dispatch({ type: SET_FILTER, payload: newFilter });
 
         const day = new Date(filter.from)
         const toDay = new Date(event.target.value)
         if (day > toDay) {
             newFilter['from'] = event.target.value;
-            dispatch({ type: GET_FILTER, payload: newFilter });
+            dispatch({ type: SET_FILTER, payload: newFilter });
         }
     }
 
@@ -244,9 +218,9 @@ function DeskFilter(title, f1, f2, f3) {
                         onClose={handleFloorplanClose}
                     >
                         <MapPopup
-                            locationID={office}
+                            locationID={filter.office}
                             closeHandler={handleFloorplanClose}
-                            officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === office)}
+                            officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === filter.office)}
                         />
                         {/* {floorplanBody()} */}
                     </Modal>
