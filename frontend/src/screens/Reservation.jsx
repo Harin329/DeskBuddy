@@ -194,7 +194,6 @@ function Reservation() {
                     </Grid>
                     <Grid item xs={2} />
                 </Grid>}
-
                 {window.innerWidth <= 1500 && <Grid container justify='center'>
                     <Grid item xs={11} >
                         <BookingsCalendar />
@@ -209,7 +208,8 @@ function Reservation() {
                     <Grid item xs={2} />
                 </Grid>}
 
-                {Subheader('RESERVE', 3, 2, 3)}
+                {window.innerWidth > 1500 && Subheader('RESERVE', 3, 2, 3)}
+                {window.innerWidth <= 1500 && Subheader('RESERVE', 0, 2, 0)}
 
                 {DeskFilter()}
 

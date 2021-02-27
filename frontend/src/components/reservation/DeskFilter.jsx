@@ -5,7 +5,7 @@ import MapPopup from './map-popup/index';
 import AddLocationForm from '../../components/reservation/AddLocationForm';
 import { isMobile } from "react-device-detect";
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchReservations, fetchDesks, fetchOffices, fetchDesksByOffice, hasFloorplan } from '../../actions/reservationActions';
+import { fetchDesks, fetchOffices, fetchDesksByOffice, hasFloorplan } from '../../actions/reservationActions';
 import UpdateLocationPopup from './UpdateLocationPopup';
 import Search from '../../assets/search.png';
 import { SET_FILTER, SET_DESKS, SET_FLOORPLAN_AVAILABLE } from '../../actions/actionTypes';
@@ -162,7 +162,7 @@ function DeskFilter() {
 
     return (
         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-            <Grid container item justify='center' alignItems='center' className={classes.sectionSpacing}>
+            <Grid container item justify='center' alignItems='center' direction={isMobile ? 'column' : 'row'} className={classes.sectionSpacing}>
                 <Grid item xs={3}>
                     <Typography className={classes.sectionText}>
                         OFFICE
@@ -195,7 +195,7 @@ function DeskFilter() {
                 </Grid>
                 <Grid item xs={2} />
             </Grid>
-            <Grid container item justify='center' alignItems='center' className={classes.sectionSpacing}>
+            <Grid container item justify='center' alignItems='center' direction={isMobile ? 'column' : 'row'} className={classes.sectionSpacing}>
 
                 <UpdateLocationPopup isOpen={isUpdateLocationClosed} whatToDoWhenClosed={(bool) => { setIsUpdateLocationClosed(bool) }}></UpdateLocationPopup>
 
@@ -222,11 +222,10 @@ function DeskFilter() {
                             closeHandler={handleFloorplanClose}
                             officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === filter.office)}
                         />
-                        {/* {floorplanBody()} */}
                     </Modal>
                 </Grid>
             </Grid>
-            <Grid container item justify='center' alignItems='flex-end' className={classes.sectionSpacing}>
+            <Grid container item justify='center' alignItems={isMobile ? 'center' : 'flex-end'} direction={isMobile ? 'column' : 'row'} className={classes.sectionSpacing}>
                 <Grid item xs={3}>
                     <Typography className={classes.sectionText}>
                         FROM
