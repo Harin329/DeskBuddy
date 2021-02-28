@@ -64,7 +64,7 @@ function DeskFilter() {
     const officeDisabled = useSelector(state => state.hasFloorplan);
 
     useEffect(() => {
-        dispatch(fetchOffices(filter, false, 0, deskResults));
+        dispatch(fetchOffices());
     }, []);
 
     const handleFloorplanOpen = () => {
