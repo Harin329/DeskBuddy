@@ -87,12 +87,14 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         position: 'fixed',
         top: '30%',
-        left: '35%',
-        width: '20%',
+        left: isMobile ? '3%' : '35%',
+        width: isMobile ? '80%' : '20%',
         height: 'auto',
         backgroundColor: 'white',
         padding: '30px',
     },
+    reservationCard: { backgroundColor: '#E5E5E5', height: '150px', marginBottom: '10px' },
+    reservationCardMobile: { backgroundColor: '#E5E5E5', height: '350px', marginBottom: '10px', flexDirection: 'column' }
 }));
 
 function Reservation() {
@@ -200,66 +202,114 @@ function Reservation() {
                     </Grid>
                 </Grid>}
                 {window.innerWidth <= 1500 && <Grid container>
-                    <Grid item xs={2} />
-                    <Grid item xs={5}>
+                    <Grid item xs={1} />
+                    <Grid item xs={10} style={{ marginTop: 20 }}>
                         {Subheader('UPCOMING RESERVATIONS', 0, 12, 0)}
                         {UpcomingReservations()}
                     </Grid>
-                    <Grid item xs={2} />
+                    <Grid item xs={1} />
                 </Grid>}
 
                 {window.innerWidth > 1500 && Subheader('RESERVE', 3, 2, 3)}
-                {window.innerWidth <= 1500 && Subheader('RESERVE', 0, 2, 0)}
+                {window.innerWidth <= 1500 && Subheader('RESERVE', 0, 12, 0)}
 
                 {DeskFilter()}
 
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={8}>
+                    <Grid item xs={isMobile ? 10 : 8}>
                         <List>
-                            {deskResults.map((option) => (
-                                <ListItem style={{ backgroundColor: '#E5E5E5', height: '150px', marginBottom: '10px' }}>
-                                    <div style={{ width: '25%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                        <img src={'data:image/png;base64,' + new Buffer(option.office_photo, 'binary').toString('base64')} alt="OfficePicture" style={{ height: '100px', width: '100px', borderRadius: 100 }} />
-                                        <Typography className={classes.officeText}>
-                                            {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.desk_id}
-                                        </Typography>
-                                    </div>
-                                    <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
-                                    <div style={{ width: '55%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
-                                        <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                            <Typography className={classes.deskSectionText}>
-                                                FLOOR: <Typography className={classes.deskText}>
-                                                    {option.fk_floor_num}
+                            {deskResults.map((option) => {
+                                if (!isMobile) {
+                                    return (
+                                        <ListItem className={classes.reservationCard}>
+                                            <div style={{ width: '25%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                                <img src={'data:image/png;base64,' + new Buffer(option.office_photo, 'binary').toString('base64')} alt="OfficePicture" style={{ height: '100px', width: '100px', borderRadius: 100 }} />
+                                                <Typography className={classes.officeText}>
+                                                    {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.desk_id}
                                                 </Typography>
-                                            </Typography>
-                                            <Typography className={classes.deskSectionText}>
-                                                TYPE: <Typography className={classes.deskText}>
-                                                    Desk
+                                            </div>
+                                            <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
+                                            <div style={{ width: '55%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
+                                                <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                                    <Typography className={classes.deskSectionText}>
+                                                        FLOOR: <Typography className={classes.deskText}>
+                                                            {option.fk_floor_num}
+                                                        </Typography>
+                                                    </Typography>
+                                                    <Typography className={classes.deskSectionText}>
+                                                        TYPE: <Typography className={classes.deskText}>
+                                                            Desk
                                                 </Typography>
-                                            </Typography>
-                                            <Typography className={classes.deskSectionText}>
-                                                CAPACITY: <Typography className={classes.deskText}>
-                                                    {option.capacity}
+                                                    </Typography>
+                                                    <Typography className={classes.deskSectionText}>
+                                                        CAPACITY: <Typography className={classes.deskText}>
+                                                            {option.capacity}
+                                                        </Typography>
+                                                    </Typography>
+                                                </div>
+                                                <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                                    <Typography className={classes.deskSectionText}>
+                                                        ADDRESS: <Typography className={classes.deskText}>
+                                                            {option.address}
+                                                        </Typography>
+                                                    </Typography>
+                                                </div>
+                                            </div>
+                                            <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
+                                            <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                                <Button className={classes.reserveButton} onClick={() => {
+                                                    count(option);
+                                                    handleOpen(option)
+                                                }}>Reserve Now</Button>
+                                            </div>
+                                        </ListItem>
+                                    )
+                                } else {
+                                    return (
+                                        <ListItem className={classes.reservationCardMobile}>
+                                            <div style={{ width: isMobile ? '100%' : '25%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                                <img src={'data:image/png;base64,' + new Buffer(option.office_photo, 'binary').toString('base64')} alt="OfficePicture" style={{ height: '100px', width: '100px', borderRadius: 100 }} />
+                                                <Typography className={classes.officeText}>
+                                                    {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.desk_id}
                                                 </Typography>
+                                            </div>
+                                            <div style={{ width: isMobile ? '100%' : '55%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
+                                                <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                                    <Typography className={classes.deskSectionText}>
+                                                        FLOOR: <Typography className={classes.deskText}>
+                                                            {option.fk_floor_num}
+                                                        </Typography>
+                                                    </Typography>
+                                                    <Typography className={classes.deskSectionText}>
+                                                        TYPE: <Typography className={classes.deskText}>
+                                                            Desk
                                             </Typography>
-                                        </div>
-                                        <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                            <Typography className={classes.deskSectionText}>
-                                                ADDRESS: <Typography className={classes.deskText}>
-                                                    {option.address}
-                                                </Typography>
-                                            </Typography>
-                                        </div>
-                                    </div>
-                                    <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
-                                    <div style={{ width: '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                        <Button className={classes.reserveButton} onClick={() => {
-                                            count(option);
-                                            handleOpen(option)
-                                        }}>Reserve Now</Button>
-                                    </div>
-                                </ListItem>
-                            ))}
+                                                    </Typography>
+                                                    <Typography className={classes.deskSectionText}>
+                                                        CAPACITY: <Typography className={classes.deskText}>
+                                                            {option.capacity}
+                                                        </Typography>
+                                                    </Typography>
+                                                </div>
+                                                <div style={{ width: '40%', height: '140px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                                    <Typography className={classes.deskSectionText}>
+                                                        ADDRESS: <Typography className={classes.deskText}>
+                                                            {option.address}
+                                                        </Typography>
+                                                    </Typography>
+                                                </div>
+                                            </div>
+                                            <div style={{ width: isMobile ? '100%' : '20%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+                                                <Button className={classes.reserveButton} onClick={() => {
+                                                    count(option);
+                                                    handleOpen(option)
+                                                }}>Reserve Now</Button>
+                                            </div>
+                                        </ListItem>
+
+                                    )
+                                }
+                            })}
                             <Modal
                                 open={open}
                                 onClose={handleClose}>

@@ -163,7 +163,7 @@ function DeskFilter() {
     return (
         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
             <Grid container item justify='center' alignItems='center' direction={isMobile ? 'column' : 'row'} className={classes.sectionSpacing}>
-                <Grid item xs={3}>
+                <Grid item xs={isMobile ? 'auto' : 3} style={{width: '90%'}}>
                     <Typography className={classes.sectionText}>
                         OFFICE
                         </Typography>
@@ -178,7 +178,7 @@ function DeskFilter() {
                         ))}
                     </TextField>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={isMobile ? 'auto' : 3} style={{width: '90%'}}>
                     <Typography className={classes.sectionText}>
                         DESK NUMBER
                         </Typography>
@@ -199,7 +199,7 @@ function DeskFilter() {
 
                 <UpdateLocationPopup isOpen={isUpdateLocationClosed} whatToDoWhenClosed={(bool) => { setIsUpdateLocationClosed(bool) }}></UpdateLocationPopup>
 
-                <Grid item xs={3}>
+                <Grid item xs={isMobile ? 'auto' : 3} style={{width: '90%'}}>
                     <Button className={classes.actionButton} onClick={handleUpdateLocationClosed}>Update Location</Button>
                     <Grid item xs={8}>
                         <Button className={classes.actionButton} onClick={handleAddLocationOpen}>Add Location</Button>
@@ -211,7 +211,7 @@ function DeskFilter() {
                         </Modal>
                     </Grid>
                 </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={isMobile ? 'auto' : 5} style={{width: '90%'}}>
                     <Button className={classes.actionButton} onClick={handleFloorplanOpen} disabled={officeDisabled}>Floorplan</Button>
                     <Modal
                         open={floorplan}
@@ -226,19 +226,19 @@ function DeskFilter() {
                 </Grid>
             </Grid>
             <Grid container item justify='center' alignItems={isMobile ? 'center' : 'flex-end'} direction={isMobile ? 'column' : 'row'} className={classes.sectionSpacing}>
-                <Grid item xs={3}>
+                <Grid item xs={isMobile ? 'auto' : 3} style={{width: '90%'}}>
                     <Typography className={classes.sectionText}>
                         FROM
                         </Typography>
                     <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleFromChange} value={filter.from} defaultValue={filter.from} />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={isMobile ? 'auto' : 3} style={{width: '90%'}}>
                     <Typography className={classes.sectionText}>
                         TO
                         </Typography>
                     <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleToChange} value={filter.to} defaultValue={filter.to} />
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={isMobile ? 'auto' : 2} style={{width: '90%', marginTop: isMobile ? 10 : 0}}>
                     <button onClick={() => {
                         dispatch(fetchDesks(filter, false, 0, deskResults));
                     }} style={{ backgroundColor: 'transparent', border: 'none' }}><img src={Search} alt="Search" style={{ height: '50px' }} /></button>
