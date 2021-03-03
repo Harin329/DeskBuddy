@@ -5,6 +5,7 @@ import { fetchReservations, cancelReservations, getEmployeeCountUpcomingRes } fr
 import { SET_EMPLOYEE_COUNT } from "../../actions/actionTypes";
 import { makeStyles } from '@material-ui/core/styles';
 import CancelIcon from '@material-ui/icons/Cancel';
+import { isMobile } from 'react-device-detect';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -49,6 +50,13 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '10px',
         borderRadius: '10px'
     },
+    upcomingResBoxMobile: {
+        backgroundColor: '#E5E5E5',
+        height: '200px',
+        marginBottom: '10px',
+        borderRadius: '10px',
+        flexDirection: 'column'
+    },
     upcomingResBoxDate: {
         width: '25%',
         height: '80px',
@@ -59,6 +67,14 @@ const useStyles = makeStyles((theme) => ({
     },
     upcomingResBoxOffice: {
         width: '60%',
+        height: '80px',
+        alignItems: 'center',
+        justifyContent: 'left',
+        display: 'flex',
+        flexDirection: 'row'
+    },
+    upcomingResBoxOfficeMobile: {
+        width: '90%',
         height: '80px',
         alignItems: 'center',
         justifyContent: 'left',
@@ -83,8 +99,8 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         position: 'fixed',
         top: '30%',
-        left: '35%',
-        width: '20%',
+        left: isMobile ? '3%' : '35%',
+        width: isMobile ? '80%' : '20%',
         height: 'auto',
         backgroundColor: 'white',
         padding: '30px',
@@ -196,39 +212,73 @@ function UpcomingReservations() {
         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
             <Grid item xs={12}>
                 <List>
-                    {upcomingReservation.map((option) => (
-                        <ListItem className={classes.upcomingResBox}>
-                            <div className={classes.upcomingResBoxDate}>
-                                <Typography className={classes.dateText}>
-                                    {convertStartDate(option.start_date)}
-                                </Typography>
-                            </div>
-                            <Divider orientation='vertical'
-                                style={{ backgroundColor: 'black', height: '80px', width: '1px' }} />
-                            <div className={classes.upcomingResBoxOffice}>
-                                <div className={classes.upcomingResBoxCenterSection}>
-                                    <Typography className={classes.deskSectionText}>
-                                        OFFICE: <Typography className={classes.deskText}>
-                                            {option.name}
+                    {upcomingReservation.map((option) => {
+                        if (!isMobile) {
+                            return (
+                                <ListItem className={classes.upcomingResBox}>
+                                    <div className={classes.upcomingResBoxDate}>
+                                        <Typography className={classes.dateText}>
+                                            {convertStartDate(option.start_date)}
                                         </Typography>
-                                    </Typography>
-                                    <Typography className={classes.deskSectionText}>
-                                        DESK ID: <Typography className={classes.deskText}>
-                                            {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.fk_desk_id}
+                                    </div>
+                                    <Divider orientation='vertical'
+                                        style={{ backgroundColor: 'black', height: '80px', width: '1px' }} />
+                                    <div className={classes.upcomingResBoxOffice}>
+                                        <div className={classes.upcomingResBoxCenterSection}>
+                                            <Typography className={classes.deskSectionText}>
+                                                OFFICE: <Typography className={classes.deskText}>
+                                                    {option.name}
+                                                </Typography>
+                                            </Typography>
+                                            <Typography className={classes.deskSectionText}>
+                                                DESK ID: <Typography className={classes.deskText}>
+                                                    {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.fk_desk_id}
+                                                </Typography>
+                                            </Typography>
+                                        </div>
+                                    </div>
+                                    <Divider orientation='vertical'
+                                        style={{ backgroundColor: 'black', height: '80px', width: '1px' }} />
+                                    <div className={classes.upcomingResBoxCancel}>
+                                        <Button className={classes.cancelButton} onClick={() => {
+                                            dispatch(getEmployeeCountUpcomingRes(option));
+                                            handleOpenUpcomingRes(option)
+                                        }}>Cancel</Button>
+                                    </div>
+                                </ListItem>
+                            )
+                        } else {
+                            return (
+                                <ListItem className={classes.upcomingResBoxMobile}>
+                                    <div className={classes.upcomingResBoxDate}>
+                                        <Typography className={classes.dateText}>
+                                            {convertStartDate(option.start_date)}
                                         </Typography>
-                                    </Typography>
-                                </div>
-                            </div>
-                            <Divider orientation='vertical'
-                                style={{ backgroundColor: 'black', height: '80px', width: '1px' }} />
-                            <div className={classes.upcomingResBoxCancel}>
-                                <Button className={classes.cancelButton} onClick={() => {
-                                    dispatch(getEmployeeCountUpcomingRes(option));
-                                    handleOpenUpcomingRes(option)
-                                }}>Cancel</Button>
-                            </div>
-                        </ListItem>
-                    ))}
+                                    </div>
+                                    <div className={classes.upcomingResBoxOfficeMobile}>
+                                        <div className={classes.upcomingResBoxCenterSection}>
+                                            <Typography className={classes.deskSectionText}>
+                                                OFFICE: <Typography className={classes.deskText}>
+                                                    {option.name}
+                                                </Typography>
+                                            </Typography>
+                                            <Typography className={classes.deskSectionText}>
+                                                DESK ID: <Typography className={classes.deskText}>
+                                                    {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.fk_desk_id}
+                                                </Typography>
+                                            </Typography>
+                                        </div>
+                                    </div>
+                                    <div className={classes.upcomingResBoxCancel}>
+                                        <Button className={classes.cancelButton} onClick={() => {
+                                            dispatch(getEmployeeCountUpcomingRes(option));
+                                            handleOpenUpcomingRes(option)
+                                        }}>Cancel</Button>
+                                    </div>
+                                </ListItem>
+                            )
+                        }
+                    })}
                     <Modal
                         open={openCancelRes}
                         onClose={handleCloseUpcomingRes}>
