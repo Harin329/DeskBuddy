@@ -78,7 +78,7 @@ class AddLocationForm extends React.Component {
     }
 
     addFloor() {
-        const floor = { floor_id: this.getLowestID.bind(this), floor_num: 0, floor_desks: "" }
+        const floor = { floor_id: this.getLowestID.bind(this), floor_num: 0, floor_desks: "", floor_image: null }
         this.setState(prevState => ({
             inputFloors: [...prevState.inputFloors, floor]
         }));
@@ -170,6 +170,17 @@ class AddLocationForm extends React.Component {
         }));
     }
 
+    handleFloorImageInput(id, input) {
+        this.setState(prevState => ({
+            inputFloors: prevState.inputFloors.map((floor) => {
+                if (floor.floor_id === id) {
+                    floor.floor_image = input.target.value;
+                }
+                return floor;
+            })
+        }))
+    }
+
     handleCityInput(input) {
         this.setState({
             city: input.target.value
@@ -185,6 +196,12 @@ class AddLocationForm extends React.Component {
     handleAddressInput(input) {
         this.setState({
             address: input.target.value
+        });
+    }
+
+    handleOfficeImageInput(input) {
+        this.setState({
+            image: input.target.value
         });
     }
 
@@ -207,8 +224,9 @@ class AddLocationForm extends React.Component {
                         }}
                         onChange={this.handleFloorNumberInput.bind(this, floor.floor_id)}
                     />
-                    <Button className={classes.actionButton}>
-                        Attach Image
+                    <Button className={classes.actionButton} component="label">
+                        Attach Image &nbsp; <b>{floor.floor_image ? 'Y' : 'N'}</b>
+                        <input type='file' accept='image/*' hidden onChange={this.handleFloorImageInput.bind(this, floor.floor_id)}/>
                     </Button>
                     <Button className={classes.actionButton} onClick={this.deleteFloor.bind(this, floor.floor_id)}>
                         Remove Floor
@@ -286,8 +304,9 @@ class AddLocationForm extends React.Component {
                         <Button className={classes.actionButton} onClick={this.addFloor.bind(this)}>
                             Add Floor
                         </Button>
-                        <Button className={classes.actionButton}>
-                            Attach Image
+                        <Button className={classes.actionButton} component="label">
+                            Attach Image &nbsp; {this.state.image? 'Y' : 'N'}
+                            <input type='file' accept='image/*' hidden onChange={this.handleOfficeImageInput.bind(this)}/>
                         </Button>
                     </div>
                     {this.renderFloors.bind(this)()}
