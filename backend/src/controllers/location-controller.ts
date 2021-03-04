@@ -141,4 +141,25 @@ export default class LocationController {
         }
         return 0;
     }
+
+    public async deleteLocation(city: string, id: number): Promise<boolean> {
+        const result = await this.deleteOffice(city, id);
+        if (result !== true) {
+            return Promise.reject(false);
+        } else {
+            return Promise.resolve(true);
+        }
+    }
+
+    private deleteOffice(city: string, id: number): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            Office.deleteOffice(city, id, (err: any, res: any) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(true);
+                }
+            })
+        })
+    }
 }

@@ -28,4 +28,25 @@ router.get('/', (_, res: Response) => {
     // TODO
 })
 
+// DELETE removes an ICBC location
+router.delete('/:city/:id', (req: Request, res: Response) => {
+    const city = req.params.city;
+    const id = req.params.id;
+    if (city && id) {
+        const parsedID = parseInt(id, 10);
+        locationServer.deleteLocation(city, parsedID)
+            .then((result: boolean) => {
+                res.status(200);
+                res.send();
+            }).catch((err: any) => {
+                res.status(404).send({
+                    message: err
+                });
+            })
+    } else {
+        res.status(400);
+        res.send();
+    }
+})
+
 export default router

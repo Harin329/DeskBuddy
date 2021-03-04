@@ -1,6 +1,7 @@
 import { DeskbuddyServer } from "../src/server";
 import supertest from "supertest";
 import fs from 'fs';
+import { IOffice } from "../src/interfaces/location.interface";
 
 let server: DeskbuddyServer;
 let request: any;
@@ -59,9 +60,10 @@ describe("Miscellaneous tests", () => {
     });
 
     it("POST /location", async done => {
-        const body: string = loadJSON("test/jsonBody/postLocationNormal.json");
+        const body: IOffice = loadJSON("test/jsonBody/postLocationNormal.json");
         const res = await request.post('/location').send(body);
         expect(res.status).toBe(200);
+        // await request.delete(`/location/${body.city}/1`);
         done();
     });
 

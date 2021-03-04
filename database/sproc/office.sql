@@ -5,3 +5,10 @@ INSERT INTO `office` (`office_id`, `office_location`, `name`, `address`, `office
 	VALUES (`office_id`, `office_location`, `name`, `address`, `image`);
 
 END
+
+CREATE PROCEDURE `deleteOffice` (IN `id` INT(8), IN `location` VARCHAR(50))
+BEGIN
+
+DELETE FROM `office` WHERE (`office_location` = `location`) AND (`office_id` = `id`);
+
+END
