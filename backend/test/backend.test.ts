@@ -58,7 +58,9 @@ describe("Miscellaneous tests", () => {
         expect(res.status).toBe(200);
         done();
     });
+});
 
+describe("Location endpoint tests", () => {
     it("POST /location", async done => {
         const body: IOffice = loadJSON("test/jsonBody/postLocationNormal.json");
         const res = await request.post('/location').send(body);
@@ -68,23 +70,33 @@ describe("Miscellaneous tests", () => {
     });
 
     it("POST /location with null city", async done => {
-        const body: string = loadJSON("test/jsonBody/postLocationMissingCity.json");
+        const body: IOffice = loadJSON("test/jsonBody/postLocationMissingCity.json");
         const res = await request.post('/location').send(body);
         expect(res.status).toBe(401);
         done();
     });
 
-    it("POST /location with missing address", async done => {
-        const body: string = loadJSON("test/jsonBody/postLocationMissingAddress.json");
+    it.only("POST /location with missing address", async done => {
+        const body: IOffice = loadJSON("test/jsonBody/postLocationMissingAddress.json");
         const res = await request.post('/location').send(body);
         expect(res.status).toBe(200);
+        const result = JSON.parse(res.text).code;
+        expect(result).toMatch(body.city);
+        let cityCode;
+        try {
+            cityCode = result.split("-");
+            const rowsDeleted = await request.delete(`/location/${cityCode[0]}/${cityCode[1]}`);
+            expect(rowsDeleted).toBe(1);
+        } catch (err) {
+            throw new Error(err);
+        }
         done();
     });
 
     it("POST /location with duplicate floor numbers", async done => {
         expect(5 + 5).toBe(10); // dummy
         done();
-    })
+    });
 });
 
 

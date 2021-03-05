@@ -12,9 +12,11 @@ router.post('/', (req: Request, res: Response) => {
         });
     }
     locationServer.addLocation(req)
-        .then((result: boolean) => {
+        .then((result: string) => {
             res.status(200);
-            res.send();
+            res.json({
+                code: result
+            });
         })
         .catch((err) => {
             res.status(401).send({
@@ -35,7 +37,7 @@ router.delete('/:city/:id', (req: Request, res: Response) => {
     if (city && id) {
         const parsedID = parseInt(id, 10);
         locationServer.deleteLocation(city, parsedID)
-            .then((result: boolean) => {
+            .then((result) => {
                 res.status(200);
                 res.send();
             }).catch((err: any) => {

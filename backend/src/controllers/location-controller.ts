@@ -15,7 +15,7 @@ export default class LocationController {
         @param: req is the request, which contains the office in req.body
         @return: promise of type boolean to signify if adding location was successful or not.
     */
-    public async addLocation(req: Request): Promise<boolean> {
+    public async addLocation(req: Request): Promise<string> {
         try {
             const office: IOffice = req.body;
             if (office.image === null) {
@@ -41,7 +41,7 @@ export default class LocationController {
             if (deskRes !== true) {
                 return Promise.reject(false);
             }
-            return Promise.resolve(true);
+            return Promise.resolve(office.city + "-" + availableID);
         } catch (err) {
             console.log(err);
             return Promise.reject(false);
@@ -64,7 +64,7 @@ export default class LocationController {
         return new Promise((resolve, reject) => {
             Office.addOffice(id, office, (err: any, res: any) => {
                 if (err) {
-                    reject(err);
+                    reject(false);
                 } else {
                     resolve(true);
                 }
@@ -81,7 +81,7 @@ export default class LocationController {
         return Promise.all(promises).then((res) => {
             return Promise.resolve(true);
         }).catch((err) => {
-            return Promise.reject(err);
+            return Promise.reject(false);
         });
     }
 
@@ -89,7 +89,7 @@ export default class LocationController {
         return new Promise((resolve, reject) => {
             Floor.addFloor(id, floor, office, (err: any, res: any) => {
                 if (err) {
-                    reject(err);
+                    reject(false);
                 } else {
                     resolve(true);
                 }
@@ -108,7 +108,7 @@ export default class LocationController {
         return Promise.all(promises).then((res) => {
             return Promise.resolve(true);
         }).catch((err) => {
-            return Promise.reject(err);
+            return Promise.reject(false);
         });
     }
 
@@ -116,7 +116,7 @@ export default class LocationController {
         return new Promise((resolve, reject) => {
             Desk.addDesk(id, desk, floor, office , (err: any, res: any) => {
                 if (err) {
-                    reject(err);
+                    reject(false);
                 } else {
                     resolve(true);
                 }
@@ -142,22 +142,23 @@ export default class LocationController {
         return 0;
     }
 
-    public async deleteLocation(city: string, id: number): Promise<boolean> {
+    public async deleteLocation(city: string, id: number): Promise<number> {
+        console.log(city + " " + id);
         const result = await this.deleteOffice(city, id);
-        if (result !== true) {
+        if (!result) {
             return Promise.reject(false);
         } else {
-            return Promise.resolve(true);
+            return Promise.resolve(result);
         }
     }
 
-    private deleteOffice(city: string, id: number): Promise<boolean> {
+    private deleteOffice(city: string, id: number): Promise<number> {
         return new Promise((resolve, reject) => {
             Office.deleteOffice(city, id, (err: any, res: any) => {
                 if (err) {
-                    reject(err);
+                    reject(false);
                 } else {
-                    resolve(true);
+                    resolve(res);
                 }
             })
         })
