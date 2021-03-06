@@ -1,15 +1,10 @@
-import '../App.css';
-import logo from '../logo.svg';
+import React from 'react';
+import Updates from '../components/social/updates/index';
 
 function Social() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Social Feed!
-        </p>
-      </header>
+    <div style={{ margin: '25px' }}>
+      <Updates />
     </div>
   );
 }
