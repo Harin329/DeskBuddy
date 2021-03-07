@@ -45,6 +45,12 @@ export const msalConfig = {
     }
 };
 
+// Coordinates and required scopes for your web API
+export const apiConfig = {
+    resourceUri: "http://localhost:3000/",
+    resourceScopes: ["api://d111cdab-6637-46bb-86b1-3685db9d744e/access_as_user"]
+}
+
 /**
  * Scopes you add here will be prompted for user consent during sign-in.
  * By default, MSAL.js will add OIDC scopes (openid, profile, email) to any login request.
@@ -52,8 +58,13 @@ export const msalConfig = {
  * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
  */
 export const loginRequest = {
-    scopes: ["User.Read"]
+    scopes: ["User.Read", "openid", "profile", "offline_access", ...apiConfig.resourceScopes]
 };
+
+// Add here scopes for access token to be used at the API endpoints.
+export const tokenRequest = {
+    scopes: [...apiConfig.resourceScopes]
+}
 
 /**
  * Add here the scopes to request when obtaining an access token for MS Graph API. For more information, see:

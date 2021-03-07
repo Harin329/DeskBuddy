@@ -12,6 +12,8 @@ import Subheader from '../components/reservation/Subheader';
 import UpcomingReservations from '../components/reservation/UpcomingReservations';
 import DeskFilter from '../components/reservation/DeskFilter';
 import { SET_EMPLOYEE_COUNT } from '../actions/actionTypes';
+import {useMsal} from "@azure/msal-react";
+import {apiConfig, loginRequest} from "../authConfig";
 
 const useStyles = makeStyles((theme) => ({
     background: {
@@ -109,7 +111,29 @@ function Reservation() {
     const page = useSelector(state => state.pageCount);
     const employeeCount = useSelector(state => state.deskEmployeeCount);
 
+    const { instance, accounts } = useMsal();
+
     useEffect(() => {
+
+        instance.acquireTokenSilent({
+            ...loginRequest,
+            account: accounts[0]
+        }).then((response) => {
+            const headers = new Headers();
+            const bearer = `Bearer ${response.accessToken}`;
+
+            headers.append("Authorization", bearer);
+
+            const options = {
+                method: "GET",
+                headers: headers
+            };
+
+            fetch(apiConfig.resourceUri + "reservation/getUpcomingReservations", options)
+                .then(response => response.json())
+                .catch(error => console.log(error));
+        });
+
         dispatch(fetchDesks(filter, false, 0, deskResults));
     }, []);
 

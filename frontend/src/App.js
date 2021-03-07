@@ -13,13 +13,15 @@ function App() {
     const request = {
         scopes: ["User.Read"]
     }
-    const { login, result, error } = useMsalAuthentication(InteractionType.Redirect, request);
-    console.log("res: " + result);
+    const { login, result, error } = useMsalAuthentication(InteractionType.Silent, request);
 
     useEffect(() => {
         if (error) {
             console.log("error");
             login(InteractionType.Redirect, request);
+        } else {
+            console.log("somebody logged in");
+            // User is logged in, cool, potentially do something here? set redux state?
         }
     }, [error]);
 
