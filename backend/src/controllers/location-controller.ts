@@ -21,23 +21,24 @@ export default class LocationController {
             if (office.image === null) {
                 office.image = fs.readFileSync("src/images/defaultBuildingImage.jpg");
             }
+            for (const floor in office.floors) {
+                if (office.floors[floor].image === null) {
+                    office.floors[floor].image = fs.readFileSync("src/images/defaultFloorPlanImage.jpg");
+                }
+            }
             const unparsedIDs = await this.getOfficeIDs(office.city);
             const IDs: any[] = JSON.parse(JSON.stringify(unparsedIDs));
             const availableID = this.computeID(IDs);
             const officeRes = await this.addOffice(availableID, office);
-            console.log("pass");
             if (officeRes !== true) {
-                console.log(officeRes);
                 return Promise.reject(false);
             }
             const floorRes = await this.addFloors(availableID, office);
             if (floorRes !== true) {
-                console.log(floorRes);
                 return Promise.reject(false);
             }
             const deskRes = await this.addDesks(availableID, office);
             if (deskRes !== true) {
-                console.log(deskRes);
                 return Promise.reject(false);
             }
             return Promise.resolve(true);

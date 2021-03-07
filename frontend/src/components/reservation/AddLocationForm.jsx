@@ -56,6 +56,7 @@ class AddLocationForm extends React.Component {
 
         this.state = {
             city: "",
+            name: "",
             address: "",
             image: null,
             visible: false,
@@ -102,6 +103,7 @@ class AddLocationForm extends React.Component {
 
             const jsonBody = {
                 city: this.state.city,
+                name: this.state.name,
                 address: this.state.address,
                 image: this.state.image,
                 floors: floors
@@ -174,6 +176,12 @@ class AddLocationForm extends React.Component {
         });
     }
 
+    handleNameInput(input) {
+        this.setState({
+            name: input.target.value
+        })
+    }
+
     handleAddressInput(input) {
         this.setState({
             address: input.target.value
@@ -188,10 +196,10 @@ class AddLocationForm extends React.Component {
             <div>
                 <div>
                     <TextField
-                        id="num_id"
+                        id="floor_num"
                         label="Floor Number"
                         style={{ margin: 8 }}
-                        placeholder="1234 Test Road"
+                        placeholder="2"
                         variant="outlined"
                         margin="normal"
                         InputLabelProps={{
@@ -239,7 +247,7 @@ class AddLocationForm extends React.Component {
                         id="city"
                         label="City"
                         style={{ margin: 8 }}
-                        placeholder="NV"
+                        placeholder="SUR"
                         variant="outlined"
                         fullWidth
                         margin="normal"
@@ -249,10 +257,23 @@ class AddLocationForm extends React.Component {
                         onChange={this.handleCityInput.bind(this)}
                     /></div>
                     <div><TextField
+                        id="name"
+                        label="Name"
+                        style={{ margin: 8 }}
+                        placeholder="ICBC Westminster"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        onChange={this.handleNameInput.bind(this)}
+                    /></div>
+                    <div><TextField
                         id="address"
                         label="Address"
                         style={{ margin: 8 }}
-                        placeholder="1234 Test Road"
+                        placeholder="10262 152A St"
                         variant="outlined"
                         fullWidth
                         margin="normal"

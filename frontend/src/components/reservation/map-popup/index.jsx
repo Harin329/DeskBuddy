@@ -1,5 +1,5 @@
 import React from 'react';
-import Endpoint from '../../config/Constants'
+import Endpoint from '../../../config/Constants'
 
 // styles
 import { MapContainer, LevelButton, LevelContainer, MapImage, MapTitle, ImageContainer, HeaderContainer } from './styles';
