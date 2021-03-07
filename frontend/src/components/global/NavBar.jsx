@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link } from 'react-router-dom';
 import {useMsal} from "@azure/msal-react";
-import {apiConfig, graphConfig, loginRequest, tokenRequest} from "../../authConfig";
+import {apiConfig, graphConfig, loginRequest, tokenRequest, adminGroup} from "../../authConfig";
 
 function NavBar() {
 
@@ -9,7 +9,7 @@ function NavBar() {
     console.log("account: " + JSON.stringify(accounts[0]));
 
     const userOID = accounts[0].idTokenClaims.oid;
-    const isAdmin = (accounts[0].idTokenClaims.hasOwnProperty("roles") && accounts[0].idTokenClaims.roles.includes("admin"));
+    const isAdmin = (accounts[0].idTokenClaims.hasOwnProperty("groups") && accounts[0].idTokenClaims.groups.includes(adminGroup));
     const username = accounts[0].username;
 
     const callAuthenticatedEndpoint = () => {

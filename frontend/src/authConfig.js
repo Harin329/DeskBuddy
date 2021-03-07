@@ -73,3 +73,5 @@ export const tokenRequest = {
 export const graphConfig = {
     graphMeEndpoint: "https://graph.microsoft.com/v1.0/me"
 };
+
+export const adminGroup = "e30cc8cd-3f89-4a78-80fc-678a1e04a791";
