@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link } from 'react-router-dom';
 import {useMsal} from "@azure/msal-react";
-import {apiConfig, loginRequest, tokenRequest} from "../../authConfig";
+import {apiConfig, graphConfig, loginRequest, tokenRequest} from "../../authConfig";
 
 function NavBar() {
 
@@ -30,7 +30,31 @@ function NavBar() {
             fetch(apiConfig.resourceUri + "auth/authenticatedEndpoint", options)
                 .then(response => response.json())
                 .then(responseJson =>
-                    alert(JSON.stringify(responseJson))
+                    alert(JSON.stringify(responseJson, null, 2))
+                )
+                .catch(error => console.log(error));
+        });
+    }
+
+    const callGraphEndpoint = () => {
+        instance.acquireTokenSilent({
+            ...loginRequest,
+            account: accounts[0]
+        }).then((response) => {
+            const headers = new Headers();
+            const bearer = `Bearer ${response.accessToken}`;
+
+            headers.append("Authorization", bearer);
+
+            const options = {
+                method: "GET",
+                headers: headers
+            };
+
+            fetch(graphConfig.graphMeEndpoint, options)
+                .then(response => response.json())
+                .then(responseJson =>
+                    alert(JSON.stringify(responseJson, null, 2))
                 )
                 .catch(error => console.log(error));
         });
@@ -63,6 +87,7 @@ function NavBar() {
                 </Link>&nbsp;&nbsp;&nbsp;
 
                 <button style={{ height: '25px' }} onClick={() => callAuthenticatedEndpoint()} > AUTHENTICATED API CALL </button>&nbsp;&nbsp;&nbsp;
+                <button style={{ height: '25px' }} onClick={() => callGraphEndpoint()} > MS GRAPH CALL </button>&nbsp;&nbsp;&nbsp;
                 <button style={{ height: '25px' }} onClick={() => instance.logout()} > LOGOUT </button>
             </div>
             <div style={{color: 'white'}}> username: {username} </div>
