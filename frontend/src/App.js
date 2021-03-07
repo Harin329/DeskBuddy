@@ -31,7 +31,7 @@ function App() {
     return (
         <div>
             <UnauthenticatedTemplate>
-                <p> 😎 </p>
+                <p> You should be redirected to a login screen... </p>
             </UnauthenticatedTemplate>
             <AuthenticatedTemplate>
                 <Router>

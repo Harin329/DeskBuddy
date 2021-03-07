@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link } from 'react-router-dom';
 import {useMsal} from "@azure/msal-react";
-import {apiConfig, loginRequest} from "../../authConfig";
+import {apiConfig, loginRequest, tokenRequest} from "../../authConfig";
 
 function NavBar() {
 
@@ -14,7 +14,7 @@ function NavBar() {
 
     const callAuthenticatedEndpoint = () => {
         instance.acquireTokenSilent({
-            ...loginRequest,
+            ...tokenRequest,
             account: accounts[0]
         }).then((response) => {
             const headers = new Headers();
@@ -27,8 +27,11 @@ function NavBar() {
                 headers: headers
             };
 
-            fetch(apiConfig.resourceUri + "authenticationTest", options)
+            fetch(apiConfig.resourceUri + "auth/authenticatedEndpoint", options)
                 .then(response => response.json())
+                .then(responseJson =>
+                    alert(JSON.stringify(responseJson))
+                )
                 .catch(error => console.log(error));
         });
     }
