@@ -8,6 +8,7 @@ import './App.css';
 import "@fontsource/lato"
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal, useMsalAuthentication } from "@azure/msal-react";
 import { InteractionType } from '@azure/msal-browser';
+import NavBar from "./components/global/NavBar";
 
 function App() {
     const request = {
@@ -33,7 +34,8 @@ function App() {
                 <p> 😎 </p>
             </UnauthenticatedTemplate>
             <AuthenticatedTemplate>
-            <Router>
+                <Router>
+                <NavBar/>
                 <Route exact path="/" component={Dashboard} />
                 <Route exact path="/reservation" component={Reservation} />
                 <Route exact path="/mail" component={Mail} />

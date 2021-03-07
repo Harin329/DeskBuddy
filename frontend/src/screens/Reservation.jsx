@@ -111,29 +111,8 @@ function Reservation() {
     const page = useSelector(state => state.pageCount);
     const employeeCount = useSelector(state => state.deskEmployeeCount);
 
-    const { instance, accounts } = useMsal();
 
     useEffect(() => {
-
-        instance.acquireTokenSilent({
-            ...loginRequest,
-            account: accounts[0]
-        }).then((response) => {
-            const headers = new Headers();
-            const bearer = `Bearer ${response.accessToken}`;
-
-            headers.append("Authorization", bearer);
-
-            const options = {
-                method: "GET",
-                headers: headers
-            };
-
-            fetch(apiConfig.resourceUri + "reservation/getUpcomingReservations", options)
-                .then(response => response.json())
-                .catch(error => console.log(error));
-        });
-
         dispatch(fetchDesks(filter, false, 0, deskResults));
     }, []);
 
