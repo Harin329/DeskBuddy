@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {makeStyles} from "@material-ui/core/styles";
-import {Grid, MenuItem, TextField} from "@material-ui/core";
+import {withStyles} from "@material-ui/core/styles";
+import {MenuItem, TextField} from "@material-ui/core";
+import InfiniteScroll from "react-infinite-scroller";
 import Endpoint from "../../config/Constants";
 
-const useStyles = makeStyles({
+const styles = theme => ({
     title: {
         fontFamily: 'Lato',
         textAlign: 'center'
@@ -26,7 +27,7 @@ const useStyles = makeStyles({
     backgroundBox: {
         background: '#FFFCF7',
         borderRadius: 20,
-        width: '50%',
+        width: '45%',
         height: 500,
         alignItems: 'center'
     },
@@ -47,60 +48,81 @@ function handleOfficeChange(){
 
 }
 
-function BranchUpdates(){
-    const classes = useStyles();
-    const [officeList, setOfficeList] = useState([]);
-    const [office, setOffice] = useState('All');
+class BranchUpdates extends React.Component {
+    componentDidMount() {
+        this.getAnnouncements(0);
+    }
 
-    useEffect(() => {
+    getAnnouncements(length){
+        console.log("called");
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
 
-        fetch(Endpoint + "/office/getAllOffices", requestOptions)
-            .then((response) => response.text())
+        fetch(Endpoint + "/announcement/getAnnouncements/" + length, requestOptions)
+            .then(response => response.text())
             .then(result => {
-                setOfficeList(JSON.parse(result));
+                const announcements = JSON.parse(result);
+                this.setState({updateList: this.state.updateList.concat(announcements)});
             })
-            .catch(error => console.log('error', error));
+            .catch(error => console.log('error', error))
+    }
 
-    }, []);
+    hasMore(){
+        const requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
 
-    return (
-        <div className={classes.backgroundBox}>
-            <div className={classes.titleBox}>
+        return fetch(Endpoint + "/announcement/getTotalAnnouncements", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                const total = JSON.parse(result);
+                console.log(!(Number(total) === this.state.updateList.length));
+            })
+            .catch(error => console.log('error', error))
+
+    }
+    render() {
+        const { classes } = this.props;
+
+        let announcements = [];
+        this.state.updateList.map((update, i) => {
+            announcements.push(
+                <div className={classes.updateBox} key={i}>
+                    <h2 className={classes.announcementName}>{this.state.updateList[i].title}</h2>
+                    <h3 className={classes.announcementText}>{this.state.updateList[i].sub_title}</h3>
+                </div>
+            );
+        });
+
+        return (
+            <div className={classes.backgroundBox} style= {{height: '500px', overflow: 'auto'}} ref={(ref) => this.scrollParentRef = ref}>
                 <h1 className={classes.title}>BRANCH UPDATES</h1>
-                <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
+                <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleOfficeChange} value={this.state.office} className={classes.inputBoxes}>
                     <MenuItem key={'All'} value={'All'}>
                         All
                     </MenuItem>
-                    {officeList.map((option) => (
+                    {this.state.officeList.map((option) => (
                         <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
                             {option.name}
                         </MenuItem>
                     ))}
                 </TextField>
-
+                <InfiniteScroll
+                    loadMore={this.getAnnouncements(this.state.updateList.length)}
+                    hasMore={false}
+                    loader={<div className="loader" key={0}>Loading ...</div>}
+                    useWindow={false}
+                    threshold={500}
+                    getScrollParent={() => this.scrollParentRef}
+                >
+                    {announcements}
+                </InfiniteScroll>
             </div>
-            <div className={classes.updateBox}>
-                <h2 className={classes.announcementName}>Update 1</h2>
-                <h3 className={classes.announcementText}>Update Text</h3>
-            </div>
-            <div className={classes.updateBox}>
-                <h2 className={classes.announcementName}>Update 2</h2>
-                <h3 className={classes.announcementText}>Update Text</h3>
-            </div>
-            <div className={classes.updateBox}>
-                <h2 className={classes.announcementName}>Update 3</h2>
-                <h3 className={classes.announcementText}>Update Text</h3>
-            </div>
-            <div className={classes.updateBox}>
-                <h2 className={classes.announcementName}>Update 4</h2>
-                <h3 className={classes.announcementText}>Update Text</h3>
-            </div>
-        </div>
-    );
+        );
+    }
 
 }
-export default BranchUpdates;
+export default withStyles(styles, { withTheme: true })(BranchUpdates);

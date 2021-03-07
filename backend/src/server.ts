@@ -5,6 +5,7 @@ import reservationRoute from './routes/reservation-routes';
 import officeRoute from './routes/office-routes';
 import floorRoute from './routes/floor-routes';
 import deskRoute from './routes/desk-routes';
+import announcementRoute from './routes/announcement-routes';
 import locationRoute from './routes/location-routes';
 import DB from './config/db-handler';
 
@@ -30,6 +31,7 @@ export class DeskbuddyServer {
     this.app.use('/floor', floorRoute)
     this.app.use('/desk', deskRoute);
     this.app.use('/location', locationRoute);
+    this.app.use('/announcement', announcementRoute)
   }
 
   public getApp() {
