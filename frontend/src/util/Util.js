@@ -7,7 +7,6 @@ const authenticateOptions = (options, token) => {
         authOptions['headers'] = new Headers(authOptions['headers']);
     }
     authOptions['headers'].append('Authorization', `Bearer ${token}`);
-    console.log(authOptions['headers'].get("body"));
     return authOptions;
 }
 
