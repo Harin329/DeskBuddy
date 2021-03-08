@@ -145,14 +145,14 @@ export const fetchReservations = () => dispatch => {
         redirect: 'follow'
     };
 
-    return fetch(Endpoint + "/reservation/getUpcomingReservations", requestOptions)
-        .then(response => response.text())
+    return safeFetch(Endpoint + "/reservation/getUpcomingReservations", requestOptions)
+      /*  .then(response => response.text())
         .then(result => {
             const res = JSON.parse(result)
             // console.log(res)
             dispatch({ type: SET_RESERVATIONS, payload: res })
         })
-        .catch(error => console.log('error', error));
+        .catch(error => console.log('error', error));*/
 }
 
 export const cancelReservations = (rawBody, filter) => dispatch => {

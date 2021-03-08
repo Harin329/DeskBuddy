@@ -16,7 +16,7 @@ import {PublicClientApplication} from "@azure/msal-browser";
 const middleware = [ thunk ];
 const store = createStore(rootReducer, applyMiddleware(...middleware));
 
-const msalInstance = new PublicClientApplication(msalConfig);
+export const msalInstance = new PublicClientApplication(msalConfig);
 
 ReactDOM.render(
   <React.StrictMode>

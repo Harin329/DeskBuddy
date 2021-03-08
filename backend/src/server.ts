@@ -17,12 +17,10 @@ export class DeskbuddyServer {
   constructor(port: number) {
     this.port = port;
     this.app = express();
-    this.app.use(authRoute);
-
     this.app.use(cors());
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
-
+    this.app.use(authRoute);
     this.app.get('/', (req: Request, res: Response) => {
       res.send('Hello DeskBuddy!');
     });

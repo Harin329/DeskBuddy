@@ -27,8 +27,8 @@ function NavBar() {
                 headers: headers
             };
 
-            fetch(apiConfig.resourceUri + "auth/authenticatedEndpoint", options)
-                .then(response => response.json())
+            fetch(apiConfig.resourceUri, options)
+                .then(response => response.text())
                 .then(responseJson =>
                     alert(JSON.stringify(responseJson, null, 2))
                 )
