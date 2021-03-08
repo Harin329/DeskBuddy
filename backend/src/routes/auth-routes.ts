@@ -35,9 +35,9 @@ router.use((req, res, next) => {
     next();
 });
 
-router.use(passport.authenticate("oauth-bearer", { session: false }), (req, res, next) => {
-    console.log("Authenticated");
-    next();
-});
+// router.use(passport.authenticate("oauth-bearer", { session: false }), (req, res, next) => {
+//     console.log("Authenticated");
+//     next();
+// });
 
 export default router
