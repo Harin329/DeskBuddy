@@ -2,13 +2,12 @@ import { tokenRequest } from "../authConfig";
 import {msalInstance} from "../index";
 
 const authenticateOptions = (options, token) => {
-    let authOptions = JSON.parse(JSON.stringify(options)); // deep copies options
-    let authHeader = {};
-    if (authOptions.hasOwnProperty('headers') && Object.keys(authOptions['headers']).length !== 0) {
-        authHeader = authOptions['headers'];
+    let authOptions = Object.assign(options);
+    if (typeof authOptions['headers'] !== Headers) {
+        authOptions['headers'] = new Headers(authOptions['headers']);
     }
-    authHeader[`Authorization`] = `Bearer ${token}`;
-    authOptions['headers'] = authHeader;
+    authOptions['headers'].append('Authorization', `Bearer ${token}`);
+    console.log(authOptions['headers'].get("body"));
     return authOptions;
 }
 

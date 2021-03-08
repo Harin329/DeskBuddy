@@ -84,7 +84,7 @@ export const fetchDesks = (filter, append, pageStart, deskResults) => dispatch =
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
-    var raw = JSON.stringify({
+    const raw = JSON.stringify({
         "desk_id": String(deskParam[1]),
         "floor_num": Number(deskParam[0]),
         "office_id": Number(officeParam[1]),
@@ -94,8 +94,6 @@ export const fetchDesks = (filter, append, pageStart, deskResults) => dispatch =
         "startIndex": pageStart,
         "numOnPage": resultOnPage
     });
-
-    console.log(raw);
 
     var requestOptions = {
         method: 'POST',
@@ -108,7 +106,6 @@ export const fetchDesks = (filter, append, pageStart, deskResults) => dispatch =
         .then(response => response.text())
         .then(result => {
             const res = JSON.parse(result)
-            console.log(res)
             if (deskResults.length === 0 || !append) {
                 dispatch({ type: SET_DESKS_RESULTS, payload: res })
             } else {
