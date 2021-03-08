@@ -1,6 +1,7 @@
 import { SET_RESERVATIONS, SET_EMPLOYEE_COUNT, SET_DESKS_RESULTS, CHECK_MORE, SET_PAGE, SET_OFFICES, SET_DESKS, SET_FLOORPLAN_AVAILABLE } from "./actionTypes";
 import Endpoint, { resultOnPage } from '../config/Constants';
 import { appendLeadingZeroes } from "../functions/Date";
+import safeFetch from "../util/Util";
 
 export const makeReservation = (userID, deskObj, filter) => dispatch => {
     var day = new Date(filter.from)

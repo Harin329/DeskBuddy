@@ -35,14 +35,9 @@ router.use((req, res, next) => {
     next();
 });
 
-router.get('/authenticatedEndpoint',  passport.authenticate("oauth-bearer", { session: false }),
-    (req, res) => {
-        console.log(req.authInfo);
-        // @ts-ignore
-        return res.status(200).json({ message: "Hello " + req.authInfo.name + "! " + "Your token has been verified." });
-    }
-);
-
-
+router.use(passport.authenticate("oauth-bearer", { session: false }), (req, res, next) => {
+    console.log("Authenticated");
+    next();
+});
 
 export default router

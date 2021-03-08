@@ -17,6 +17,7 @@ export class DeskbuddyServer {
   constructor(port: number) {
     this.port = port;
     this.app = express();
+    this.app.use(authRoute);
 
     this.app.use(cors());
     this.app.use(bodyParser.json());
@@ -31,7 +32,6 @@ export class DeskbuddyServer {
     this.app.use('/floor', floorRoute)
     this.app.use('/desk', deskRoute);
     this.app.use('/location', locationRoute);
-    this.app.use('/auth', authRoute);
   }
 
   public getApp() {
