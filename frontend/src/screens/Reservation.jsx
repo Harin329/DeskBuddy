@@ -12,8 +12,6 @@ import Subheader from '../components/reservation/Subheader';
 import UpcomingReservations from '../components/reservation/UpcomingReservations';
 import DeskFilter from '../components/reservation/DeskFilter';
 import { SET_EMPLOYEE_COUNT } from '../actions/actionTypes';
-import {useMsal} from "@azure/msal-react";
-import {apiConfig, loginRequest} from "../authConfig";
 
 const useStyles = makeStyles((theme) => ({
     background: {

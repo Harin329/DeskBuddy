@@ -6,32 +6,25 @@ import Mail from './screens/Mail';
 import Social from './screens/Social';
 import './App.css';
 import "@fontsource/lato"
-import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal, useMsalAuthentication } from "@azure/msal-react";
+import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsalAuthentication } from "@azure/msal-react";
 import { InteractionType } from '@azure/msal-browser';
 import NavBar from "./components/global/NavBar";
+import {loginRequest} from "./authConfig";
 
 function App() {
-    const request = {
-        scopes: ["User.Read"]
-    }
-    const { login, result, error } = useMsalAuthentication(InteractionType.Silent, request);
+    const { login, error } = useMsalAuthentication(InteractionType.Silent, loginRequest);
 
     useEffect(() => {
         if (error) {
-            console.log("error");
-            login(InteractionType.Redirect, request);
-        } else {
-            console.log("somebody logged in");
-            // User is logged in, cool, potentially do something here? set redux state?
+            console.error(error);
+            login(InteractionType.Redirect, loginRequest);
         }
     }, [error]);
-
-    const { accounts } = useMsal();
 
     return (
         <div>
             <UnauthenticatedTemplate>
-                <p> You should be redirected to a login screen... </p>
+                <p style={{color: 'white'}} > Redirecting to login... </p>
             </UnauthenticatedTemplate>
             <AuthenticatedTemplate>
                 <Router>

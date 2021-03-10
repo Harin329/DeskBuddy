@@ -1,4 +1,4 @@
-import { tokenRequest } from "../authConfig";
+import {adminGroup, loginRequest, tokenRequest} from "../authConfig";
 import {msalInstance} from "../index";
 
 const authenticateOptions = (options, token) => {
@@ -7,10 +7,12 @@ const authenticateOptions = (options, token) => {
         authOptions['headers'] = new Headers(authOptions['headers']);
     }
     authOptions['headers'].append('Authorization', `Bearer ${token}`);
-    console.log(authOptions['headers'].get("body"));
     return authOptions;
 }
 
+/*
+ * Wrapper function to add access token for calls to DeskBuddy API.
+ */
 export default function safeFetch(url, options) {
     const accounts = JSON.stringify(msalInstance.getAllAccounts()); // can probably replace this with getActiveAccount doing msalInstance.setActiveAccount(msalInstance.getAllAccounts()[0]) somewhere else first
     return msalInstance.acquireTokenSilent({
@@ -22,4 +24,26 @@ export default function safeFetch(url, options) {
     }).catch(err => {
         throw Error("Something went wrong with authentication: " + err);
     });
+}
+
+/*
+ * Wrapper function to add access token for calls to Microsoft Graph.
+ * Some potential queries: https://developer.microsoft.com/en-us/graph/graph-explorer
+ */
+export function graphFetch(url, options) {
+    const accounts = JSON.stringify(msalInstance.getAllAccounts());
+    return msalInstance.acquireTokenSilent({
+        ...loginRequest,
+        account: accounts[0]
+    }).then((response) => {
+        const authOptions = authenticateOptions(options, response.accessToken);
+        return fetch(url, authOptions);
+    }).catch(err => {
+        throw Error("Something went wrong with authentication: " + err);
+    });
+}
+
+export function accountIsAdmin(accountIdentifiers){
+    return (accountIdentifiers.idTokenClaims.hasOwnProperty("groups")
+            && accountIdentifiers.idTokenClaims.groups.includes(adminGroup));
 }

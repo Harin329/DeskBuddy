@@ -1,4 +1,5 @@
 /*
+ * https://github.com/Azure-Samples/ms-identity-javascript-react-spa
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License.
  */
@@ -71,7 +72,8 @@ export const tokenRequest = {
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/resources-and-scopes.md
  */
 export const graphConfig = {
-    graphMeEndpoint: "https://graph.microsoft.com/v1.0/me"
+    graphMeEndpoint: "https://graph.microsoft.com/v1.0/me",
+    graphMeEndpointBeta: "https://graph.microsoft.com/beta/me"
 };
 
 export const adminGroup = "e30cc8cd-3f89-4a78-80fc-678a1e04a791";

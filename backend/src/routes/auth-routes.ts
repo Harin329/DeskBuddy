@@ -1,3 +1,5 @@
+// MIT License: https://github.com/Azure-Samples/ms-identity-javascript-tutorial/tree/main/3-Authorization-II/1-call-api
+
 import { Router, Request, Response } from 'express';
 import passport from "passport";
 import { BearerStrategy } from 'passport-azure-ad';
