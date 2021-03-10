@@ -24,7 +24,7 @@ function App() {
     return (
         <div>
             <UnauthenticatedTemplate>
-                <p style={{color: 'white'}} > Redirecting to login... </p>
+                <p style={{color: 'white'}} > Redirecting... </p>
             </UnauthenticatedTemplate>
             <AuthenticatedTemplate>
                 <Router>
