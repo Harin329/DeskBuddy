@@ -1,15 +1,10 @@
 import '../App.css';
-import logo from '../logo.svg';
+import GroupChannel from "../components/social/GroupChannel";
 
 function Social() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Social Feed!
-        </p>
-      </header>
+    <div className="App" >
+      <GroupChannel isAdmin={true} />
     </div>
   );
 }

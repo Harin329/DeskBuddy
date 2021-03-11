@@ -6,6 +6,7 @@ import officeRoute from './routes/office-routes';
 import floorRoute from './routes/floor-routes';
 import deskRoute from './routes/desk-routes';
 import locationRoute from './routes/location-routes';
+import channelRoute from './routes/channel-routes';
 import DB from './config/db-handler';
 
 export class DeskbuddyServer {
@@ -30,6 +31,7 @@ export class DeskbuddyServer {
     this.app.use('/floor', floorRoute)
     this.app.use('/desk', deskRoute);
     this.app.use('/location', locationRoute);
+    this.app.use('/channel', channelRoute);
   }
 
   public getApp() {
