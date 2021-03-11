@@ -35,5 +35,8 @@ frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
 
+frontend/localhost.crt
+frontend/localhost.key
+
 # HTTPS Keys
 *.pem

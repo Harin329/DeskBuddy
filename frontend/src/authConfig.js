@@ -15,7 +15,7 @@ export const msalConfig = {
     auth: {
         clientId: "42a72579-a163-4e8b-b427-aa7eb197eb87",
         authority: "https://login.microsoftonline.com/deskbuddy.onmicrosoft.com",
-        redirectUri: "http://localhost:3001/"
+        redirectUri: "https://localhost:3001/"
     },
     cache: {
         cacheLocation: "sessionStorage", // This configures where your cache will be stored
