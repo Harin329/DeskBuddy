@@ -5,6 +5,7 @@
  */
 
 import { LogLevel } from "@azure/msal-browser";
+import Endpoint, {EndpointFE} from "./config/Constants";
 
 /**
  * Configuration object to be passed to MSAL instance on creation.
@@ -15,7 +16,7 @@ export const msalConfig = {
     auth: {
         clientId: "42a72579-a163-4e8b-b427-aa7eb197eb87",
         authority: "https://login.microsoftonline.com/deskbuddy.onmicrosoft.com",
-        redirectUri: "https://localhost:3001/"
+        redirectUri: EndpointFE
     },
     cache: {
         cacheLocation: "sessionStorage", // This configures where your cache will be stored
@@ -48,7 +49,7 @@ export const msalConfig = {
 
 // Coordinates and required scopes for your web API
 export const apiConfig = {
-    resourceUri: "http://localhost:3000/",
+    resourceUri: Endpoint,
     resourceScopes: ["api://d111cdab-6637-46bb-86b1-3685db9d744e/access_as_user"]
 }
 

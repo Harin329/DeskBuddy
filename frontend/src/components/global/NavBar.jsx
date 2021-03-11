@@ -15,7 +15,7 @@ function NavBar() {
         const options = {
             method: "GET",
         };
-        safeFetch(apiConfig.resourceUri, options)
+        safeFetch(apiConfig.resourceUri + "", options)
             .then(response => response.text())
             .then(responseJson => {
                 alert(JSON.stringify(responseJson, null, 2));

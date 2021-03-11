@@ -1,20 +1,20 @@
-import React, { useEffect } from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import React, {useEffect} from "react";
+import {BrowserRouter as Router, Route} from "react-router-dom";
 import Dashboard from './screens/Dashboard';
 import Reservation from './screens/Reservation';
 import Mail from './screens/Mail';
 import Social from './screens/Social';
 import './App.css';
 import "@fontsource/lato"
-import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsalAuthentication } from "@azure/msal-react";
-import { InteractionType } from '@azure/msal-browser';
+import {AuthenticatedTemplate, UnauthenticatedTemplate, useMsalAuthentication} from "@azure/msal-react";
+import {InteractionType} from '@azure/msal-browser';
 import NavBar from "./components/global/NavBar";
 import {graphConfig, loginRequest} from "./authConfig";
 import safeFetch, {graphFetch} from "./util/Util";
 import Endpoint from "./config/Constants";
 
 function App() {
-    const { login, result, error } = useMsalAuthentication(InteractionType.Silent, loginRequest);
+    const {login, result, error} = useMsalAuthentication(InteractionType.Silent, loginRequest);
 
     useEffect(() => {
         if (error) {
@@ -25,25 +25,29 @@ function App() {
 
     useEffect(() => {
         if (result) {
-            let userInfo = result.account.idTokenClaims
-
-            const options = {
-                method: "GET",
-            };
-            //graph fetch to get user phone and email
-            graphFetch(graphConfig.graphMeEndpoint, options)
-                .then(response => response.json())
-                .then(responseJson => {
-                    userInfo.mobilePhone = responseJson.mobilePhone;
-                    userInfo.mail = responseJson.mail;
-                    createUser(userInfo)
-                })
-                .catch(error => console.log(error));
+            fetchUserInfo()
         }
     }, [result]);
 
-    // todo timing error if a new user is not in database before other actions start firing. should keep user on tbd landing page/loading screen while this completes?
-    // create or update user info in deskbuddy db. called on every login.
+    // graph fetch to get user phone and email
+    const fetchUserInfo = () => {
+        let userInfo = result.account.idTokenClaims
+
+        const options = {
+            method: "GET",
+        };
+
+        graphFetch(graphConfig.graphMeEndpoint, options)
+            .then(response => response.json())
+            .then(responseJson => {
+                userInfo.mobilePhone = responseJson.mobilePhone;
+                userInfo.mail = responseJson.mail;
+                createUser(userInfo)
+            })
+            .catch(error => console.log(error));
+    }
+
+    // create or update user info in deskbuddy db.
     const createUser = (userInfo) => {
         let myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -63,16 +67,16 @@ function App() {
     return (
         <div>
             <UnauthenticatedTemplate>
-                <p style={{color: 'white'}} > Redirecting... </p>
+                <p style={{color: 'white'}}> Redirecting... </p>
             </UnauthenticatedTemplate>
             <AuthenticatedTemplate>
                 <Router>
-                <NavBar/>
-                <Route exact path="/" component={Dashboard} />
-                <Route exact path="/reservation" component={Reservation} />
-                <Route exact path="/mail" component={Mail} />
-                <Route exact path="/social" component={Social} />
-            </Router>
+                    <NavBar/>
+                    <Route exact path="/" component={Dashboard}/>
+                    <Route exact path="/reservation" component={Reservation}/>
+                    <Route exact path="/mail" component={Mail}/>
+                    <Route exact path="/social" component={Social}/>
+                </Router>
             </AuthenticatedTemplate>
         </div>
     );
