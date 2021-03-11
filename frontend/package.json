@@ -30,7 +30,7 @@
     "@azure/msal-browser": "^2.12.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "export HTTPS=true&&SSL_CRT_FILE=../cert.pem&&SSL_KEY_FILE=../key.pem react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
