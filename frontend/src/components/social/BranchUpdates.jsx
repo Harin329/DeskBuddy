@@ -3,6 +3,8 @@ import {withStyles} from "@material-ui/core/styles";
 import {MenuItem, TextField} from "@material-ui/core";
 import InfiniteScroll from "react-infinite-scroller";
 import Endpoint from "../../config/Constants";
+import {updatePopup} from "./Popup";
+import { Modal } from '@material-ui/core';
 
 const styles = theme => ({
     title: {
@@ -44,66 +46,137 @@ const styles = theme => ({
 
 });
 
-function handleOfficeChange(){
-
-}
-
 class BranchUpdates extends React.Component {
-    componentDidMount() {
-        this.getAnnouncements(0);
+
+state = {
+        announcementList: [],
+        hasMoreAnnouncements: true,
+        totalAnnouncements: 0,
+        selectedOfficeID: 0,
+        selectedOfficeLocation: "",
+        officeList: [],
+        open: false,
+        currAnnouncement: null
+    };
+
+    handleUpdateOpen = (el) => {
+        console.log("update is: " + el);
+        this.setState({ open: true, currAnnouncement: el});
     }
 
-    getAnnouncements(length){
+    handleClose = () => {
+        this.setState({ open: false, currAnnouncement: null});
+    }
+
+     handleOfficeChange(event) {
+
+        if (event.target.value !== 'All') {
+            const params = event.target.value.split(['-']);
+
+            console.log(params[0])
+            console.log(params[1])
+            this.setState({selectedOfficeLocation: params[0], selectedOfficeID: params[1], announcementList: []});
+
+            let requestOptions = {
+                method: 'GET',
+                redirect: 'follow'
+            };
+
+            setTimeout(() => {
+                fetch(Endpoint + "/announcement/getBranchAnnouncements/" + this.state.announcementList.length + "/"
+                    + this.state.selectedOfficeLocation + "/" + this.state.selectedOfficeID, requestOptions)
+                    .then((response) => response.text())
+                    .then(result => {
+                        const announcements = JSON.parse(result);
+                        console.log(announcements);
+                        this.setState({announcementList: this.state.announcementList.concat(announcements),
+                            hasMoreAnnouncements: !(this.state.announcementList.length === this.state.totalAnnouncements)});
+                    })
+                    .catch(error => console.log('error', error));
+
+            }, 1000);
+
+        }
+    };
+
+    componentDidMount() {
+        const requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        fetch(Endpoint + "/announcement/getTotalAnnouncements", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                const total = JSON.parse(result);
+                this.setState({totalAnnouncements: Number(total)});
+            })
+            .catch(error => console.log('error', error))
+
+        fetch(Endpoint + "/office/getAllOffices", requestOptions)
+            .then((response) => response.text())
+            .then(result => {
+                this.setState({officeList: JSON.parse(result)});
+            })
+            .catch(error => console.log('error', error));
+    }
+
+    getAnnouncements(page){
         console.log("called");
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
 
-        fetch(Endpoint + "/announcement/getAnnouncements/" + length, requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                const announcements = JSON.parse(result);
-                this.setState({updateList: this.state.updateList.concat(announcements)});
-            })
-            .catch(error => console.log('error', error))
-    }
+        if (this.state.selectedOfficeLocation === "" || this.state.selectedOfficeLocation === "ALL") {
+            fetch(Endpoint + "/announcement/getAllBranchAnnouncements/" + this.state.announcementList.length, requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    const announcements = JSON.parse(result);
+                    console.log(announcements);
+                    this.setState({announcementList: this.state.announcementList.concat(announcements),
+                        hasMoreAnnouncements: !(this.state.announcementList.length === this.state.totalAnnouncements)});
+                })
+                .catch(error => console.log('error', error))
 
-    hasMore(){
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
+        } else {
 
-        return fetch(Endpoint + "/announcement/getTotalAnnouncements", requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                const total = JSON.parse(result);
-                console.log(!(Number(total) === this.state.updateList.length));
-            })
-            .catch(error => console.log('error', error))
+        }
 
     }
+
     render() {
         const { classes } = this.props;
 
         let announcements = [];
-        this.state.updateList.map((update, i) => {
+        this.state.announcementList.map((update, i) => {
             announcements.push(
-                <div className={classes.updateBox} key={i}>
-                    <h2 className={classes.announcementName}>{this.state.updateList[i].title}</h2>
-                    <h3 className={classes.announcementText}>{this.state.updateList[i].sub_title}</h3>
+                <div className={classes.updateBox} key={i} onClick={() => this.handleUpdateOpen(update)}>
+                    <h2 className={classes.announcementName}>{this.state.announcementList[i].title}</h2>
+                    <h3 className={classes.announcementText}>{this.state.announcementList[i].sub_title}</h3>
                 </div>
             );
         });
 
+        const popup = () => {
+            if (this.state.open) {
+                return (
+                    <Modal
+                        open={this.state.open}
+                        onClose={this.handleClose}
+                        style={{display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                        {updatePopup(this.state.currAnnouncement)}
+                    </Modal>
+                )
+            } else
+                return null;
+        }
+
         return (
             <div className={classes.backgroundBox} style= {{height: '500px', overflow: 'auto'}} ref={(ref) => this.scrollParentRef = ref}>
                 <h1 className={classes.title}>BRANCH UPDATES</h1>
-                <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleOfficeChange} value={this.state.office} className={classes.inputBoxes}>
-                    <MenuItem key={'All'} value={'All'}>
-                        All
-                    </MenuItem>
+                <TextField id="outlined-basic" label="" variant="outlined" select onChange={(e) => this.handleOfficeChange(e)} value={this.state.selectedOffice}>
                     {this.state.officeList.map((option) => (
                         <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
                             {option.name}
@@ -111,13 +184,12 @@ class BranchUpdates extends React.Component {
                     ))}
                 </TextField>
                 <InfiniteScroll
-                    loadMore={this.getAnnouncements(this.state.updateList.length)}
-                    hasMore={false}
-                    loader={<div className="loader" key={0}>Loading ...</div>}
+                    loadMore={this.getAnnouncements.bind(this)}
+                    hasMore={this.state.hasMoreAnnouncements}
                     useWindow={false}
-                    threshold={500}
                     getScrollParent={() => this.scrollParentRef}
                 >
+                    {popup()}
                     {announcements}
                 </InfiniteScroll>
             </div>

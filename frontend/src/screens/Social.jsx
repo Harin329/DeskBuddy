@@ -27,8 +27,8 @@ function Social() {
       <div className={classes.updatesSection}>
         <CompanyUpdates>
         </CompanyUpdates>
-        {/*<BranchUpdates>*/}
-        {/*</BranchUpdates>*/}
+        <BranchUpdates>
+        </BranchUpdates>
        </div>
     </div>
   );

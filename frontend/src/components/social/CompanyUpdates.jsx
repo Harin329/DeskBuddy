@@ -2,6 +2,8 @@ import React from 'react';
 import InfiniteScroll from "react-infinite-scroller";
 import {withStyles} from "@material-ui/core/styles";
 import Endpoint from "../../config/Constants";
+import {updatePopup} from "./Popup";
+import { Modal } from '@material-ui/core';
 
 const styles = theme => ({
     title: {
@@ -45,6 +47,14 @@ const styles = theme => ({
 
 class CompanyUpdates extends React.Component {
 
+    state = {
+        announcementList: [],
+        hasMoreAnnouncements: true,
+        totalAnnouncements: 0,
+        open: false,
+        currAnnouncement: null
+    };
+
     componentDidMount() {
         const requestOptions = {
             method: 'GET',
@@ -60,11 +70,14 @@ class CompanyUpdates extends React.Component {
             .catch(error => console.log('error', error))
     }
 
-    state = {
-        announcementList: [],
-        hasMoreAnnouncements: true,
-        totalAnnouncements: 0
-    };ß
+    handleUpdateOpen = (el) => {
+        console.log("update is: " + el);
+        this.setState({ open: true, currAnnouncement: el});
+    }
+
+    handleClose = () => {
+        this.setState({ open: false, currAnnouncement: null});
+    }
 
     getAnnouncements(page){
         console.log("called");
@@ -73,7 +86,7 @@ class CompanyUpdates extends React.Component {
             redirect: 'follow'
         };
 
-       fetch(Endpoint + "/announcement/getAnnouncements/" + this.state.announcementList.length, requestOptions)
+       fetch(Endpoint + "/announcement/getCompanyAnnouncements/" + this.state.announcementList.length, requestOptions)
             .then(response => response.text())
             .then(result => {
                 const announcements = JSON.parse(result);
@@ -90,12 +103,27 @@ class CompanyUpdates extends React.Component {
         let announcements = [];
             this.state.announcementList.map((update, i) => {
                 announcements.push(
-                    <div className={classes.updateBox} key={i}>
+                    <div className={classes.updateBox} key={i} onClick={() => this.handleUpdateOpen(update)}>
                         <h2 className={classes.announcementName}>{this.state.announcementList[i].title}</h2>
                         <h3 className={classes.announcementText}>{this.state.announcementList[i].sub_title}</h3>
                     </div>
                 );
             });
+
+        const popup = () => {
+            if (this.state.open) {
+                return (
+                    <Modal
+                        open={this.state.open}
+                        onClose={this.handleClose}
+                        style={{display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                        {updatePopup(this.state.currAnnouncement)}
+                    </Modal>
+                )
+            } else
+                return null;
+        }
 
         return (
             <div className={classes.backgroundBox} style= {{height: '500px', overflow: 'auto'}} ref={(ref) => this.scrollParentRef = ref}>
@@ -107,6 +135,7 @@ class CompanyUpdates extends React.Component {
                     useWindow={false}
                     getScrollParent={() => this.scrollParentRef}
                 >
+                    {popup()}
                     {announcements}
                 </InfiniteScroll>
             </div>

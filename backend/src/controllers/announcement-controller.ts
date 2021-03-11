@@ -2,10 +2,9 @@ import { Announcement } from '../models/announcement';
 
 export default class AnnouncementController {
 
-    getAnnouncements(req: any) {
-        const startIndex = req;
+    getCompanyAnnouncements(start_index: number) {
         return new Promise((resolve, reject) => {
-            Announcement.getAnnouncements(startIndex, (err: any, result: any) => {
+            Announcement.getCompanyAnnouncements(start_index, (err: any, result: any) => {
                 if (err) {
                     reject(err);
                 }
@@ -13,6 +12,27 @@ export default class AnnouncementController {
             })
         })
 
+    }
+    getAllBranchAnnouncements(start_index: number) {
+        return new Promise((resolve, reject) => {
+            Announcement.getAllBranchAnnouncements(start_index, (err: any, result: any) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(result);
+            })
+        })
+
+    }
+    getBranchAnnouncements(office_location: string, office_id: number, start_index: number, ) {
+        return new Promise((resolve, reject) => {
+            Announcement.getBranchAnnouncements(office_location, office_id, start_index, (err: any, res: any) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            })
+        })
     }
     getTotalAnnouncements(){
         return new Promise((resolve, reject) => {
