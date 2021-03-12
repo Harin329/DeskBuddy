@@ -103,11 +103,11 @@ function Reservation() {
     const [confirmationDesk, setConfirmationDesk] = useState();
 
     const dispatch = useDispatch()
-    const filter = useSelector(state => state.searchFilter);
-    const deskResults = useSelector(state => state.deskResults);
-    const more = useSelector(state => state.hasMore);
-    const page = useSelector(state => state.pageCount);
-    const employeeCount = useSelector(state => state.deskEmployeeCount);
+    const filter = useSelector(state => state.reservations.searchFilter);
+    const deskResults = useSelector(state => state.reservations.deskResults);
+    const more = useSelector(state => state.reservations.hasMore);
+    const page = useSelector(state => state.reservations.pageCount);
+    const employeeCount = useSelector(state => state.reservations.deskEmployeeCount);
 
 
     useEffect(() => {

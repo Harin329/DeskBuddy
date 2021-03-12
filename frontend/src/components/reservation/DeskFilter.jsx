@@ -59,11 +59,11 @@ function DeskFilter() {
     const [addLocation, setAddLocation] = useState(false);
 
     const dispatch = useDispatch()
-    const filter = useSelector(state => state.searchFilter);
-    const deskResults = useSelector(state => state.deskResults);
-    const officeList = useSelector(state => state.offices);
-    const deskList = useSelector(state => state.desks);
-    const officeDisabled = useSelector(state => state.hasFloorplan);
+    const filter = useSelector(state => state.reservations.searchFilter);
+    const deskResults = useSelector(state => state.reservations.deskResults);
+    const officeList = useSelector(state => state.reservations.offices);
+    const deskList = useSelector(state => state.reservations.desks);
+    const officeDisabled = useSelector(state => state.reservations.hasFloorplan);
 
     const { accounts } = useMsal();
     const isAdmin = accountIsAdmin(accounts[0]);

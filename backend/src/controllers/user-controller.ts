@@ -11,7 +11,7 @@ export default class UserController {
             first_name: req.body.given_name,
             last_name: req.body.family_name,
             phone: req.body.mobilePhone,
-            email: req.body.mail
+            email: req.body.email
         }
         return new Promise((resolve, reject) => {
             User.insertUser(user, (err: any, result: any) => {
