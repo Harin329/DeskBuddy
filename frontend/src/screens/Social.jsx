@@ -1,12 +1,10 @@
-import React from 'react';
-import Updates from '../components/social/updates/index';
-import Feed from '../components/social/feed/index';
+import '../App.css';
+import GroupChannel from "../components/social/GroupChannel";
 
 function Social() {
   return (
-    <div style={{ margin: '25px' }}>
-      <Updates />
-      <Feed />
+    <div className="App" >
+      <GroupChannel isAdmin={true} />
     </div>
   );
 }
