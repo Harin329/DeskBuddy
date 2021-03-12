@@ -27,28 +27,51 @@ describe("Reservation endpoints tests", () => {
         done();
     });
 
-    it("POST /reservation", () => {
-        expect(5 + 5).toBe(10);
+    it("POST /reservation", async done => {
+        // todo
+        done();
     });
 
-    it("GET /reservation/count", () => {
-        expect(5 + 5).toBe(10);
+    it("POST /reservation with malformed packet", async done => {
+        // todo
+        done();
     });
 
-    it("DEL /reservation/deleteReservation", () => {
-        expect(5 + 5).toBe(10);
+    it("POST /reservation duplicated", async done => {
+        // todo
+        done();
+    });
+
+    it("GET /reservation/upcoming", async done => {
+        // todo
+        done();
+    });
+
+    it("POST /reservation/upcoming/:date", async done => {
+        // todo
+        done();
+    });
+
+    it("GET /reservation/count/:officeID/:start/:end", async done => {
+        // todo
+        done();
+    });
+
+    it("DEL /reservation/:reservationID", async done => {
+        // todo
+        done();
     });
 });
 
 describe("Social feed endpoints tests", () => {
     it("dummy", () => {
-        expect(5 + 5).toBe(10);
+        // todo
     });
 });
 
 describe("Mail manager endpoints tests", () => {
     it("dummy", () => {
-        expect(5 + 5).toBe(10);
+        // todo
     });
 });
 
