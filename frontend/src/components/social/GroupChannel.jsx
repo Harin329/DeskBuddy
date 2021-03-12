@@ -4,7 +4,7 @@ import {Button, Divider, Grid, List, ListItem, Typography,} from '@material-ui/c
 import { makeStyles } from '@material-ui/core/styles';
 import Home from '../../assets/home.png';
 import Subheader from "../reservation/Subheader";
-import Delete from "../../assets/delete.jpg";
+import Delete from "../../assets/delete.png";
 
 const useStyles = makeStyles((theme) => ({
     channelText: {
@@ -20,7 +20,16 @@ const useStyles = makeStyles((theme) => ({
         textAlign: "center",
         background: "white",
         borderRadius: "30px",
-
+        margin: 30,
+    },
+    title: {
+        color: 'white',
+        fontFamily: 'lato',
+        fontSize: 40,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        margin: 20,
+        padding: 10,
     }
 
 
@@ -30,6 +39,8 @@ const useStyles = makeStyles((theme) => ({
 function GroupChannel(props) {
     const classes = useStyles();
     const [channels, setChannels] = useState([]);
+    const [selectedIndex, setSelectedIndex] = useState(1);
+
 
     const getChannels = () => {
         var requestOptions = {
@@ -74,7 +85,6 @@ function GroupChannel(props) {
 
         fetch(Endpoint + "/channel/channels", requestOptions)
             .then(response => response.text())
-            //.then(result => console.log(result))
             .then(() => {
                 //getChannels();
             })
@@ -82,51 +92,52 @@ function GroupChannel(props) {
         //console.log("Channel will be deleted");
     };
     const handleAddChannelClicked = (event) => {
-        //TODO: call add channel pop up here i guess
+        console.log("Clicked add channel");
     };
 
     return (
         <Grid container justify='center' alignItems='center' >
-            {Subheader('GENERAL', 0, 12, 0)};
-            {Subheader('YOUR GROUPS', 3, 1, 3)}
             <Grid item xs={12}>
-                <List>
-                    {channels.map((option, index) => {
-                        return (
-                            <div>
-                                <div>
-                                    <ListItem button={true} onClick={(event) => handleListItemClicked(event, option.channel_id)}>
-                                        <div>
-                                            {(option.channel_icon != null)
-                                                ? <img src={'data:image/png;base64,' + new Buffer(option.channel_icon, 'binary')
-                                                    .toString('base64')}
-                                                       alt="channelLogo" style={{height:'20px', width: '20px', borderRadius: 20}} />
-                                                : <img src={Home} alt={"home"} style={{ height: '20px'}} />}
-                                        </div>
-                                        <div>
-                                            <Typography className={classes.channelText}>
-                                                {option.channel_name}
-                                            </Typography>
-                                        </div>
-                                    </ListItem>
+                <Typography className={classes.title}>GENERAL</Typography>
+            </Grid>
+            {Subheader('YOUR GROUPS', 3, 4, 3)}
+            <Grid item xs={12}>
+                <div>
+                    <List>
+                        {channels.map((option, index) => {
+                            return (
+                                <div style={{alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row'}}>
+                                    <div style={{ width: '10%', height: '30px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
+                                        <ListItem button={true} onClick={(event) => handleListItemClicked(event, option.channel_id)}>
+                                            <div style={{width: '20%'}}>
+                                                {(option.channel_icon != null)
+                                                    ? <img src={'data:image/png;base64,' + new Buffer(option.channel_icon, 'binary')
+                                                        .toString('base64')}
+                                                           alt="channelLogo" style={{height:'20px', width: '20px', borderRadius: 20}} />
+                                                    : <img src={Home} alt={"home"} style={{ height: '15px', backgroundColor: 'transparent', borderRadius: 10}} />}
+                                            </div>
+                                            <div style={{ width: '5%', height: '10px', alignItems: 'center', justifyContent: 'left', display: 'flex', flexDirection: 'row' }}>
+                                                <Typography className={classes.channelText}>
+                                                    {option.channel_name}
+                                                </Typography>
+                                            </div>
+                                        </ListItem>
+                                    </div>
+                                    {props.isAdmin &&<div style={{height: '20px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
+                                        <Button onClick={(event) => handleDeleteChannelClicked(event, option.channel_id)}
+                                                style={{ backgroundColor: 'transparent', border: 'none'}}>
+                                            <img src={Delete} alt="Delete" style={{ height: '15px', backgroundColor: 'transparent'}}/>
+                                        </Button>
+                                    </div>}
                                 </div>
-                                <div>
-                                    <Button onClick={(event) => handleDeleteChannelClicked(event, option.channel_id)}
-                                            style={{ backgroundColor: 'transparent', border: 'none' }}>
-                                        <img src={Delete} alt="Delete" style={{ height: '10px' , background: 'transparent'}}/>
-                                    </Button>
-                                </div>
-                            </div>
-                        )
-
-                    })}
-                </List>
+                            )
+                        })}
+                    </List>
+                </div>
             </Grid>
             {props.isAdmin && <Divider/>}
             {props.isAdmin && <Button onClick={(event) => handleAddChannelClicked(event)} className={classes.addChannelButton}>Add Channel</Button>}
-
         </Grid>
     )
 }
-
 export default GroupChannel;
