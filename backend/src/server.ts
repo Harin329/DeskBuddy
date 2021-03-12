@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import reservationRoute from './routes/reservation-routes';
@@ -7,6 +7,11 @@ import floorRoute from './routes/floor-routes';
 import deskRoute from './routes/desk-routes';
 import locationRoute from './routes/location-routes';
 import DB from './config/db-handler';
+
+const authenticator = (req: Request, res: Response, next: NextFunction) => {
+  console.log("I was here");
+  next();
+}
 
 export class DeskbuddyServer {
   private app: any;
@@ -25,6 +30,8 @@ export class DeskbuddyServer {
       res.send('Hello DeskBuddy!');
     });
 
+    // Auth probably deserves its own route later on.
+    this.app.use(authenticator);
     this.app.use('/reservation', reservationRoute);
     this.app.use('/office', officeRoute);
     this.app.use('/floor', floorRoute)
