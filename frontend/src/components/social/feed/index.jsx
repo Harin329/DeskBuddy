@@ -1,5 +1,4 @@
 import React from 'react';
-import { subtitle } from '../../global/subtitle-line/index';
 import JonSnow from './assets/jonsnow_pic.png';
 import Redflag from './assets/redflag.svg';
 import Flag from './assets/flag.svg';
@@ -37,13 +36,13 @@ class Feed extends React.Component {
     flag_loaded: 1,
     post_loaded: 1,
     post_error: false,
-    channel_id: 0
   };
 
   constructor(props) {
     super(props);
     this.feed = null;
-    this.init(0);
+    this.channel_id = 1;
+    this.init();
     this.CURR_EMPLOYEE_ID = '99b9a9cf-1cb0-40c3-87c0-aa98d6ce68d1';
   }
 
@@ -56,7 +55,7 @@ class Feed extends React.Component {
     };
 
     fetch(
-      `${Endpoint}/post/getFeedByCategory/${this.state.channel_id}`,
+      `${Endpoint}/post/getFeedByCategory/${this.channel_id}`,
       requestOptions
     )
       .then((response) => response.text())
@@ -70,15 +69,19 @@ class Feed extends React.Component {
 
   handlePost = () => {
     // console.log(`Post the following: ${this.state.post}`);
-    this.setState({ post_error: false, post_loaded: (this.state.post_loaded + 1) % 2 });
+    this.setState({
+      post_error: false,
+      post_loaded: (this.state.post_loaded + 1) % 2,
+    });
     setTimeout(() => {
-
       let date = new Date();
 
       const jsonBody = {
         employee_id: this.CURR_EMPLOYEE_ID,
-        channel_id: this.state.channel_id,
-        date_posted: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`,
+        channel_id: this.channel_id,
+        date_posted: `${date.getFullYear()}-${
+          date.getMonth() + 1
+        }-${date.getDate()}`,
         post_content: this.state.post,
       };
 
@@ -89,17 +92,17 @@ class Feed extends React.Component {
         redirect: 'follow',
       };
 
-      fetch(Endpoint + "/post/createPost", requestOptions)
+      fetch(Endpoint + '/post/createPost', requestOptions)
         .then((response) => response.text())
-        .then(result => {
+        .then((result) => {
           // console.log(JSON.parse(result));
-          this.init(0);
+          this.init();
           this.setState({
             post_loaded: (this.state.post_loaded + 1) % 2,
-            post: ''
+            post: '',
           });
         })
-        .catch(error => {
+        .catch((error) => {
           this.setState({
             post_loaded: (this.state.post_loaded + 1) % 2,
             post_error: true,
@@ -111,29 +114,26 @@ class Feed extends React.Component {
 
   handleFlag = (el) => {
     // console.log(`Flaggin post with id: ${el.employee_id} which is flagged or not: ${el.is_flagged}`);
-    const raw = JSON.stringify(
-      {
-        post_id: el.post_id,
-        flag_val: !el.is_flagged,
-      }
-    )
+    const raw = JSON.stringify({
+      post_id: el.post_id,
+      flag_val: !el.is_flagged,
+    });
 
     const requestOptions = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: raw,
-    redirect: 'follow',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: raw,
+      redirect: 'follow',
     };
 
-    fetch(Endpoint + "/post/flagPost", requestOptions)
+    fetch(Endpoint + '/post/flagPost', requestOptions)
       .then((response) => response.text())
-      .then(result => {
+      .then((result) => {
         console.log(JSON.parse(result));
         el.is_flagged = !el.is_flagged;
         this.setState({ flag_loaded: (this.state.flag_loaded + 1) % 2 });
-
       })
-      .catch(error => console.log('error', error));
+      .catch((error) => console.log('error', error));
   };
 
   handleChange = (arg) => {
@@ -142,7 +142,7 @@ class Feed extends React.Component {
 
   handleDelete = (el) => {
     const raw = JSON.stringify({
-      post_id: el.post_id
+      post_id: el.post_id,
     });
 
     const requestOptions = {
@@ -159,8 +159,13 @@ class Feed extends React.Component {
         this.setState({ flag_loaded: (this.state.flag_loaded + 1) % 2 });
       })
       .catch((error) => console.log('error', error));
-  }
+  };
 
+  handleChannelChange = (channel_id) => {
+    this.channel_id = channel_id;
+    this.init();
+    this.setState({ flag_load: (this.state.flag_loaded + 1) % 2 });
+  }
 
   render() {
     let list_of_feed = <Spinner />;
@@ -172,7 +177,9 @@ class Feed extends React.Component {
             <UserContainer>
               <UserPic src={JonSnow} alt="profie pic" />
               {`${el.employee_id} | `}
-              <DatePostedContainer>{el.date_posted.slice(0, 10)}</DatePostedContainer>
+              <DatePostedContainer>
+                {el.date_posted.slice(0, 10)}
+              </DatePostedContainer>
             </UserContainer>
             <TextContainer>{el.post_content}</TextContainer>
             <ButtonContainers>
@@ -180,13 +187,15 @@ class Feed extends React.Component {
                 src={el.is_flagged ? Redflag : Flag}
                 onClick={() => this.handleFlag(el)}
               />
-              {el.employee_id === this.CURR_EMPLOYEE_ID ? <Icon src={Thrash} onClick={ () => this.handleDelete(el)}/> : null}
+              {el.employee_id === this.CURR_EMPLOYEE_ID ? (
+                <Icon src={Thrash} onClick={() => this.handleDelete(el)} />
+              ) : null}
             </ButtonContainers>
           </SinglePostContainer>
         );
       });
     } else if (this.state.error) {
-      list_of_feed = <div>Error loading feed. Try again later.</div>
+      list_of_feed = <div>Error loading feed. Try again later.</div>;
     }
 
     let isPosting = null;
@@ -208,7 +217,6 @@ class Feed extends React.Component {
     return (
       <Container>
         {isPosting}
-        {subtitle('FEED')}
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <SocialFeed>
             <ShareContainer>

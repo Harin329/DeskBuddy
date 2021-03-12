@@ -4,6 +4,7 @@ const MainContainer = styled.div`
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  margin: 80px 0px;
 `;
 
 const Line = styled.div`

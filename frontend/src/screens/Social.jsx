@@ -1,11 +1,14 @@
 import '../App.css';
 import GroupChannel from "../components/social/GroupChannel";
+import React from 'react';
+import { subtitle } from '../components/global/subtitle-line/index';
 
 function Social() {
   return (
-    <div className="App" >
+    <React.Fragment>
+      {subtitle("FEED")}
       <GroupChannel isAdmin={true} />
-    </div>
+    </React.Fragment>
   );
 }
 

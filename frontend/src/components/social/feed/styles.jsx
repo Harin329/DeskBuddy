@@ -1,11 +1,9 @@
 import styled from 'styled-components';
 
 const Container = styled.div`
-  margin-top: 90px;
 `;
 
 const SocialFeed = styled.div`
-  margin-top: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
