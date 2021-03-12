@@ -53,6 +53,8 @@ export const apiConfig = {
     resourceScopes: ["api://d111cdab-6637-46bb-86b1-3685db9d744e/access_as_user"]
 }
 
+export const graphScopes = ["User.Read", "openid", "profile", "offline_access"];
+
 /**
  * Scopes you add here will be prompted for user consent during sign-in.
  * By default, MSAL.js will add OIDC scopes (openid, profile, email) to any login request.
@@ -60,7 +62,7 @@ export const apiConfig = {
  * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
  */
 export const loginRequest = {
-    scopes: ["User.Read", "openid", "profile", "offline_access", ...apiConfig.resourceScopes]
+    scopes: [...graphScopes, ...apiConfig.resourceScopes]
 };
 
 // Add here scopes for access token to be used at the API endpoints.

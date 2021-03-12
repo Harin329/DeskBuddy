@@ -1,4 +1,4 @@
-import {adminGroup, loginRequest, tokenRequest} from "../authConfig";
+import {adminGroup, apiConfig, graphScopes, tokenRequest} from "../authConfig";
 import {msalInstance} from "../index";
 
 const authenticateOptions = (options, token) => {
@@ -14,7 +14,7 @@ const authenticateOptions = (options, token) => {
  * Wrapper function to add access token for calls to DeskBuddy API.
  */
 export default function safeFetch(url, options) {
-    const accounts = JSON.stringify(msalInstance.getAllAccounts()); // can probably replace this with getActiveAccount doing msalInstance.setActiveAccount(msalInstance.getAllAccounts()[0]) somewhere else first
+    const accounts = msalInstance.getAllAccounts(); // can probably replace this with getActiveAccount doing msalInstance.setActiveAccount(msalInstance.getAllAccounts()[0]) somewhere else first
     return msalInstance.acquireTokenSilent({
         ...tokenRequest,
         account: accounts[0]
@@ -31,9 +31,9 @@ export default function safeFetch(url, options) {
  * Some potential queries: https://developer.microsoft.com/en-us/graph/graph-explorer
  */
 export function graphFetch(url, options) {
-    const accounts = JSON.stringify(msalInstance.getAllAccounts());
+    const accounts = msalInstance.getAllAccounts();
     return msalInstance.acquireTokenSilent({
-        ...loginRequest,
+        scopes: graphScopes,
         account: accounts[0]
     }).then((response) => {
         const authOptions = authenticateOptions(options, response.accessToken);
