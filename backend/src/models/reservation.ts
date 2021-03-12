@@ -45,10 +45,8 @@ Reservation.getAllReservations = (result: any) => {
             console.log("Error: ", err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res);
         }
-        console.log(res);
     })
 };
 
@@ -65,10 +63,8 @@ Reservation.getUpcomingReservations = (result: any) => {
             console.log("Error: ", err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res);
         }
-        console.log(res);
     })
 };
 
@@ -84,7 +80,6 @@ Reservation.getEmployeeCountForOffice = (params: any, result: any) => {
             console.log('Error: ', err);
             result(err, null);
         } else {
-            // console.log(res);
             result(null, res);
         }
     })
@@ -110,7 +105,6 @@ Reservation.deleteReservation = (reservationID: any, result: any) => {
             console.log('Error: ', err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res);
         }
     })

@@ -43,7 +43,7 @@ function getReservationForDate(selectedDate) {
         redirect: 'follow'
     };
 
-        fetch(Endpoint + "/reservation/getReservationByDate/" + selectedDate, requestOptions)
+        fetch(Endpoint + "/reservation/upcoming/" + selectedDate, requestOptions)
             .then(response => response.text())
             .then(result => {
                 const res = JSON.parse(result)

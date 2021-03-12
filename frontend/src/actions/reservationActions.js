@@ -144,7 +144,7 @@ export const fetchReservations = () => dispatch => {
         redirect: 'follow'
     };
 
-    return fetch(Endpoint + "/reservation/getUpcomingReservations", requestOptions)
+    return fetch(Endpoint + "/reservation/upcoming", requestOptions)
         .then(response => response.text())
         .then(result => {
             const res = JSON.parse(result)
@@ -182,7 +182,7 @@ export const getEmployeeCount = (deskObj, filter) => dispatch => {
         redirect: 'follow'
     };
 
-    return fetch(Endpoint + "/reservation/getCount/" + deskObj.office_id + "/" + filter.from + "/" + filter.to, requestOptions)
+    return fetch(Endpoint + "/reservation/count/" + deskObj.office_id + "/" + filter.from + "/" + filter.to, requestOptions)
         .then(response => response.text())
         .then(result => {
             const res = JSON.parse(result)
@@ -201,7 +201,7 @@ export const getEmployeeCountUpcomingRes = (reservationObj) => dispatch => {
         redirect: 'follow'
     };
 
-    return fetch(Endpoint + "/reservation/getCount/" + reservationObj.fk_office_id + "/" + reservationObj.start_date.split("T")[0] + "/" + reservationObj.end_date.split("T")[0], requestOptions)
+    return fetch(Endpoint + "/reservation/count/" + reservationObj.fk_office_id + "/" + reservationObj.start_date.split("T")[0] + "/" + reservationObj.end_date.split("T")[0], requestOptions)
         .then(response => response.text())
         .then(result => {
             const res = JSON.parse(result)

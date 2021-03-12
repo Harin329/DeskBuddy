@@ -41,10 +41,8 @@ Desk.getDeskByOffice = (office_location: string, office_id: number, result: any)
             console.log('Error: ', err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res[0]);
         }
-        console.log(res);
     })
 };
 
@@ -65,10 +63,8 @@ Desk.getOpenDesks = (reservationQuery: any, result: any) => {
             console.log('Error: ', err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res[0]);
         }
-        console.log(res);
     })
 };
 
@@ -87,10 +83,8 @@ Desk.getOpenDesksAtOffice = (reservationQuery: any, result: any) => {
             console.log('Error: ', err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res[0]);
         }
-        console.log(res);
     })
 };
 
@@ -107,9 +101,7 @@ Desk.getAllOpenDesks = (reservationQuery: any, result: any) => {
             console.log('Error: ', err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res[0]);
         }
-        console.log(res);
     })
 };
