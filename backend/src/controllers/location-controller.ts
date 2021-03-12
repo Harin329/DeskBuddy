@@ -1,10 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, response } from 'express';
 import { IOffice, IFloor, IDesk } from '../interfaces/location.interface';
 import { Desk } from '../models/desk';
 import { Floor } from '../models/floor';
 import { Office } from '../models/office';
 import fs from 'fs';
+import db from '../config/db-handler';
+import mysql from 'mysql';
 
+const conn = db.getCon();
 
 export default class LocationController {
     // tslint:disable-next-line:no-empty
@@ -16,6 +19,7 @@ export default class LocationController {
         @return: promise of type boolean to signify if adding location was successful or not.
     */
     public async addLocation(req: Request): Promise<string> {
+        await this.begin(conn);
         try {
             const office: IOffice = req.body;
             if (office.image === null) {
@@ -31,19 +35,23 @@ export default class LocationController {
             const availableID = this.computeID(IDs);
             const officeRes = await this.addOffice(availableID, office);
             if (officeRes !== true) {
+                await this.rollback(conn);
                 return Promise.reject(false);
             }
             const floorRes = await this.addFloors(availableID, office);
             if (floorRes !== true) {
+                await this.rollback(conn);
                 return Promise.reject(false);
             }
             const deskRes = await this.addDesks(availableID, office);
             if (deskRes !== true) {
+                await this.rollback(conn);
                 return Promise.reject(false);
             }
+            await this.end(conn);
             return Promise.resolve(office.city + "-" + availableID);
         } catch (err) {
-            console.log(err);
+            await this.rollback(conn);
             return Promise.reject(false);
         }
     }
@@ -143,7 +151,6 @@ export default class LocationController {
     }
 
     public async deleteLocation(city: string, id: number): Promise<number> {
-        console.log(city + " " + id);
         const result = await this.deleteOffice(city, id);
         if (!result) {
             return Promise.reject(false);
@@ -159,6 +166,57 @@ export default class LocationController {
                     reject(false);
                 } else {
                     resolve(res);
+                }
+            })
+        })
+    }
+
+    private async begin(con: mysql.Connection) {
+        const result = await this.beginTxn(con);
+        return result;
+    }
+
+    private beginTxn(con: mysql.Connection) {
+        return new Promise((resolve, reject) => {
+            con.beginTransaction(err => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(true);
+                }
+            })
+        })
+    }
+
+    private async end(con: mysql.Connection) {
+        const result = await this.endTxn(con);
+        return result;
+    }
+
+    private endTxn(con: mysql.Connection) {
+        return new Promise((resolve, reject) => {
+            con.commit(err => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(true);
+                }
+            })
+        })
+    }
+
+    private async rollback(con: mysql.Connection) {
+        const result = await this.rollbackTxn(con);
+        return result;
+    }
+
+    private rollbackTxn(con: mysql.Connection) {
+        return new Promise((resolve, reject) => {
+            con.rollback(err => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(true);
                 }
             })
         })

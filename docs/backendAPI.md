@@ -1,5 +1,5 @@
-In this document, we list the various API endpoints that our backend supports:
-NOTE: For all endpoints, status code 401 means that the operation was not authenticated.
+In this document, we list the various API endpoints that our backend supports:<br/>
+NOTE: For all endpoints, status code 401 means that the operation was not authenticated.<br/>
 
 ------------------------------------------------------------------------------------
 

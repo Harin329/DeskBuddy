@@ -31,7 +31,7 @@ describe("Reservation endpoints tests", () => {
         expect(5 + 5).toBe(10);
     });
 
-    it("GET /reservation/getCount", () => {
+    it("GET /reservation/count", () => {
         expect(5 + 5).toBe(10);
     });
 
@@ -62,42 +62,65 @@ describe("Miscellaneous tests", () => {
 
 describe("Location endpoint tests", () => {
     it("POST /location", async done => {
-        const body: IOffice = loadJSON("test/jsonBody/postLocationNormal.json");
+        const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationNormal.json");
         const res = await request.post('/location').send(body);
         expect(res.status).toBe(200);
-        // await request.delete(`/location/${body.city}/1`);
+        await locationDeleter(res);
         done();
     });
 
     it("POST /location with null city", async done => {
-        const body: IOffice = loadJSON("test/jsonBody/postLocationMissingCity.json");
+        const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationMissingCity.json");
         const res = await request.post('/location').send(body);
-        expect(res.status).toBe(401);
+        expect(res.status).toBe(404);
         done();
     });
 
-    it.only("POST /location with missing address", async done => {
-        const body: IOffice = loadJSON("test/jsonBody/postLocationMissingAddress.json");
+    it("POST /location with missing address", async done => {
+        const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationMissingAddress.json");
         const res = await request.post('/location').send(body);
         expect(res.status).toBe(200);
-        const result = JSON.parse(res.text).code;
-        expect(result).toMatch(body.city);
-        let cityCode;
-        try {
-            cityCode = result.split("-");
-            const rowsDeleted = await request.delete(`/location/${cityCode[0]}/${cityCode[1]}`);
-            expect(rowsDeleted).toBe(1);
-        } catch (err) {
-            throw new Error(err);
-        }
+        await locationDeleter(res);
         done();
     });
 
     it("POST /location with duplicate floor numbers", async done => {
-        expect(5 + 5).toBe(10); // dummy
+        const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationDuplicateFloors.json");
+        const res = await request.post('/location').send(body);
+        expect(res.status).toBe(404);
+        done();
+    });
+
+    it("POST /location with duplicate desk IDs", async done => {
+        const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationDuplicateDesks.json");
+        const res = await request.post('/location').send(body);
+        expect(res.status).toBe(404);
+        done();
+    });
+
+    // Maximum amount of offices for a single location (i.e. NV) is 100
+    it("POST /location twice", async done => {
+        const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationNormal.json");
+        const resFirst = await request.post('/location').send(body);
+        expect(resFirst.status).toBe(200);
+        const resSecond = await request.post('/location').send(body);
+        expect(resSecond.status).toBe(200);
+        await locationDeleter(resFirst);
+        await locationDeleter(resSecond);
         done();
     });
 });
+
+const locationDeleter = async (res: any) => {
+    const result = JSON.parse(res.text).code;
+    let cityCode;
+    try {
+        cityCode = result.split("-");
+        await request.delete(`/location/${cityCode[0]}/${cityCode[1]}`);
+    } catch (err) {
+        throw new Error(err);
+    }
+}
 
 
 const loadJSON = (path: string) => {

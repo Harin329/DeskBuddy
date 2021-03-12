@@ -39,7 +39,7 @@ Office.deleteOffice = (city: string, id: number, result: any) => {
         if (err) {
             result(err, null);
         } else {
-            result(null, res[0]);
+            result(null, res.affectedRows);
         }
     });
 }
@@ -60,9 +60,7 @@ Office.getAllOffices = (result: any) => {
             console.log('Error: ', err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res);
         }
-        console.log(res);
     })
 };
