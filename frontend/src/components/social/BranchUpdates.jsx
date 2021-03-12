@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {withStyles} from "@material-ui/core/styles";
 import {MenuItem, TextField} from "@material-ui/core";
 import InfiniteScroll from "react-infinite-scroller";
@@ -9,18 +9,19 @@ import { Modal } from '@material-ui/core';
 const styles = theme => ({
     title: {
         fontFamily: 'Lato',
-        textAlign: 'center'
+        textAlign: 'center',
+        marginLeft: 50
     },
     titleBox: {
         alignItems: 'center',
-        justifyContent: 'center',
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        justifyContent: 'space-evenly'
     },
     updateBox: {
         background: '#EEF0F2',
         borderRadius: 10,
-        width: '90%',
+        width: '85%',
         height: 82,
         margin: 'auto',
         marginTop: 2,
@@ -39,9 +40,6 @@ const styles = theme => ({
     },
     announcementText: {
         paddingLeft: 15
-    },
-    inputBoxes: {
-        marginLeft: 20
     }
 
 });
@@ -175,14 +173,17 @@ state = {
 
         return (
             <div className={classes.backgroundBox} style= {{height: '500px', overflow: 'auto'}} ref={(ref) => this.scrollParentRef = ref}>
-                <h1 className={classes.title}>BRANCH UPDATES</h1>
-                <TextField id="outlined-basic" label="" variant="outlined" select onChange={(e) => this.handleOfficeChange(e)} value={this.state.selectedOffice}>
-                    {this.state.officeList.map((option) => (
-                        <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
-                            {option.name}
-                        </MenuItem>
-                    ))}
-                </TextField>
+                <div className={classes.titleBox}>
+                    <h1 className={classes.title}>BRANCH UPDATES</h1>
+                    <TextField id="outlined-basic" label="" variant="outlined" select onChange={(e) => this.handleOfficeChange(e)} value={this.state.selectedOffice}>
+                        {this.state.officeList.map((option) => (
+                            <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
+                                {option.name}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+
+                </div>
                 <InfiniteScroll
                     loadMore={this.getAnnouncements.bind(this)}
                     hasMore={this.state.hasMoreAnnouncements}

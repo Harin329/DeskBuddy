@@ -1,5 +1,4 @@
 import '../App.css';
-import logo from '../logo.svg';
 import CompanyUpdates from "../components/social/CompanyUpdates";
 import BranchUpdates from "../components/social/BranchUpdates";
 import {makeStyles} from "@material-ui/core/styles";
@@ -8,11 +7,11 @@ const useStyles = makeStyles((theme) => ({
     updatesSection: {
         width: '80%',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         display: 'flex',
         flexDirection: 'row',
         alignContent: 'center',
-        marginLeft: '160px',
+        marginLeft: '140px',
         marginTop: '20px'
     }
 }));
