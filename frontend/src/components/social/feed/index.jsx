@@ -41,7 +41,7 @@ class Feed extends React.Component {
   constructor(props) {
     super(props);
     this.feed = null;
-    this.channel_id = 1;
+    this.channel_id = -1;
     this.init();
     this.CURR_EMPLOYEE_ID = '99b9a9cf-1cb0-40c3-87c0-aa98d6ce68d1';
   }

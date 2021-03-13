@@ -20,7 +20,6 @@ Channel.getAllChannelsForUser = (employeeID: any, result: any) => {
 };
 
 Channel.deleteChannel = (req: any, result: any) => {
-    console.log(req.channel_id);
     con.query("DELETE FROM channel WHERE ? = channel_id",[
         req.channel_id,
     ], (err: any, res: any) => {
