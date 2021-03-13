@@ -6,6 +6,7 @@ import { MapContainer, LevelButton, LevelContainer, MapImage, MapTitle, ImageCon
 import { IconButton } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Spinner from './spinner/spinner';
+import safeFetch from '../../../util/Util';
 
 class MapPopup extends React.Component {
   state = {
@@ -30,7 +31,7 @@ class MapPopup extends React.Component {
       redirect: 'follow',
     };
 
-    fetch(
+    safeFetch(
       `${Endpoint}/floor/getFloorsByOffice/${params[0]}/${params[1]}`,
       requestOptions
     )

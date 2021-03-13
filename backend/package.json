@@ -4,8 +4,11 @@
   "description": "Backend for DeskBuddy",
   "main": "dist/app.js",
   "scripts": {
-    "start": "tsc && node dist/src/app.js",
-    "test": "jest --forceExit"
+    "start": "node dist/src/app.js",
+    "devstart": "tsc && node dist/src/app.js",
+    "test": "jest --forceExit",
+    "postinstall": "tsc",
+    "deploy": "git add . && git commit -am Heroku && git push heroku master"
   },
   "repository": {
     "type": "git",
@@ -37,6 +40,10 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "passport": "^0.4.1",
+    "@types/passport": "^1.0.6",
+    "passport-azure-ad": "^4.2.1",
+    "@types/passport-azure-ad": "^4.0.8"
   }
 }

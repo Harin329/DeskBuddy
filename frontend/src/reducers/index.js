@@ -1,4 +1,5 @@
-// import { combineReducers } from "redux";
+import { combineReducers } from "redux";
 import reservations from "./reservations";
+import authentication from "./authentication";
 
-export default reservations;
+export default combineReducers({reservations, authentication});

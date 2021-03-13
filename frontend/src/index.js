@@ -9,14 +9,22 @@ import { createStore, applyMiddleware } from "redux";
 import rootReducer from "./reducers";
 import thunk from 'redux-thunk'
 
+import { msalConfig } from "./authConfig";
+import { MsalProvider } from "@azure/msal-react";
+import {PublicClientApplication} from "@azure/msal-browser";
+
 const middleware = [ thunk ];
 const store = createStore(rootReducer, applyMiddleware(...middleware));
 
+export const msalInstance = new PublicClientApplication(msalConfig);
+
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+      <MsalProvider instance={msalInstance}>
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </MsalProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
