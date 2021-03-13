@@ -29,6 +29,21 @@ Office.addOffice = (id: number, office: IOffice, result: any) => {
     });
 }
 
+Office.deleteOffice = (city: string, id: number, result: any) => {
+    con.query('CALL deleteOffice(?, ?)',
+    [
+        id,
+        city
+    ],
+    (err: any, res: any) => {
+        if (err) {
+            result(err, null);
+        } else {
+            result(null, res.affectedRows);
+        }
+    });
+}
+
 Office.getAllOfficeIDs = (city: string, result: any) => {
     con.query(`SELECT office_id FROM office WHERE office_location = "${city}"`, (err: any, res: any) => {
         if (err) {

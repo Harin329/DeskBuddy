@@ -105,7 +105,6 @@ Reservation.deleteReservation = (reservationID: any, result: any) => {
             console.log('Error: ', err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res);
         }
     })
