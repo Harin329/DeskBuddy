@@ -33,9 +33,10 @@ router.get('/getAllReservations', (_, res: Response) => {
     })
 })
 
-// GET upcoming reservations from current date
-router.get('/upcoming', (_, res: Response) => {
-    reservationServer.findUpcomingReservations()
+// GET upcoming reservations from current date from a user
+router.get('/upcomingByUID/:userID', (req, res: Response) => {
+    console.log(req.params);
+    reservationServer.findUpcomingReservations(req.params)
         .then((reservations: any) => {
             res.json(reservations);
         })
@@ -45,7 +46,7 @@ router.get('/upcoming', (_, res: Response) => {
 })
 
 // GET reservation matching a given date
-router.get('/upcoming/:date', (req, res: Response) => {
+router.get('/upcoming/:date/:userID', (req, res: Response) => {
     console.log(req.params);
     reservationServer.getReservationByDate(req.params)
         .then((reservation: any) => {

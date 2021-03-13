@@ -51,19 +51,13 @@ Reservation.getAllReservations = (result: any) => {
 };
 
 // Get upcoming reservations from the current date
-Reservation.getUpcomingReservations = (result: any) => {
-    const upcomingResQuery =    "SELECT reservation.reservation_id, reservation.start_date, reservation.end_date, reservation.fk_office_id, reservation.fk_office_location, reservation.fk_floor_num, reservation.fk_desk_id, office.name " +
-                                "FROM reservation " +
-                                "INNER JOIN office ON office.office_id=reservation.fk_office_id AND office.office_location=reservation.fk_office_location " +
-                                "WHERE reservation.start_date >= CURDATE() " +
-                                "ORDER BY reservation.start_date;";
-
-    con.query(upcomingResQuery, (err: any, res: any) => {
+Reservation.getUpcomingReservations = (userID: any, result: any) => {
+    con.query("CALL getUpcomingReservation(?)", [userID], (err: any, res: any) => {
         if (err) {
             console.log("Error: ", err);
             result(err, null);
         } else {
-            result(null, res);
+            result(null, res[0]);
         }
     })
 };
@@ -85,10 +79,11 @@ Reservation.getEmployeeCountForOffice = (params: any, result: any) => {
     })
 };
 
-Reservation.getReservationByDate = (params: any, result: any) => {
+Reservation.getReservationByDate = (date: any, userID: any, result: any) => {
     con.query("SELECT * FROM reservation r " +
-        "WHERE r.start_date = ?", [
-        String(params.date),
+        "WHERE r.start_date = ? AND r.fk_employee_id = ?", [
+        String(date),
+        String(userID)
     ], (err: any, res: any) => {
         if (err) {
             console.log('Error: ', err);

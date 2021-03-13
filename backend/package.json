@@ -5,6 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "start": "node dist/src/app.js",
+    "devstart": "tsc && node dist/src/app.js",
     "test": "jest --forceExit",
     "postinstall": "tsc",
     "deploy": "git add . && git commit -am Heroku && git push heroku master"

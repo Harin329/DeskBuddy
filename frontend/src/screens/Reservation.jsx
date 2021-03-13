@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { fetchDesks, makeReservation, getEmployeeCount } from '../actions/reservationActions';
 import CancelIcon from '@material-ui/icons/Cancel';
 import BookingsCalendar from '../components/reservation/BookingsCalendar';
+import { useMsal } from "@azure/msal-react";
 
 import Title from '../components/global/Title';
 import Subheader from '../components/reservation/Subheader';
@@ -109,6 +110,8 @@ function Reservation() {
     const page = useSelector(state => state.reservations.pageCount);
     const employeeCount = useSelector(state => state.reservations.deskEmployeeCount);
 
+    const { accounts } = useMsal();
+    const userOID = accounts[0].idTokenClaims.oid;
 
     useEffect(() => {
         dispatch(fetchDesks(filter, false, 0, deskResults));
@@ -123,9 +126,8 @@ function Reservation() {
         setOpen(false);
     };
 
-    // TODO GET EMPLOYEE ID
     const reserve = (deskObj) => {
-        dispatch(makeReservation(329, deskObj, filter))
+        dispatch(makeReservation(userOID, deskObj, filter))
         handleClose();
         // Replace this with promises followed by then one day... :)
         setTimeout(() => dispatch(fetchDesks(filter, false, 0, deskResults)), 3000);
@@ -189,7 +191,7 @@ function Reservation() {
                 {window.innerWidth > 1500 && <Grid container>
                     <Grid item xs={2} />
                     <Grid item xs={3} >
-                        <BookingsCalendar />
+                        <BookingsCalendar userID={userOID}/>
                     </Grid>
                     <Grid item xs={5}>
                         {Subheader('UPCOMING RESERVATIONS', 3, 6, 3)}
@@ -199,7 +201,7 @@ function Reservation() {
                 </Grid>}
                 {window.innerWidth <= 1500 && <Grid container justify='center'>
                     <Grid item xs={11} >
-                        <BookingsCalendar />
+                        <BookingsCalendar userID={userOID}/>
                     </Grid>
                 </Grid>}
                 {window.innerWidth <= 1500 && <Grid container>

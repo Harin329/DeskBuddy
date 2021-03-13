@@ -39,13 +39,13 @@ function formatReservations(res) {
     }
 }
 
-function getReservationForDate(selectedDate) {
+function getReservationForDate(userOID, selectedDate) {
     {const requestOptions = {
         method: 'GET',
         redirect: 'follow'
     };
 
-        safeFetch(Endpoint + "/reservation/getReservationByDate/" + selectedDate, requestOptions)
+        safeFetch(Endpoint + "/reservation/upcoming/" + selectedDate + "/" + userOID, requestOptions)
             .then(response => response.text())
             .then(result => {
                 const res = JSON.parse(result)
@@ -57,18 +57,21 @@ function getReservationForDate(selectedDate) {
 }
 
 class BookingsCalendar extends React.Component {
-    constructor() {
-        super();
-        this.state = {selectedDay : utils().getToday()}
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedDay : utils().getToday(),
+            userID: props.userID
+        }
     }
 
-    componentDidMount() {
+    componentDidMount() {        
         {const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
 
-            safeFetch(Endpoint + "/reservation/getAllReservations", requestOptions)
+            safeFetch(Endpoint + "/reservation/upcomingByUID/" + this.state.userID, requestOptions)
                 .then(response => response.text())
                 .then(result => {
                     const res = JSON.parse(result)
@@ -85,7 +88,7 @@ class BookingsCalendar extends React.Component {
             let selectedMonth = this.state.selectedDay.month;
             let selectedDay = this.state.selectedDay.day;
             selectedDate = selectedYear.toString() + "-" + selectedMonth.toString() + "-" + selectedDay.toString();
-            getReservationForDate(selectedDate);
+            getReservationForDate(this.state.userID, selectedDate);
         }, 800);
     }
 
