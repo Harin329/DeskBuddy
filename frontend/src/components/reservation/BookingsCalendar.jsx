@@ -3,6 +3,7 @@ import "./BookingsCalendar.css";
 import { Calendar, utils } from "react-modern-calendar-datepicker";
 import Endpoint from '../../config/Constants';
 import safeFetch from "../../util/Util";
+
 let selectedDate = null;
 const bookedDays = [];
 const today = new Date();
