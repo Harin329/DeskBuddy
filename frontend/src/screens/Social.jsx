@@ -31,9 +31,9 @@ function Social() {
         </CompanyUpdates>
         <BranchUpdates>
         </BranchUpdates>
-      {subtitle("FEED")}
-      <GroupChannel isAdmin={true} />
        </div>
+       {subtitle("FEED")}
+      <GroupChannel isAdmin={true} />
     </div>
   );
 }
