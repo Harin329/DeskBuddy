@@ -6,6 +6,8 @@ import Home from '../../assets/home.png';
 import Subheader from "../reservation/Subheader";
 import Delete from "../../assets/delete.png";
 
+import Feed from '../social/feed/index';
+
 const useStyles = makeStyles((theme) => ({
     channelText: {
         color: 'white',
@@ -61,9 +63,11 @@ function GroupChannel(props) {
         getChannels();
     });
 
+    const feedElement = React.createRef();
+
     const handleListItemClicked = (event, id) => {
-        // TODO: link this up with the posts
-        console.log("You clicked " + id);
+        // console.log("You clicked " + id);
+        feedElement.current.handleChannelChange(id);
     };
 
     const handleDeleteChannelClicked = (event, id) => {
@@ -96,18 +100,19 @@ function GroupChannel(props) {
     };
 
     return (
-        <Grid container justify='center' alignItems='center' >
-            <Grid item xs={12}>
-                <Typography className={classes.title}>GENERAL</Typography>
-            </Grid>
-            {Subheader('YOUR GROUPS', 3, 4, 3)}
-            <Grid item xs={12}>
-                <div>
-                    <List>
+        <div style={{display: 'flex', justifyContent: 'space-evenly'}}>
+            <Grid container justify='center' alignItems='center' style={{width: '350px', height: '500px', backgroundColor: 'red'}}>
+                <Grid item xs={12}>
+                    <Typography className={classes.title}>GENERAL</Typography>
+                </Grid>
+                {Subheader('YOUR GROUPS', 3, 4, 3)}
+                <Grid item xs={12}>
+                    <div>
+                     <List>
                         {channels.map((option, index) => {
                             return (
                                 <div style={{alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row'}}>
-                                    <div style={{ width: '10%', height: '30px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
+                                    <div style={{ width: '60%', height: '30px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
                                         <ListItem button={true} onClick={(event) => handleListItemClicked(event, option.channel_id)}>
                                             <div style={{width: '20%'}}>
                                                 {(option.channel_icon != null)
@@ -137,7 +142,9 @@ function GroupChannel(props) {
             </Grid>
             {props.isAdmin && <Divider/>}
             {props.isAdmin && <Button onClick={(event) => handleAddChannelClicked(event)} className={classes.addChannelButton}>Add Channel</Button>}
-        </Grid>
+            </Grid>
+            <Feed ref={ feedElement } style={{ flex: '1' }}/>
+        </div>
     )
 }
 export default GroupChannel;
