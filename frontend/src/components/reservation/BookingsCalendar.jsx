@@ -2,6 +2,8 @@ import React from 'react';
 import "./BookingsCalendar.css";
 import { Calendar, utils } from "react-modern-calendar-datepicker";
 import Endpoint from '../../config/Constants';
+import safeFetch from "../../util/Util";
+
 let selectedDate = null;
 const bookedDays = [];
 const today = new Date();
@@ -43,7 +45,7 @@ function getReservationForDate(selectedDate) {
         redirect: 'follow'
     };
 
-        fetch(Endpoint + "/reservation/getReservationByDate/" + selectedDate, requestOptions)
+        safeFetch(Endpoint + "/reservation/getReservationByDate/" + selectedDate, requestOptions)
             .then(response => response.text())
             .then(result => {
                 const res = JSON.parse(result)
@@ -66,7 +68,7 @@ class BookingsCalendar extends React.Component {
             redirect: 'follow'
         };
 
-            fetch(Endpoint + "/reservation/getAllReservations", requestOptions)
+            safeFetch(Endpoint + "/reservation/getAllReservations", requestOptions)
                 .then(response => response.text())
                 .then(result => {
                     const res = JSON.parse(result)

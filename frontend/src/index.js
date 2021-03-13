@@ -4,9 +4,27 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import { Provider } from 'react-redux'
+import { createStore, applyMiddleware } from "redux";
+import rootReducer from "./reducers";
+import thunk from 'redux-thunk'
+
+import { msalConfig } from "./authConfig";
+import { MsalProvider } from "@azure/msal-react";
+import {PublicClientApplication} from "@azure/msal-browser";
+
+const middleware = [ thunk ];
+const store = createStore(rootReducer, applyMiddleware(...middleware));
+
+export const msalInstance = new PublicClientApplication(msalConfig);
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+      <MsalProvider instance={msalInstance}>
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </MsalProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -4,9 +4,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import { Button, Grid, Typography, TextField, MenuItem } from '@material-ui/core';
+import { useSelector, useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles';
-import UpdateLocationFloorContainer from '../components/reservation/UpdateLocationFloorContainer';
-import Endpoint from '../config/Constants'
+import UpdateLocationFloorContainer from '../../components/reservation/UpdateLocationFloorContainer';
+import { fetchOffices } from '../../actions/reservationActions';
 
 const useStyles = makeStyles({
   background: {
@@ -130,25 +131,19 @@ const useStyles = makeStyles({
 function UpdateLocationPopup (props) {
   const classes = useStyles();
   let isUpdateLocationClosed = props.isOpen;
-  const [officeList, setOfficeList] = useState([]);
   const [office, setOffice] = useState();
+
+  const dispatch = useDispatch()
+  const officeList = useSelector(state => state.reservations.offices);
+
 
   const handleUpdateLocationClose = () => {
     props.whatToDoWhenClosed();
   }
+  
 
   useEffect(() => {
-    var requestOptions = {
-        method: 'GET',
-        redirect: 'follow'
-      };
-      
-      fetch(Endpoint + "/office/getAllOffices", requestOptions)
-        .then((response) => response.text())
-        .then(result => {
-            setOfficeList(JSON.parse(result));
-        })
-        .catch(error => console.log('error', error));
+    dispatch(fetchOffices());
   }, []);
 
   const handleOfficeChange = (event) => {

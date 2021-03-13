@@ -17,12 +17,12 @@ router.get('/getDesksByOffice/:officeloc/:officeid', (req: Request, res: Respons
 })
 
 router.post('/getOpenDesks', (req: Request, res: Response) => {
+    console.log(req.body);
     if (!req.body) {
         res.status(400).send({
             message: 'Content can not be empty!'
         });
     }
-
     deskServer.getOpenDesks(req)
     .then((desk: any) => {
         res.json(desk);
