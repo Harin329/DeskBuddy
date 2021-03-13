@@ -128,9 +128,9 @@ function UpcomingReservations() {
     const [openCancelRes, setOpenCancelRes] = useState(false);
 
     const dispatch = useDispatch();
-    const filter = useSelector(state => state.searchFilter);
-    const upcomingReservation = useSelector(state => state.upcomingReservations);
-    const employeeCountUpcomingRes = useSelector(state => state.deskEmployeeCount);
+    const filter = useSelector(state => state.reservations.searchFilter);
+    const upcomingReservation = useSelector(state => state.reservations.upcomingReservations);
+    const employeeCountUpcomingRes = useSelector(state => state.reservations.deskEmployeeCount);
 
     useEffect(() => {
         dispatch(fetchReservations());

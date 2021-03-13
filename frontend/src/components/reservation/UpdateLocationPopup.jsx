@@ -134,7 +134,7 @@ function UpdateLocationPopup (props) {
   const [office, setOffice] = useState();
 
   const dispatch = useDispatch()
-  const officeList = useSelector(state => state.offices);
+  const officeList = useSelector(state => state.reservations.offices);
 
 
   const handleUpdateLocationClose = () => {

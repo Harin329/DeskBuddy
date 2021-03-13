@@ -117,3 +117,4 @@ const deskEmployeeCount = (state = initialNumState, action) => {
   };
 
 export default combineReducers({ upcomingReservations, deskEmployeeCount, deskResults, hasMore, pageCount, searchFilter, offices, hasFloorplan, desks });
+

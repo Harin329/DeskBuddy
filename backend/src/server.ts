@@ -1,4 +1,6 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
+import https from 'https';
+import fs from 'fs';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import reservationRoute from './routes/reservation-routes';
@@ -6,6 +8,8 @@ import officeRoute from './routes/office-routes';
 import floorRoute from './routes/floor-routes';
 import deskRoute from './routes/desk-routes';
 import locationRoute from './routes/location-routes';
+import authRoute from './routes/auth-routes';
+import userRoute from './routes/user-routes';
 import DB from './config/db-handler';
 
 const authenticator = (req: Request, res: Response, next: NextFunction) => {
@@ -15,23 +19,30 @@ const authenticator = (req: Request, res: Response, next: NextFunction) => {
 
 export class DeskbuddyServer {
   private app: any;
+  private server: any;
   private port: number;
   private handler: any;
 
   constructor(port: number) {
+    const key = fs.readFileSync('../key.pem');
+    const cert = fs.readFileSync('../cert.pem')
+    // const key = fs.readFileSync('key.pem'); // Windows
+    // const cert = fs.readFileSync('cert.pem') // Windows
+
     this.port = port;
     this.app = express();
-
     this.app.use(cors());
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
+    this.app.use(authRoute);
+
+    this.server = https.createServer({key: key, cert: cert}, this.app);
 
     this.app.get('/', (req: Request, res: Response) => {
       res.send('Hello DeskBuddy!');
     });
 
-    // Auth probably deserves its own route later on.
-    this.app.use(authenticator);
+    this.app.use('/user',userRoute);
     this.app.use('/reservation', reservationRoute);
     this.app.use('/office', officeRoute);
     this.app.use('/floor', floorRoute)
@@ -47,7 +58,7 @@ export class DeskbuddyServer {
     return new Promise((fulfill, reject) => {
       const listenPromise = new Promise((listenFulfill, listenReject) => {
         try {
-          this.handler = this.app.listen(this.port, () => {
+          this.handler = this.server.listen(this.port, () => {
             console.log(`Server is listening on ${this.port}`);
             listenFulfill(true);
           });
