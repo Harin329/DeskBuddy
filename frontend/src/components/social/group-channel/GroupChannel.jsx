@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 function GroupChannel(props) {
     const classes = useStyles();
     const [channels, setChannels] = useState([]);
-    const [selectedIndex, setSelectedIndex] = useState(1);
+    const [selectedChannel, setSelectedChannel] = useState(1);
 
 
     const getChannels = () => {
@@ -70,6 +70,7 @@ function GroupChannel(props) {
     const handleListItemClicked = (event, id) => {
         // console.log("You clicked " + id);
         feedElement.current.handleChannelChange(id);
+        setSelectedChannel(id);
     };
 
     const handleDeleteChannelClicked = (event, id) => {
@@ -112,7 +113,7 @@ function GroupChannel(props) {
                             return (
                                 <div style={{alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row'}}>
                                     <div style={{ width: '60%', height: '30px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
-                                        <ListItem button={true} onClick={(event) => handleListItemClicked(event, option.channel_id)} style={{overflow: 'hidden'}}>
+                                        <ListItem button={true} onClick={(event) => handleListItemClicked(event, option.channel_id)} selected={selectedChannel === option.channel_id} style={{overflow: 'hidden'}}>
                                             <div style={{width: '20%'}}>
                                                 {(option.channel_icon != null)
                                                     ? <img src={'data:image/png;base64,' + new Buffer(option.channel_icon, 'binary')
@@ -128,7 +129,7 @@ function GroupChannel(props) {
                                         </ListItem>
                                     </div>
                                     {(props.isAdmin) && <div style={{width: '50px', height: '20px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
-                                        {option.channel_id !== 0 &&
+                                        {(option.channel_id !== 0 && option.channel_id !== 1) &&
                                         <Button onClick={(event) => handleDeleteChannelClicked(event, option.channel_id)}
                                                                             style={{ width: 15, height: 15, border: 'none'}}>
                                             <img src={Delete} alt="Delete" style={{width: '15px', height: '15px', backgroundColor: 'transparent'}}/>
