@@ -64,10 +64,9 @@ Reservation.getUpcomingReservations = (userID: any, result: any) => {
 
 Reservation.getEmployeeCountForOffice = (params: any, result: any) => {
     // console.log(params.start_date);
-    con.query("SELECT AVG(z.count) AS avg FROM (SELECT COUNT(*) AS count FROM reservation r " +
-        "WHERE r.start_date >= ? AND r.end_date <= ? AND r.fk_office_id = ? GROUP BY r.start_date) AS z", [
-        String(params.start_date),
-        String(params.end_date),
+    con.query("SELECT AVG(z.count) AS avg FROM (SELECT COUNT(*) AS count FROM reservation WHERE start_date >= ? AND end_date <= ? AND fk_office_id = ? GROUP BY start_date) AS z", [
+        params.start_date,
+        params.end_date,
         params.office_id,
     ], (err: any, res: any) => {
         if (err) {

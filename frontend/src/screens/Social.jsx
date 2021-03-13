@@ -1,4 +1,7 @@
 import '../App.css';
+import GroupChannel from "../components/social/group-channel/GroupChannel";
+import React from 'react';
+import { subtitle } from '../components/global/subtitle-line/index';
 import CompanyUpdates from "../components/social/CompanyUpdates";
 import BranchUpdates from "../components/social/BranchUpdates";
 import {makeStyles} from "@material-ui/core/styles";
@@ -28,6 +31,8 @@ function Social() {
         </CompanyUpdates>
         <BranchUpdates>
         </BranchUpdates>
+      {subtitle("FEED")}
+      <GroupChannel isAdmin={true} />
        </div>
     </div>
   );

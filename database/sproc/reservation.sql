@@ -12,7 +12,6 @@ BEGIN
 
 DELETE FROM `reservation` where `reservation_id`=`my_reservation_id`;
 
-END
 
 CREATE PROCEDURE `getUpcomingReservation` (IN `employee_id` VARCHAR(50))
 BEGIN
