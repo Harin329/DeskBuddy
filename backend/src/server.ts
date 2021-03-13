@@ -13,11 +13,6 @@ import authRoute from './routes/auth-routes';
 import userRoute from './routes/user-routes';
 import DB from './config/db-handler';
 
-const authenticator = (req: Request, res: Response, next: NextFunction) => {
-  console.log("I was here");
-  next();
-}
-
 export class DeskbuddyServer {
   private app: any;
   private server: any;
