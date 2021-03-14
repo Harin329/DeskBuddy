@@ -22,10 +22,8 @@ export class DeskbuddyServer {
   private handler: any;
 
   constructor(port: number) {
-    const key = fs.readFileSync('../key.pem');
-    const cert = fs.readFileSync('../cert.pem')
-    // const key = fs.readFileSync('key.pem'); // Windows
-    // const cert = fs.readFileSync('cert.pem') // Windows
+    // const key = fs.readFileSync('key.pem'); // Dev
+    // const cert = fs.readFileSync('cert.pem'); // Dev
 
     this.port = port;
     this.app = express();
@@ -34,7 +32,7 @@ export class DeskbuddyServer {
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(authRoute);
 
-    this.server = https.createServer({key: key, cert: cert}, this.app);
+    // this.server = https.createServer({key: key, cert: cert}, this.app); // Dev
 
     this.app.get('/', (req: Request, res: Response) => {
       res.send('Hello DeskBuddy!');
@@ -59,7 +57,7 @@ export class DeskbuddyServer {
     return new Promise((fulfill, reject) => {
       const listenPromise = new Promise((listenFulfill, listenReject) => {
         try {
-          this.handler = this.server.listen(this.port, () => {
+          this.handler = this.app.listen(this.port, () => {
             console.log(`Server is listening on ${this.port}`);
             listenFulfill(true);
           });
