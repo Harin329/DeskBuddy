@@ -1,6 +1,4 @@
 import express, { Request, Response } from 'express';
-import https from 'https';
-import fs from 'fs';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import reservationRoute from './routes/reservation-routes';
@@ -17,22 +15,16 @@ import DB from './config/db-handler';
 
 export class DeskbuddyServer {
   private app: any;
-  private server: any;
   private port: number;
   private handler: any;
 
   constructor(port: number) {
-    // const key = fs.readFileSync('key.pem'); // Dev
-    // const cert = fs.readFileSync('cert.pem'); // Dev
-
     this.port = port;
     this.app = express();
     this.app.use(cors());
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(authRoute);
-
-    // this.server = https.createServer({key: key, cert: cert}, this.app); // Dev
 
     this.app.get('/', (req: Request, res: Response) => {
       res.send('Hello DeskBuddy!');
