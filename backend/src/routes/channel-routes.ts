@@ -1,21 +1,13 @@
 import { Router, Request, Response } from 'express';
-import config from '../config.json';
 
 const router = Router();
 
 import ChannelController from '../controllers/channel-controller';
+import {requestIsAdmin} from "../util";
 const channelServer = new ChannelController();
 
 router.get('/', (req: Request, res: Response) => {
-    let isAdmin = false;
-    // @ts-ignore
-    // tslint:disable-next-line:forin
-    for (const i in req.authInfo.groups) {
-        // @ts-ignore
-        if (req.authInfo.groups[i] === config.credentials.adminGroup) {
-            isAdmin = true;
-        }
-    }
+    const isAdmin = requestIsAdmin(req.authInfo);
     channelServer.getChannelForEmployee(isAdmin)
         .then((channels: any) => {
             res.json(channels);

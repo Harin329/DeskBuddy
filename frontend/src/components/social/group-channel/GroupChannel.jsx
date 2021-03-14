@@ -65,7 +65,7 @@ function GroupChannel() {
 
     useEffect(() => {
         getChannels();
-    });
+    },[]);
 
     const feedElement = React.createRef();
 
