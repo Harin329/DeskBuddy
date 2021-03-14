@@ -20,10 +20,10 @@ Announcement.getCompanyAnnouncements = (start_index: number, result: any) => {
             console.log("Error: ", err);
             result(err, null);
         } else {
-            console.log(res);
+            // console.log(res);
             result(null, res);
         }
-        console.log(res);
+         // console.log(res);
     })
 };
 
@@ -36,10 +36,10 @@ Announcement.getAllBranchAnnouncements = (start_index: number, result: any) => {
             console.log("Error: ", err);
             result(err, null);
         } else {
-            console.log(res);
+            // console.log(res);
             result(null, res);
         }
-        console.log(res);
+        // console.log(res);
     })
 };
 
@@ -53,10 +53,10 @@ Announcement.getBranchAnnouncements = (office_location: string, office_id: numbe
             console.log("Error: ", err);
             result(err, null);
         } else {
-            console.log(res);
+            // console.log(res);
             result(null, res);
         }
-        console.log(res);
+        // console.log(res);
     })
 };
 
@@ -66,9 +66,9 @@ Announcement.getTotalAnnouncements = (result: any) => {
             console.log("Error: ", err);
             result(err, null);
         } else {
-            console.log(res);
+            // console.log(res);
             result(null, res);
         }
-        console.log(res);
+        // console.log(res);
     })
 };
