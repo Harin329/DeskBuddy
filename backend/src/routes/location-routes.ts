@@ -12,20 +12,37 @@ router.post('/', (req: Request, res: Response) => {
         });
     }
     locationServer.addLocation(req)
-        .then((result: boolean) => {
+        .then((result: string) => {
             res.status(200);
-            res.send();
+            res.json({
+                code: result
+            });
         })
         .catch((err) => {
-            res.status(401).send({
+            res.status(404).send({
                 message: err
             });
         });
 });
 
-// GET all ICBC office locations
-router.get('/', (_, res: Response) => {
-    // TODO
+// DELETE removes an ICBC location
+router.delete('/:city/:id', (req: Request, res: Response) => {
+    const city = req.params.city;
+    const id = req.params.id;
+    if (city && id) {
+        const parsedID = parseInt(id, 10);
+        locationServer.deleteLocation(city, parsedID)
+            .then((result) => {
+                res.status(200).send(result.toString());
+            }).catch((err: any) => {
+                res.status(404).send({
+                    message: err
+                });
+            })
+    } else {
+        res.status(400);
+        res.send();
+    }
 })
 
 export default router

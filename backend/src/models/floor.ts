@@ -39,9 +39,7 @@ Floor.getFloorByOffice = (office_location: string, office_id: number, result: an
             console.log('Error: ', err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res[0]);
         }
-        console.log(res);
     })
 };

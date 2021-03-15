@@ -45,55 +45,44 @@ Reservation.getAllReservations = (result: any) => {
             console.log("Error: ", err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res);
         }
-        console.log(res);
     })
 };
 
 // Get upcoming reservations from the current date
-Reservation.getUpcomingReservations = (result: any) => {
-    const upcomingResQuery =    "SELECT reservation.reservation_id, reservation.start_date, reservation.end_date, reservation.fk_office_id, reservation.fk_office_location, reservation.fk_floor_num, reservation.fk_desk_id, office.name " +
-                                "FROM reservation " +
-                                "INNER JOIN office ON office.office_id=reservation.fk_office_id AND office.office_location=reservation.fk_office_location " +
-                                "WHERE reservation.start_date >= CURDATE() " +
-                                "ORDER BY reservation.start_date;";
-
-    con.query(upcomingResQuery, (err: any, res: any) => {
+Reservation.getUpcomingReservations = (userID: any, result: any) => {
+    con.query("CALL getUpcomingReservation(?)", [userID], (err: any, res: any) => {
         if (err) {
             console.log("Error: ", err);
             result(err, null);
         } else {
-            console.log(res);
-            result(null, res);
+            result(null, res[0]);
         }
-        console.log(res);
     })
 };
 
 Reservation.getEmployeeCountForOffice = (params: any, result: any) => {
     // console.log(params.start_date);
-    con.query("SELECT AVG(z.count) AS avg FROM (SELECT COUNT(*) AS count FROM reservation r " +
-        "WHERE r.start_date >= ? AND r.end_date <= ? AND r.fk_office_id = ? GROUP BY r.start_date) AS z", [
-        String(params.start_date),
-        String(params.end_date),
+    con.query("SELECT AVG(z.count) AS avg FROM (SELECT COUNT(*) AS count FROM reservation WHERE start_date >= ? AND end_date <= ? AND fk_office_id = ? GROUP BY start_date) AS z", [
+        params.start_date,
+        params.end_date,
         params.office_id,
     ], (err: any, res: any) => {
         if (err) {
             console.log('Error: ', err);
             result(err, null);
         } else {
-            // console.log(res);
             result(null, res);
         }
     })
 };
 
-Reservation.getReservationByDate = (params: any, result: any) => {
+Reservation.getReservationByDate = (date: any, userID: any, result: any) => {
     con.query("SELECT * FROM reservation r " +
-        "WHERE r.start_date = ?", [
-        String(params.date),
+        "WHERE r.start_date = ? AND r.fk_employee_id = ?", [
+        String(date),
+        String(userID)
     ], (err: any, res: any) => {
         if (err) {
             console.log('Error: ', err);
@@ -110,7 +99,6 @@ Reservation.deleteReservation = (reservationID: any, result: any) => {
             console.log('Error: ', err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res);
         }
     })

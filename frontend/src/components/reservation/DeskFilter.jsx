@@ -9,6 +9,8 @@ import { fetchDesks, fetchOffices, fetchDesksByOffice, hasFloorplan } from '../.
 import UpdateLocationPopup from './UpdateLocationPopup';
 import Search from '../../assets/search.png';
 import { SET_FILTER, SET_DESKS, SET_FLOORPLAN_AVAILABLE } from '../../actions/actionTypes';
+import {useMsal} from "@azure/msal-react";
+import {accountIsAdmin} from "../../util/Util";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -57,11 +59,14 @@ function DeskFilter() {
     const [addLocation, setAddLocation] = useState(false);
 
     const dispatch = useDispatch()
-    const filter = useSelector(state => state.searchFilter);
-    const deskResults = useSelector(state => state.deskResults);
-    const officeList = useSelector(state => state.offices);
-    const deskList = useSelector(state => state.desks);
-    const officeDisabled = useSelector(state => state.hasFloorplan);
+    const filter = useSelector(state => state.reservations.searchFilter);
+    const deskResults = useSelector(state => state.reservations.deskResults);
+    const officeList = useSelector(state => state.reservations.offices);
+    const deskList = useSelector(state => state.reservations.desks);
+    const officeDisabled = useSelector(state => state.reservations.hasFloorplan);
+
+    const { accounts } = useMsal();
+    const isAdmin = accountIsAdmin(accounts[0]);
 
     useEffect(() => {
         dispatch(fetchOffices());
@@ -200,7 +205,11 @@ function DeskFilter() {
                 <UpdateLocationPopup isOpen={isUpdateLocationOpen} whatToDoWhenClosed={(bool) => { setIsUpdateLocationOpen(bool) }}></UpdateLocationPopup>
 
                 <Grid item xs={isMobile ? 'auto' : 3} style={{width: '90%'}}>
-                    <Button className={classes.actionButton} onClick={handleUpdateLocationOpened}>Update Location</Button>
+                    {isAdmin &&
+                    <Button className={classes.actionButton} onClick={handleUpdateLocationClosed}>Update
+                        Location</Button>
+                    }
+                    {isAdmin &&
                     <Grid item xs={8}>
                         <Button className={classes.actionButton} onClick={handleAddLocationOpen}>Add Location</Button>
                         <Modal
@@ -210,6 +219,7 @@ function DeskFilter() {
                             {addLocationBody()}
                         </Modal>
                     </Grid>
+                    }
                 </Grid>
                 <Grid item xs={isMobile ? 'auto' : 5} style={{width: '90%'}}>
                     <Button className={classes.actionButton} onClick={handleFloorplanOpen} disabled={officeDisabled}>Floorplan</Button>

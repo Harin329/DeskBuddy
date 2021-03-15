@@ -25,7 +25,7 @@ function Dashboard() {
           className="App-link"
           href="/social"
         >
-          social
+          Social
         </a>
       </header>
     </div>

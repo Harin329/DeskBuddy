@@ -17,6 +17,7 @@
     "react-device-detect": "^1.15.0",
     "react-dom": "^17.0.1",
     "react-images-upload": "^1.2.8",
+    "react-infinite-scroller": "^1.2.4",
     "react-modern-calendar-datepicker": "^3.1.6",
     "react-redux": "^7.2.2",
     "react-router-dom": "^5.2.0",
@@ -25,10 +26,13 @@
     "redux-thunk": "^2.3.0",
     "styled-components": "^5.2.1",
     "typescript": "^4.1.5",
-    "web-vitals": "^0.2.4"
+    "web-vitals": "^0.2.4",
+    "@azure/msal-react": "^1.0.0-beta.0",
+    "@azure/msal-browser": "^2.12.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=3001 react-scripts start",
+    "windows-start": "PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
