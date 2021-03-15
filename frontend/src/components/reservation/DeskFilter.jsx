@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 function DeskFilter() {
     const classes = useStyles();
     const [floorplan, setFloorplan] = useState(false);
-    const [isUpdateLocationClosed, setIsUpdateLocationClosed] = useState(false);
+    const [isUpdateLocationOpen, setIsUpdateLocationOpen] = useState(false);
     const [addLocation, setAddLocation] = useState(false);
 
     const dispatch = useDispatch()
@@ -83,8 +83,8 @@ function DeskFilter() {
         setAddLocation(false)
     }
 
-    const handleUpdateLocationClosed = () => {
-        setIsUpdateLocationClosed(true);
+    const handleUpdateLocationOpened = () => {
+        setIsUpdateLocationOpen(true);
     }
 
     const addLocationBody = () => {
@@ -197,10 +197,10 @@ function DeskFilter() {
             </Grid>
             <Grid container item justify='center' alignItems='center' direction={isMobile ? 'column' : 'row'} className={classes.sectionSpacing}>
 
-                <UpdateLocationPopup isOpen={isUpdateLocationClosed} whatToDoWhenClosed={(bool) => { setIsUpdateLocationClosed(bool) }}></UpdateLocationPopup>
+                <UpdateLocationPopup isOpen={isUpdateLocationOpen} whatToDoWhenClosed={(bool) => { setIsUpdateLocationOpen(bool) }}></UpdateLocationPopup>
 
                 <Grid item xs={isMobile ? 'auto' : 3} style={{width: '90%'}}>
-                    <Button className={classes.actionButton} onClick={handleUpdateLocationClosed}>Update Location</Button>
+                    <Button className={classes.actionButton} onClick={handleUpdateLocationOpened}>Update Location</Button>
                     <Grid item xs={8}>
                         <Button className={classes.actionButton} onClick={handleAddLocationOpen}>Add Location</Button>
                         <Modal

@@ -136,8 +136,24 @@ function UpdateLocationPopup (props) {
   const dispatch = useDispatch()
   const officeList = useSelector(state => state.offices);
 
+  const formatNewFloor = (level, photoLink = '', removeOriginalFloorPlan = false) => ({
+    level,
+    photoLink,
+    removeOriginalFloorPlan
+  });
+
+  const initialLocationEditsObj = {
+    name: '',
+    address: '',
+    cityOrTown: '',
+    locationPhoto:'',
+    floors: {}
+  };
+
+  let currLocationEdits = {...initialLocationEditsObj};
 
   const handleUpdateLocationClose = () => {
+    currLocationEdits = {...initialLocationEditsObj};
     props.whatToDoWhenClosed();
   }
   
@@ -175,7 +191,7 @@ function UpdateLocationPopup (props) {
           <Grid container justify='center' className={classes.dialogLineContainer}>
               <Grid item xs={2} className={classes.dialogLineLabel}>
                   <Typography>
-                      New Town/City
+                      Name
                   </Typography>
               </Grid>
               <Grid item xs={9}>
@@ -187,6 +203,17 @@ function UpdateLocationPopup (props) {
               <Grid item xs={2} className={classes.dialogLineLabel}>
                   <Typography>
                       Address
+                  </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                  <TextField id="outlined-basic" variant="outlined" className={classes.inputBoxes}>
+                  </TextField>
+              </Grid>
+          </Grid>
+          <Grid container justify='center' className={classes.dialogLineContainer}>
+              <Grid item xs={2} className={classes.dialogLineLabel}>
+                  <Typography>
+                      City/Town
                   </Typography>
               </Grid>
               <Grid item xs={9}>

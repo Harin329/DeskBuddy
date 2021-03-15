@@ -110,7 +110,7 @@ function UpdateLocationFloorContainer () {
     }
 
     return (<div>
-        {updateLocationFloorAddition.map(() => <UpdateLocationFloor></UpdateLocationFloor>)}
+        {updateLocationFloorAddition.map((curr, index) => <div data-testid='update-location-floor'><UpdateLocationFloor key={index}></UpdateLocationFloor></ div>)}
         <Button className={classes.attachmentButton} onClick={handleUpdateLocationFloorAddition}>
             +
         </Button>

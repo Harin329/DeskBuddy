@@ -162,16 +162,17 @@ function UpdateLocationFloor (props) {
         Floor Number
         </Typography>
     </Grid>
-    <Grid item xs={20}>
-        <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleUpdateLocationFloorChange} value={updateLocationFloor} className={classes.inputBoxes}>
+    <Grid item xs={12}>
+        <TextField id="outlined-basic" data-testid='update-location-floor-dropdown' label="" variant="outlined" select onChange={handleUpdateLocationFloorChange} value={updateLocationFloor} className={classes.inputBoxes}>
             {floors.map((floor) => {
-                return <MenuItem key={floor.label} value={floor.label}>
+                return <div data-testid={floor.label}>
+                <MenuItem key={floor.label} value={floor.label}>
                     {floor.label}
-                </MenuItem>
+                </MenuItem></div>
             })}
         </TextField>
     </Grid>
-    <Grid item xs={20}>
+    <Grid item xs={12}>
         <ImageUploader
                 buttonClassName={classes.attachmentButton}
                 withIcon={false}
@@ -185,7 +186,7 @@ function UpdateLocationFloor (props) {
                 fileContainerStyle={{padding: '0px', margin: '0px', boxShadow: '0px 0px 0px 0px'}}
             />
     </Grid>
-    <Grid item xs={20}>
+    <Grid item xs={12}>
         <Button className={isExistingFloorPlanRemoved ? classes.selectedAttachmentButton : classes.attachmentButton} onClick={() => {setIsExistingFloorPlanRemoved(!isExistingFloorPlanRemoved)}}>
             Remove Currently Existing Floor Plan
         </Button>
