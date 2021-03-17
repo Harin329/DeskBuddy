@@ -5,18 +5,20 @@ import InfiniteScroll from "react-infinite-scroller";
 import Endpoint from "../../config/Constants";
 import {updatePopup} from "./Popup";
 import { Modal } from '@material-ui/core';
+import AddUpdateForm from "./AddUpdateForm";
+import safeFetch from "../../util/Util"
 
 const styles = theme => ({
     title: {
         fontFamily: 'Lato',
         textAlign: 'center',
-        marginLeft: 50
+        marginRight: 25
     },
     titleBox: {
         alignItems: 'center',
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-evenly'
+        justifyContent: 'center'
     },
     updateBox: {
         background: '#EEF0F2',
@@ -40,6 +42,19 @@ const styles = theme => ({
     },
     announcementText: {
         paddingLeft: 15
+    },
+    actionButton: {
+        background: '#00ADEF',
+        borderRadius: 20,
+        color: 'white',
+        height: '50px',
+        padding: '0 30px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        marginLeft: 20,
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 18
     }
 
 });
@@ -81,7 +96,7 @@ state = {
             };
 
             setTimeout(() => {
-                fetch(Endpoint + "/announcement/getBranchAnnouncements/" + this.state.announcementList.length + "/"
+                safeFetch(Endpoint + "/announcement/getBranchAnnouncements/" + this.state.announcementList.length + "/"
                     + this.state.selectedOfficeLocation + "/" + this.state.selectedOfficeID, requestOptions)
                     .then((response) => response.text())
                     .then(result => {
@@ -103,7 +118,7 @@ state = {
             redirect: 'follow'
         };
 
-        fetch(Endpoint + "/announcement/getTotalAnnouncements", requestOptions)
+        safeFetch(Endpoint + "/announcement/getTotalBranchAnnouncements", requestOptions)
             .then(response => response.text())
             .then(result => {
                 const total = JSON.parse(result);
@@ -111,7 +126,7 @@ state = {
             })
             .catch(error => console.log('error', error))
 
-        fetch(Endpoint + "/office/getAllOffices", requestOptions)
+        safeFetch(Endpoint + "/office/getAllOffices", requestOptions)
             .then((response) => response.text())
             .then(result => {
                 this.setState({officeList: JSON.parse(result)});
@@ -127,7 +142,7 @@ state = {
         };
 
         if (this.state.selectedOfficeLocation === "" || this.state.selectedOfficeLocation === "ALL") {
-            fetch(Endpoint + "/announcement/getAllBranchAnnouncements/" + this.state.announcementList.length, requestOptions)
+            safeFetch(Endpoint + "/announcement/getAllBranchAnnouncements/" + this.state.announcementList.length, requestOptions)
                 .then(response => response.text())
                 .then(result => {
                     const announcements = JSON.parse(result);
@@ -145,6 +160,18 @@ state = {
 
     render() {
         const { classes } = this.props;
+
+        const handleAddUpdateClose = () => {
+            this.setState({addAnnouncement: false})
+        }
+
+        const addUpdateBody = () => {
+            return <AddUpdateForm closeModal={handleAddUpdateClose}/>
+        }
+
+        const handleAddUpdateOpen = () => {
+            this.setState({addAnnouncement: true})
+        }
 
         let announcements = [];
         this.state.announcementList.map((update, i) => {
@@ -182,7 +209,6 @@ state = {
                             </MenuItem>
                         ))}
                     </TextField>
-
                 </div>
                 <InfiniteScroll
                     loadMore={this.getAnnouncements.bind(this)}

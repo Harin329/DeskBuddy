@@ -12,8 +12,7 @@ export const Announcement = function (this: any, announcement: any) {
 };
 
 Announcement.getCompanyAnnouncements = (start_index: number, result: any) => {
-    con.query("SELECT * FROM announcement where announcement_id not in" +
-        " (select announcement_id from branch_announcement) limit ?, 20",  [
+    con.query("SELECT * FROM company_announcement limit ?, 20",  [
         start_index
     ], (err: any, res: any) => {
         if (err) {
@@ -28,8 +27,7 @@ Announcement.getCompanyAnnouncements = (start_index: number, result: any) => {
 };
 
 Announcement.getAllBranchAnnouncements = (start_index: number, result: any) => {
-    con.query("SELECT * FROM announcement inner join branch_announcement on announcement.announcement_id = " +
-        "branch_announcement.announcement_id limit ?, 20",  [
+    con.query("SELECT * FROM branch_announcement limit ?, 20",  [
         start_index
     ], (err: any, res: any) => {
         if (err) {
@@ -45,8 +43,7 @@ Announcement.getAllBranchAnnouncements = (start_index: number, result: any) => {
 
 
 Announcement.getBranchAnnouncements = (office_location: string, office_id: number, start_index: number, result: any) => {
-    con.query("SELECT * FROM announcement inner join branch_announcement on announcement.announcement_id = " +
-        "branch_announcement.announcement_id where branch_announcement.office_location = ? and branch_announcement.office_id = ? limit ?, 20",  [
+    con.query("SELECT * FROM branch_announcement where office_location = ? and office_id = ? limit ?, 20",  [
         office_location, office_id, start_index
     ], (err: any, res: any) => {
         if (err) {
@@ -60,8 +57,8 @@ Announcement.getBranchAnnouncements = (office_location: string, office_id: numbe
     })
 };
 
-Announcement.getTotalAnnouncements = (result: any) => {
-    con.query("SELECT COUNT(announcement_id) FROM announcement", (err: any, res: any) => {
+Announcement.getTotalCompanyAnnouncements = (result: any) => {
+    con.query("SELECT COUNT(announcement_id) FROM company_announcement", (err: any, res: any) => {
         if (err) {
             console.log("Error: ", err);
             result(err, null);
@@ -72,3 +69,45 @@ Announcement.getTotalAnnouncements = (result: any) => {
         console.log(res);
     })
 };
+
+Announcement.getTotalBranchAnnouncements = (result: any) => {
+    con.query("SELECT COUNT(announcement_id) FROM branch_announcement", (err: any, res: any) => {
+        if (err) {
+            console.log("Error: ", err);
+            result(err, null);
+        } else {
+            console.log(res);
+            result(null, res);
+        }
+        console.log(res);
+    })
+};
+
+Announcement.postCompanyAnnouncement = (req: any, result: any) => {
+    con.query("INSERT INTO company_announcement (employee_id, date, title, sub_title, content)" +
+        "VALUES (?, CURDATE(), ?, ?, ?)" , [
+        req.body.user, req.body.title, req.body.subtitle, req.body.content
+    ], (err: any, res: any) => {
+        if (err) {
+            console.log("Error: ", err);
+        } else {
+            console.log(res);
+        }
+        console.log(res);
+    })
+}
+
+Announcement.postBranchAnnouncement = (req: any, result: any) => {
+    con.query("INSERT INTO branch_announcement (?, ?, employee_id, date, title, sub_title, content)" +
+        "VALUES (?, CURDATE(), ?, ?, ?)" , [
+        req.body.user, req.body.office_id, req.body.office_location,
+        req.body.title, req.body.subtitle, req.body.content
+    ], (err: any, res: any) => {
+        if (err) {
+            console.log("Error: ", err);
+        } else {
+            console.log(res);
+        }
+        console.log(res);
+    })
+}
