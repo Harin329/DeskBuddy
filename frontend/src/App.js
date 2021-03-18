@@ -9,11 +9,13 @@ import "@fontsource/lato"
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useIsAuthenticated, useMsal, useMsalAuthentication } from "@azure/msal-react";
 import {InteractionType} from '@azure/msal-browser';
 import NavBar from "./components/global/NavBar";
+import MobileNavBar from "./components/global/MobileNavBar";
 import {graphConfig, loginRequest} from "./authConfig";
 import safeFetch, {graphFetch} from "./util/Util";
 import Endpoint from "./config/Constants";
 import {useDispatch, useSelector} from "react-redux";
 import {SET_USER_ADDED_TO_DB} from "./actions/actionTypes";
+import { isMobile } from "react-device-detect";
 
 function App() {
     const {instance, accounts, inProgress} = useMsal();
@@ -84,7 +86,8 @@ function App() {
                 }
                 {addedToDB &&
                     <Router>
-                        <NavBar/>
+                        {!isMobile && <NavBar/>}
+                        {isMobile && <MobileNavBar/>}
                         <Route exact path="/" component={Dashboard}/>
                         <Route exact path="/reservation" component={Reservation}/>
                         <Route exact path="/mail" component={Mail}/>

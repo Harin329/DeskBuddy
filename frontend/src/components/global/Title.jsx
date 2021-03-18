@@ -18,18 +18,18 @@ const useStyles = makeStyles({
 });
 
 
-function Title(text) {
+function Title(text, f1, f2, f3) {
     const classes = useStyles();
 
     return (
         <Grid container>
-            <Grid item xs={2}/>
-            <Grid item xs={8}>
+            <Grid item xs={f1}/>
+            <Grid item xs={f2}>
                 <Typography className={classes.mainTitleText}>
                     {text}
                 </Typography>
             </Grid>
-            <Grid item xs={isMobile ? 2 : 6}/>
+            <Grid item xs={isMobile ? f3 : 6}/>
         </Grid>
 
     );
