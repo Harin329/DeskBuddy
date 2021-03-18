@@ -8,7 +8,7 @@ import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
     updatesSection: {
-        width: '80%',
+        width: '85%',
         alignItems: 'center',
         justifyContent: 'space-between',
         display: 'flex',
@@ -33,7 +33,7 @@ function Social() {
         </BranchUpdates>
        </div>
        {subtitle("FEED")}
-      <GroupChannel isAdmin={true} />
+       <GroupChannel/>
     </div>
   );
 }

@@ -4,9 +4,9 @@ export default class ChannelController {
     // tslint:disable-next-line:no-empty
     constructor() {}
 
-    getChannelForEmployee(employeeID: any) {
+    getChannelForEmployee(isAdmin: boolean) {
         return new Promise((resolve, reject) => {
-            Channel.getAllChannelsForUser(employeeID, (err: any, res: any) => {
+            Channel.getAllChannelsForUser(isAdmin, (err: any, res: any) => {
                 if (err) {
                     reject(err);
                 }

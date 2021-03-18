@@ -5,6 +5,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import Endpoint from "../../config/Constants";
 import {updatePopup} from "./Popup";
 import { Modal } from '@material-ui/core';
+import safeFetch from "../../util/Util";
 
 const styles = theme => ({
     title: {
@@ -81,7 +82,7 @@ state = {
             };
 
             setTimeout(() => {
-                fetch(Endpoint + "/announcement/getBranchAnnouncements/" + this.state.announcementList.length + "/"
+                safeFetch(Endpoint + "/announcement/getBranchAnnouncements/" + this.state.announcementList.length + "/"
                     + this.state.selectedOfficeLocation + "/" + this.state.selectedOfficeID, requestOptions)
                     .then((response) => response.text())
                     .then(result => {
@@ -103,7 +104,7 @@ state = {
             redirect: 'follow'
         };
 
-        fetch(Endpoint + "/announcement/getTotalAnnouncements", requestOptions)
+        safeFetch(Endpoint + "/announcement/getTotalAnnouncements", requestOptions)
             .then(response => response.text())
             .then(result => {
                 const total = JSON.parse(result);
@@ -111,7 +112,7 @@ state = {
             })
             .catch(error => console.log('error', error))
 
-        fetch(Endpoint + "/office/getAllOffices", requestOptions)
+        safeFetch(Endpoint + "/office/getAllOffices", requestOptions)
             .then((response) => response.text())
             .then(result => {
                 this.setState({officeList: JSON.parse(result)});
@@ -127,7 +128,7 @@ state = {
         };
 
         if (this.state.selectedOfficeLocation === "" || this.state.selectedOfficeLocation === "ALL") {
-            fetch(Endpoint + "/announcement/getAllBranchAnnouncements/" + this.state.announcementList.length, requestOptions)
+            safeFetch(Endpoint + "/announcement/getAllBranchAnnouncements/" + this.state.announcementList.length, requestOptions)
                 .then(response => response.text())
                 .then(result => {
                     const announcements = JSON.parse(result);

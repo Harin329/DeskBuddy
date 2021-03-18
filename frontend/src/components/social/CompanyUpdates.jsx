@@ -4,6 +4,7 @@ import {withStyles} from "@material-ui/core/styles";
 import Endpoint from "../../config/Constants";
 import {updatePopup} from "./Popup";
 import { Modal } from '@material-ui/core';
+import safeFetch from "../../util/Util";
 
 const styles = theme => ({
     title: {
@@ -61,7 +62,7 @@ class CompanyUpdates extends React.Component {
             redirect: 'follow'
         };
 
-        fetch(Endpoint + "/announcement/getTotalAnnouncements", requestOptions)
+        safeFetch(Endpoint + "/announcement/getTotalAnnouncements", requestOptions)
             .then(response => response.text())
             .then(result => {
                 const total = JSON.parse(result);
@@ -86,7 +87,7 @@ class CompanyUpdates extends React.Component {
             redirect: 'follow'
         };
 
-       fetch(Endpoint + "/announcement/getCompanyAnnouncements/" + this.state.announcementList.length, requestOptions)
+       safeFetch(Endpoint + "/announcement/getCompanyAnnouncements/" + this.state.announcementList.length, requestOptions)
             .then(response => response.text())
             .then(result => {
                 const announcements = JSON.parse(result);

@@ -7,6 +7,9 @@ import LinedHeader from "./LinedHeader";
 import Delete from "../../../assets/delete.png";
 
 import Feed from '../feed';
+import {useMsal} from "@azure/msal-react";
+import safeFetch, {accountIsAdmin} from "../../../util/Util";
+
 
 const useStyles = makeStyles((theme) => ({
     channelText: {
@@ -35,16 +38,15 @@ const useStyles = makeStyles((theme) => ({
         margin: 20,
         padding: 0,
     }
-
-
 }))
 
 
-function GroupChannel(props) {
+function GroupChannel() {
     const classes = useStyles();
     const [channels, setChannels] = useState([]);
     const [selectedChannel, setSelectedChannel] = useState(1);
-
+    const { accounts } = useMsal();
+    const isAdmin = accountIsAdmin(accounts[0]);
 
     const getChannels = () => {
         var requestOptions = {
@@ -52,7 +54,7 @@ function GroupChannel(props) {
             redirect: 'follow'
         };
 
-        fetch(Endpoint + "/channel/channels/" + 319, requestOptions)
+        safeFetch(Endpoint + "/channel", requestOptions)
             .then(response => response.text())
             .then(result => {
                 const res = JSON.parse(result);
@@ -63,7 +65,7 @@ function GroupChannel(props) {
 
     useEffect(() => {
         getChannels();
-    });
+    },[]);
 
     const feedElement = React.createRef();
 
@@ -90,7 +92,7 @@ function GroupChannel(props) {
             redirect: 'follow'
         };
 
-        fetch(Endpoint + "/channel/channels", requestOptions)
+        safeFetch(Endpoint + "/channel", requestOptions)
             .then(response => response.text())
             .then(() => {
                 //getChannels();
@@ -128,7 +130,7 @@ function GroupChannel(props) {
                                             </div>
                                         </ListItem>
                                     </div>
-                                    {(props.isAdmin) && <div style={{width: '50px', height: '20px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
+                                    {(isAdmin) && <div style={{width: '50px', height: '20px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
                                         {(option.channel_id !== 0 && option.channel_id !== 1) &&
                                         <Button onClick={(event) => handleDeleteChannelClicked(event, option.channel_id)}
                                                                             style={{ width: 15, height: 15, border: 'none'}}>
@@ -141,7 +143,7 @@ function GroupChannel(props) {
                     </List>
                 </div>
             {/*{props.isAdmin && <Divider/>}*/}
-            {props.isAdmin && <div style={{justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
+            {isAdmin && <div style={{justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
                 <Button onClick={(event) => handleAddChannelClicked(event)} className={classes.addChannelButton}>Add Channel</Button>
             </div>}
             </div>
