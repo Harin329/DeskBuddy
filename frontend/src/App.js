@@ -65,7 +65,7 @@ function App() {
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/user/", requestOptions)
+        safeFetch(Endpoint + "/user", requestOptions)
             .then(response => response.text())
             .then(result => {
                 dispatch({ type: SET_USER_ADDED_TO_DB, payload: true });
