@@ -32,10 +32,8 @@ function Social() {
         <BranchUpdates>
         </BranchUpdates>
        </div>
-        <div>
-            {subtitle("FEED")}
-            <GroupChannel/>
-        </div>
+       {subtitle("FEED")}
+       <GroupChannel/>
     </div>
   );
 }
