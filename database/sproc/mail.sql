@@ -17,3 +17,11 @@ BEGIN
 DELETE FROM `mail` WHERE `mail_id` = `mailID`;
 
 END
+
+CREATE PROCEDURE `getMail` (IN `employeeID` VARCHAR(50))
+
+BEGIN
+
+SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID`;
+
+END

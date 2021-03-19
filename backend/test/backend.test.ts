@@ -1,16 +1,17 @@
 import { DeskbuddyServer } from "../src/server";
-import supertest, {agent} from "supertest";
+import supertest from "supertest";
 import fs from 'fs';
 import { IOffice } from "../src/interfaces/location.interface";
 import { IMail } from "../src/interfaces/mail.interface";
 
 let server: DeskbuddyServer;
 let request: any;
-//                 vvvvvvvvvvv  replace with fresh token
-const adminToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Im5PbzNaRHJPRFhFSzFqS1doWHNsSFJfS1hFZyJ9.eyJhdWQiOiJkMTExY2RhYi02NjM3LTQ2YmItODZiMS0zNjg1ZGI5ZDc0NGUiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vNjVmNDBjNGEtYWEzMS00YzdjLThlNTMtNWMwY2E4MzJjN2VkL3YyLjAiLCJpYXQiOjE2MTU5NTU2NzYsIm5iZiI6MTYxNTk1NTY3NiwiZXhwIjoxNjE1OTU5NTc2LCJhaW8iOiJBVFFBeS84VEFBQUFmdW9VMDdpaUFIMXhjczF6bkpjNXNFZnRFWG1CSklaQlk5Qmk0N1RCdkd5SlJBUXFaVklVdUtvNlNDUW9uc2Y1IiwiYXpwIjoiNDJhNzI1NzktYTE2My00ZThiLWI0MjctYWE3ZWIxOTdlYjg3IiwiYXpwYWNyIjoiMCIsImdyb3VwcyI6WyJlMzBjYzhjZC0zZjg5LTRhNzgtODBmYy02NzhhMWUwNGE3OTEiLCIyNjI2MTgyNS05MDZjLTQ5OGQtOTcwNi0xMzgxMWI2NTYzNzQiXSwibmFtZSI6Ikdsb2JhbCBBZG1pbiIsIm9pZCI6Ijk5YjlhOWNmLTFjYjAtNDBjMy04N2MwLWFhOThkNmNlNjhkMSIsInByZWZlcnJlZF91c2VybmFtZSI6Imdsb2JhbGFkbWluQGRlc2tidWRkeS5vbm1pY3Jvc29mdC5jb20iLCJyaCI6IjAuQUFBQVNnejBaVEdxZkV5T1Uxd01xRExIN1hrbHAwSmpvWXRPdENlcWZyR1g2NGQ4QUdnLiIsInNjcCI6ImFjY2Vzc19hc191c2VyIiwic3ViIjoiNmxMMW51aVBsdlJLUy1kR2tCRDhVVE5QeG45ZXBEZHpHQXl5TkdORm5GTSIsInRpZCI6IjY1ZjQwYzRhLWFhMzEtNGM3Yy04ZTUzLTVjMGNhODMyYzdlZCIsInV0aSI6IklnWHV5c0ltMDBpRVR5NU5mdUVCQUEiLCJ2ZXIiOiIyLjAiLCJ3aWRzIjpbIjYyZTkwMzk0LTY5ZjUtNDIzNy05MTkwLTAxMjE3NzE0NWUxMCIsImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdfQ.n0ng5GGKMI3WpeaQ8HCgBXEFu48f0AuqBDAAZFUaiPxZP5QaJRziqOBt3CCoxKvrpvmdyUwMq2yB3pZpV-hXWd-aJhQNRXz9r7JyIGBQcctGq-zxXtCvsJLZR6rBSdLJNFQlObo1AO3lSNZ7K-TrCk2zGRz5zu4f25AVLbPZKOWWbm0qbeYWESANG48cqORlO3aG9JhAGY5arzOhVTrziULR3qlZLt3YVegzvhZpg9cGVtgLFapOPbpAqiWGJJlW0f6NdxlxQ-bqBSqxkT_PZ8sghrLQrdHKB2mbxKcaOiqlmLnAd4kNHL4U2twWdmVvvLm4U7wFNJQ8b4WSG9S1WA";
-const userToken = "PLACEHOLDER"
-const adminJSON = {"Authorization": `Bearer ${adminToken}`}
-const userJSON = {"Authorization": `Bearer ${userToken}`}
+
+const adminToken = "PLACEHOLDER"; // token for Global Admin administrator
+const userToken = "PLACEHOLDER"; // token for Dana White user
+const adminJSON = {"Authorization": `Bearer ${adminToken}`};
+const userJSON = {"Authorization": `Bearer ${userToken}`};
+const testUserOID = `faa7c922-18f4-469a-9d0e-8999d0a783a4`;
 
 beforeAll(done => {
     server = new DeskbuddyServer(3000);
@@ -76,6 +77,7 @@ describe("Social feed endpoints tests", () => {
 });
 
 describe("Mail manager endpoints tests", () => {
+    // these tests assume the existence of a test user Dana White, who has no mails to begin with
     it("POST /mail", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
@@ -98,6 +100,67 @@ describe("Mail manager endpoints tests", () => {
         done();
     });
 
+    it("POST /mail with null valid fields", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailValidNulls.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        await mailDeleter(res);
+        done();
+    });
+
+    it("GET /mail", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        // User currently has mail stored
+        const getRes = await request.get(`/mail/${testUserOID}`).set(userJSON);
+        try {
+            const output = JSON.parse(getRes.text);
+            const results: IMail[] = output.mails;
+            expect(results.length).toBe(1);
+            expect(results[0]).toStrictEqual(body);
+            await mailDeleter(res);
+        } catch(err) {
+            await mailDeleter(res);
+            throw new Error(err);
+        }
+        done();
+    });
+
+    it("GET /mail where no mail has been added", async done => {
+        const getRes = await request.get(`/mail/${testUserOID}`).set(userJSON);
+        try {
+            const output = JSON.parse(getRes.text);
+            const results: IMail[] = output.mails;
+            expect(results.length).toBe(0);
+        } catch(err) {
+            throw new Error("Test failed: " + err);
+        }
+        done();
+    });
+
+    it("GET /mail where two mails have been added", async done => {
+        const body1: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const body2: IMail = loadJSON("test/jsonBody/mailBody/postMailValidNulls.json");
+        const res1 = await request.post(`/mail`).send(body1).set(adminJSON);
+        const res2 = await request.post(`/mail`).send(body2).set(adminJSON);
+        expect(res1.status).toBe(200);
+        expect(res2.status).toBe(200);
+        const getRes = await request.get(`/mail/${testUserOID}`).set(userJSON);
+        try {
+            const output = JSON.parse(getRes.text);
+            const results: IMail[] = output.mails;
+            expect(results.length).toBe(2);
+            await mailDeleter(res1);
+            await mailDeleter(res2);
+        } catch(err) {
+            await mailDeleter(res1);
+            await mailDeleter(res2);
+            throw new Error(JSON.stringify(getRes));
+            throw new Error("Test failed: " + err);
+        }
+        done();
+    });
 });
 
 const mailDeleter = async (res: any) => {
