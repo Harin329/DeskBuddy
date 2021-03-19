@@ -55,7 +55,7 @@ function NavBar() {
         <div style={{ background: 'white', flexDirection: 'row', display: 'flex', padding: 20 }}>
             <div style={{ display: "flex", flex: 1 }} >
                 <div style={{ flex: 1 }} />
-                <img src={ICBC} style={{ width: 50, height: 50, marginRight: 30, flex: 1 }} />
+                <img src={ICBC} style={{ width: 50, marginRight: 30, flex: 1, objectFit: 'contain' }} />
                 <NavLink to="/" exact={true} className={classes.linkText} activeStyle={{color: 'black'}}>
                     DASHBOARD
                 </NavLink>
@@ -78,7 +78,7 @@ function NavBar() {
                     {isAdmin ? "Admin" : "User"}
                 </div>
                 <div style={{ flex: 1 }} />
-                <img src={ICBC} style={{ width: 50, height: 50, borderRadius: 50, backgroundColor: 'black', flex: 1 }} />
+                <img src={ICBC} style={{ width: 50, borderRadius: 50, backgroundColor: 'black', flex: 1, objectFit: 'contain' }} />
                 <div style={{ flex: 1 }} />
                 <button style={{ height: '25px', alignSelf: 'center', fontFamily: 'Lato' }} onClick={() => instance.logout()} > LOGOUT </button>
                 <div style={{ flex: 1 }} />
