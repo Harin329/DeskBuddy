@@ -3,7 +3,27 @@ import { Router, Request, Response, response } from 'express';
 const router = Router();
 
 import MailController from '../controllers/mail-controller';
+import { IMail } from '../interfaces/mail.interface';
 const mailServer = new MailController();
+
+router.get('/:employeeID', (req: Request, res: Response) => {
+    const employeeID = req.params.employeeID;
+    if (!employeeID) {
+        res.status(400).json({
+            err: "Malformed request body"
+        });
+    } else {
+        mailServer.getMail(employeeID).then((mailInfo: IMail[]) => {
+            res.status(200).json({
+                mails: mailInfo
+            });
+        }).catch((err: any) => {
+            res.status(404).json({
+                err,
+            })
+        })
+    }
+})
 
 router.post('/', (req: Request, res: Response) => {
     const body = req.body;

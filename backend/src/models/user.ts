@@ -49,3 +49,17 @@ User.getUserOIDByNameAndEmail = (first_name: string, last_name: string, email: s
         }
     )
 }
+
+User.getUserNameAndEmailByOID = (oid: string, result: any) => {
+    con.query(
+        'CALL getUserNameAndEmailByOID(?)',
+        [oid],
+        (err: any, res: any) => {
+            if (err) {
+                result(err, null);
+            } else {
+                result(null, res[0]);
+            }
+        }
+    )
+}

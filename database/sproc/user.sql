@@ -15,3 +15,12 @@ BEGIN
           email = `em`;
 
 END
+
+CREATE PROCEDURE `getUserNameAndEmailByOID` (IN `oID` VARCHAR(50))
+
+BEGIN
+    SELECT first_name, last_name, email
+    FROM `employee` 
+    WHERE employee_id = `oID`;
+
+END
