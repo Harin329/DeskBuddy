@@ -3,8 +3,10 @@ import InfiniteScroll from "react-infinite-scroller";
 import {withStyles} from "@material-ui/core/styles";
 import Endpoint from "../../config/Constants";
 import {updatePopup} from "./Popup";
-import { Modal } from '@material-ui/core';
-import safeFetch from "../../util/Util";
+import {Button, Grid, MenuItem, Modal, TextField} from '@material-ui/core';
+import AddUpdateForm from "./AddUpdateForm";
+import safeFetch from "../../util/Util"
+import { isMobile } from "react-device-detect";
 
 const styles = theme => ({
     title: {
@@ -13,9 +15,9 @@ const styles = theme => ({
     },
     titleBox: {
         alignItems: 'center',
-        justifyContent: 'center',
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        justifyContent: 'center'
     },
     updateBox: {
         background: '#EEF0F2',
@@ -29,19 +31,34 @@ const styles = theme => ({
     backgroundBox: {
         background: '#FFFCF7',
         borderRadius: 20,
-        width: '45%',
+        width: isMobile ? '95%' : '45%',
         height: 500,
         alignItems: 'center'
     },
     announcementName: {
+        fontSize: isMobile ? 20 : 26,
         paddingLeft: 15,
         paddingTop: 5
     },
     announcementText: {
+        fontSize: isMobile ? 16 : 20,
         paddingLeft: 15
     },
     inputBoxes: {
         marginLeft: 20
+    },
+    actionButton: {
+        background: '#00ADEF',
+        borderRadius: 20,
+        color: 'white',
+        height: '50px',
+        padding: '0 30px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        marginLeft: 20,
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 18
     }
 
 });
@@ -53,7 +70,8 @@ class CompanyUpdates extends React.Component {
         hasMoreAnnouncements: true,
         totalAnnouncements: 0,
         open: false,
-        currAnnouncement: null
+        currAnnouncement: null,
+        addAnnouncement: false
     };
 
     componentDidMount() {
@@ -62,7 +80,7 @@ class CompanyUpdates extends React.Component {
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/announcement/getTotalAnnouncements", requestOptions)
+        safeFetch(Endpoint + "/announcement/getTotalCompanyAnnouncements", requestOptions)
             .then(response => response.text())
             .then(result => {
                 const total = JSON.parse(result);
@@ -87,7 +105,7 @@ class CompanyUpdates extends React.Component {
             redirect: 'follow'
         };
 
-       safeFetch(Endpoint + "/announcement/getCompanyAnnouncements/" + this.state.announcementList.length, requestOptions)
+        safeFetch(Endpoint + "/announcement/getCompanyAnnouncements/" + this.state.announcementList.length, requestOptions)
             .then(response => response.text())
             .then(result => {
                 const announcements = JSON.parse(result);
@@ -101,15 +119,27 @@ class CompanyUpdates extends React.Component {
     render() {
         const { classes } = this.props;
 
+        const handleAddUpdateClose = () => {
+            this.setState({addAnnouncement: false})
+        }
+
+        const addUpdateBody = () => {
+            return <AddUpdateForm closeModal={handleAddUpdateClose} whatToDoWhenClosed={(bool) => { this.setState({addAnnouncement: bool})}}/>
+        }
+
+        const handleAddUpdateOpen = () => {
+            this.setState({addAnnouncement: true})
+        }
+
         let announcements = [];
-            this.state.announcementList.map((update, i) => {
-                announcements.push(
-                    <div className={classes.updateBox} key={i} onClick={() => this.handleUpdateOpen(update)}>
-                        <h2 className={classes.announcementName}>{this.state.announcementList[i].title}</h2>
-                        <h3 className={classes.announcementText}>{this.state.announcementList[i].sub_title}</h3>
-                    </div>
-                );
-            });
+        this.state.announcementList.map((update, i) => {
+            announcements.push(
+                <div className={classes.updateBox} key={i} onClick={() => this.handleUpdateOpen(update)}>
+                    <h2 className={classes.announcementName}>{this.state.announcementList[i].title}</h2>
+                    <h3 className={classes.announcementText}>{this.state.announcementList[i].sub_title}</h3>
+                </div>
+            );
+        });
 
         const popup = () => {
             if (this.state.open) {
@@ -128,7 +158,17 @@ class CompanyUpdates extends React.Component {
 
         return (
             <div className={classes.backgroundBox} style= {{height: '500px', overflow: 'auto'}} ref={(ref) => this.scrollParentRef = ref}>
-                <h1 className={classes.title}>COMPANY UPDATES</h1>
+                <div className={classes.titleBox}>
+                    <h1 className={classes.title}>COMPANY UPDATES</h1>
+                    <Button className={classes.actionButton} onClick={handleAddUpdateOpen}>Add</Button>
+                    <Modal
+                        open={this.state.addAnnouncement}
+                        onClose={handleAddUpdateClose}
+                    >
+                        {addUpdateBody()}
+                    </Modal>
+
+                </div>
                 <InfiniteScroll
                     loadMore={this.getAnnouncements.bind(this)}
                     hasMore={this.state.hasMoreAnnouncements}

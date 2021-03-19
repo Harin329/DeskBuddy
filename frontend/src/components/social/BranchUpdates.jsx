@@ -6,6 +6,7 @@ import Endpoint from "../../config/Constants";
 import {updatePopup} from "./Popup";
 import { Modal } from '@material-ui/core';
 import safeFetch from "../../util/Util";
+import {isMobile} from "react-device-detect";
 
 const styles = theme => ({
     title: {
@@ -31,16 +32,19 @@ const styles = theme => ({
     backgroundBox: {
         background: '#FFFCF7',
         borderRadius: 20,
-        width: '45%',
+        width: isMobile ? '95%' : '45%',
         height: 500,
         alignItems: 'center'
     },
     announcementName: {
+        fontSize: isMobile ? 20 : 26,
         paddingLeft: 15,
         paddingTop: 5
     },
     announcementText: {
-        paddingLeft: 15
+        fontSize: isMobile ? 16 : 20,
+        paddingLeft: 15,
+        paddingBottom: 5
     }
 
 });
