@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {withStyles} from "@material-ui/core/styles";
 import {MenuItem, TextField} from "@material-ui/core";
 import InfiniteScroll from "react-infinite-scroller";
@@ -61,7 +61,9 @@ const styles = theme => ({
 
 class BranchUpdates extends React.Component {
 
-state = {
+
+
+    state = {
         announcementList: [],
         hasMoreAnnouncements: true,
         totalAnnouncements: 0,

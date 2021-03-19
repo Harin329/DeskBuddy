@@ -1,12 +1,12 @@
-import React from 'react';
-import {withStyles} from "@material-ui/core/styles";
+import React, {useEffect, useState} from 'react';
+import {makeStyles, withStyles} from "@material-ui/core/styles";
 import {Button, MenuItem, TextField, Typography} from "@material-ui/core";
 import Endpoint from "../../config/Constants";
 import safeFetch from "../../util/Util"
 import {useMsal} from "@azure/msal-react";
 
 
-const styles = theme => ({
+const useStyles = makeStyles((theme) => ({
     actionButton: {
         background: '#00ADEF',
         borderRadius: 20,
@@ -61,26 +61,23 @@ const styles = theme => ({
         fontWeight: 'bolder',
         fontSize: 14
     }
-});
+}));
 
-class AddUpdateForm extends React.Component {
 
-    state = {
-        title: "",
-        subtitle: "",
-        content: "",
-        selectedOfficeLocation: "",
-        selectedOfficeID: 0,
-        officeList: [],
-        userID: ""
-    }
+function AddUpdateForm() {
 
-    componentDidMount() {
-        const { accounts } = useMsal();
-        const userOID = accounts[0].idTokenClaims.oid;
+    const [title, setTitle] = useState("");
+    const [subtitle, setSubtitle] = useState("");
+    const [content, setContent] = useState("");
+    const [selectedOfficeID, setSelectedOfficeID] = useState(0);
+    const [selectedOfficeLocation, setSelectedOfficeLocation] = useState("");
+    const [officeList, setOfficeList] = useState([]);
 
-        this.setState({userID: userOID});
+    const { accounts } = useMsal();
+    const userOID = accounts[0].idTokenClaims.oid;
+    const classes = useStyles();
 
+    useEffect( () => {
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -89,22 +86,43 @@ class AddUpdateForm extends React.Component {
         safeFetch(Endpoint + "/office/getAllOffices", requestOptions)
             .then((response) => response.text())
             .then(result => {
-                this.setState({officeList: JSON.parse(result)});
+                setOfficeList(JSON.parse(result));
             })
             .catch(error => console.log('error', error));
+    });
+
+    const handleTitleInput = (input) => {
+        setTitle(input.target.value)
     }
 
-    handleSubmit(event) {
+    const handleSubtitleInput = (input) => {
+       setSubtitle(input.target.value);
+    }
+
+    const handleContentInput = (input) => {
+        setContent(input.target.value);
+    }
+
+    const handleOfficeChange = (event) => {
+        if (event.target.value !== 'All') {
+            const params = event.target.value.split(['-']);
+
+            setSelectedOfficeLocation(params[0]);
+            setSelectedOfficeID(params[1]);
+        }
+    }
+
+    const handleSubmit = (event) => {
 
         let jsonBody;
         let requestOptions;
 
-        if (this.state.selectedOfficeLocation === "" || this.state.selectedOfficeLocation === "All"){
+        if (selectedOfficeLocation === "" || selectedOfficeLocation === "All"){
             jsonBody = {
-                user: this.state.userID,
-                title: this.state.title,
-                subtitle: this.state.subtitle,
-                content: this.state.content
+                user: userOID,
+                title: title,
+                subtitle: subtitle,
+                content: content
             };
             console.log(jsonBody);
             requestOptions = {
@@ -120,13 +138,14 @@ class AddUpdateForm extends React.Component {
                 .catch(error => console.log('error', error));
         } else {
             jsonBody = {
-                user: this.state.userID,
-                title: this.state.title,
-                subtitle: this.state.subtitle,
-                content: this.state.content,
-                office_id: this.state.selectedOfficeID,
-                office_location: this.state.selectedOfficeLocation
+                user: userOID,
+                title: title,
+                subtitle: subtitle,
+                content: content,
+                office_id: selectedOfficeID,
+                office_location: selectedOfficeLocation
             }
+            console.log(jsonBody);
             requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -142,96 +161,68 @@ class AddUpdateForm extends React.Component {
         }
     }
 
-    handleTitleInput(input) {
-        this.setState({
-            title: input.target.value
-        });
-    }
-
-    handleSubtitleInput(input) {
-        this.setState({
-            subtitle: input.target.value
-        });
-    }
-
-    handleContentInput(input) {
-        this.setState({
-            content: input.target.value
-        });
-    }
-
-    handleOfficeChange(event) {
-        if (event.target.value !== 'All') {
-            const params = event.target.value.split(['-']);
-
-            this.setState({selectedOfficeLocation: params[0], selectedOfficeID: params[1]});
-        }
-    }
-
-    render() {
-        const { classes } = this.props;
-        return (
-            <div className={classes.addAnnouncement}>
-                <Typography className={classes.sectionTextModal}>
-                    Create New Announcement
-                </Typography>
-                <form>
-                    <div><TextField
-                        id="title"
-                        label="Title"
-                        style={{ margin: 8 }}
-                        placeholder="Announcement Title"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        onChange={this.handleTitleInput.bind(this)}
-                    /></div>
-                    <div><TextField
-                        id="subtitle"
-                        label="Subtitle"
-                        style={{ margin: 8 }}
-                        placeholder="Announcement Subtitle"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        onChange={this.handleSubtitleInput.bind(this)}
-                    /></div>
-                    <div><TextField
-                        id="content"
-                        label="Content"
-                        style={{ margin: 8 }}
-                        placeholder="Announcement Details (500 Characters)"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        onChange={this.handleContentInput.bind(this)}
-                    /></div>
-                    <h1 className={classes.branchTitle}>Branch (Optional)</h1>
-                    <TextField className={classes.officeSelector} id="outlined-basic" variant="outlined" select onChange={(e) => this.handleOfficeChange(e)} value={this.state.selectedOffice}>
-                        {this.state.officeList.map((option) => (
-                            <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
-                                {option.name}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                    <div>
-                        <Button className={classes.actionButtonCenter} onClick={this.handleSubmit.bind(this)}>
-                            Post
-                        </Button>
-                    </div>
-                </form>
-            </div>);
-    }
+    return (
+        <div className={classes.addAnnouncement}>
+            <Typography className={classes.sectionTextModal}>
+                Create New Announcement
+            </Typography>
+            <form>
+                <div><TextField
+                    id="title"
+                    label="Title"
+                    style={{ margin: 8 }}
+                    placeholder="Announcement Title"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    onChange={handleTitleInput}
+                /></div>
+                <div><TextField
+                    id="subtitle"
+                    label="Subtitle"
+                    style={{ margin: 8 }}
+                    placeholder="Announcement Subtitle"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    onChange={handleSubtitleInput}
+                /></div>
+                <div><TextField
+                    id="content"
+                    label="Content"
+                    style={{ margin: 8 }}
+                    placeholder="Announcement Details (500 Characters)"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    onChange={handleContentInput}
+                /></div>
+                <h1 className={classes.branchTitle}>Branch (Optional)</h1>
+                <TextField className={classes.officeSelector} id="outlined-basic" variant="outlined" select onChange={(e) => handleOfficeChange(e)} value={selectedOfficeLocation}>
+                    {officeList.map((option) => (
+                        <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
+                            {option.name}
+                        </MenuItem>
+                    ))}
+                </TextField>
+                <div>
+                    <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
+                        Post
+                    </Button>
+                </div>
+            </form>
+        </div>
+    )
 
 }
 
-export default withStyles(styles, { withTheme: true })(AddUpdateForm);
+export default AddUpdateForm;

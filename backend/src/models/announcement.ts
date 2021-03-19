@@ -98,9 +98,9 @@ Announcement.postCompanyAnnouncement = (req: any, result: any) => {
 }
 
 Announcement.postBranchAnnouncement = (req: any, result: any) => {
-    con.query("INSERT INTO branch_announcement (?, ?, employee_id, date, title, sub_title, content)" +
-        "VALUES (?, CURDATE(), ?, ?, ?)" , [
-        req.body.user, req.body.office_id, req.body.office_location,
+    con.query("INSERT INTO branch_announcement (office_id, office_location, employee_id, date, title, sub_title, content)" +
+        " VALUES (?, ?, ?, CURDATE(), ?, ?, ?)" , [
+        req.body.office_id, req.body.office_location, req.body.user,
         req.body.title, req.body.subtitle, req.body.content
     ], (err: any, res: any) => {
         if (err) {
