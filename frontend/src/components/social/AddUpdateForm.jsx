@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {makeStyles, withStyles} from "@material-ui/core/styles";
+import {makeStyles} from "@material-ui/core/styles";
 import {Button, MenuItem, TextField, Typography} from "@material-ui/core";
 import Endpoint from "../../config/Constants";
 import safeFetch from "../../util/Util"
@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function AddUpdateForm() {
+function AddUpdateForm(props) {
 
     const [title, setTitle] = useState("");
     const [subtitle, setSubtitle] = useState("");
@@ -103,6 +103,10 @@ function AddUpdateForm() {
         setContent(input.target.value);
     }
 
+    const handleUpdateLocationClose = () => {
+        props.whatToDoWhenClosed();
+    }
+
     const handleOfficeChange = (event) => {
         if (event.target.value !== 'All') {
             const params = event.target.value.split(['-']);
@@ -133,7 +137,7 @@ function AddUpdateForm() {
             safeFetch(Endpoint + "/announcement/postCompanyAnnouncement", requestOptions)
                 .then((response) => response.text())
                 .then(result => {
-                    this.props.closeModal();
+                    props.closeModal();
                 })
                 .catch(error => console.log('error', error));
         } else {
@@ -154,15 +158,16 @@ function AddUpdateForm() {
             safeFetch(Endpoint + "/announcement/postBranchAnnouncement", requestOptions)
                 .then((response) => response.text())
                 .then(result => {
-                    this.props.closeModal();
+                    props.closeModal();
                 })
                 .catch(error => console.log('error', error));
 
         }
+        handleUpdateLocationClose();
     }
 
     return (
-        <div className={classes.addAnnouncement}>
+        <div className={classes.addAnnouncement} onClose={handleUpdateLocationClose}>
             <Typography className={classes.sectionTextModal}>
                 Create New Announcement
             </Typography>
