@@ -3,9 +3,8 @@ import InfiniteScroll from "react-infinite-scroller";
 import {withStyles} from "@material-ui/core/styles";
 import Endpoint from "../../config/Constants";
 import {updatePopup} from "./Popup";
-import {Button, Grid, MenuItem, Modal, TextField} from '@material-ui/core';
-import AddUpdateForm from "./AddUpdateForm";
-import safeFetch from "../../util/Util"
+import { Modal } from '@material-ui/core';
+import safeFetch from "../../util/Util";
 
 const styles = theme => ({
     title: {
@@ -14,9 +13,9 @@ const styles = theme => ({
     },
     titleBox: {
         alignItems: 'center',
+        justifyContent: 'center',
         display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center'
+        flexDirection: 'row'
     },
     updateBox: {
         background: '#EEF0F2',
@@ -43,19 +42,6 @@ const styles = theme => ({
     },
     inputBoxes: {
         marginLeft: 20
-    },
-    actionButton: {
-        background: '#00ADEF',
-        borderRadius: 20,
-        color: 'white',
-        height: '50px',
-        padding: '0 30px',
-        marginTop: '10px',
-        marginBottom: '10px',
-        marginLeft: 20,
-        fontFamily: 'Lato',
-        fontWeight: 'bolder',
-        fontSize: 18
     }
 
 });
@@ -67,8 +53,7 @@ class CompanyUpdates extends React.Component {
         hasMoreAnnouncements: true,
         totalAnnouncements: 0,
         open: false,
-        currAnnouncement: null,
-        addAnnouncement: false
+        currAnnouncement: null
     };
 
     componentDidMount() {
@@ -77,7 +62,7 @@ class CompanyUpdates extends React.Component {
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/announcement/getTotalCompanyAnnouncements", requestOptions)
+        safeFetch(Endpoint + "/announcement/getTotalAnnouncements", requestOptions)
             .then(response => response.text())
             .then(result => {
                 const total = JSON.parse(result);
@@ -89,6 +74,10 @@ class CompanyUpdates extends React.Component {
     handleUpdateOpen = (el) => {
         console.log("update is: " + el);
         this.setState({ open: true, currAnnouncement: el});
+    }
+
+    handleClose = () => {
+        this.setState({ open: false, currAnnouncement: null});
     }
 
     getAnnouncements(page){
@@ -111,18 +100,6 @@ class CompanyUpdates extends React.Component {
 
     render() {
         const { classes } = this.props;
-
-        const handleAddUpdateClose = () => {
-            this.setState({addAnnouncement: false})
-        }
-
-        const addUpdateBody = () => {
-            return <AddUpdateForm closeModal={handleAddUpdateClose}/>
-        }
-
-        const handleAddUpdateOpen = () => {
-            this.setState({addAnnouncement: true})
-        }
 
         let announcements = [];
             this.state.announcementList.map((update, i) => {
@@ -151,17 +128,7 @@ class CompanyUpdates extends React.Component {
 
         return (
             <div className={classes.backgroundBox} style= {{height: '500px', overflow: 'auto'}} ref={(ref) => this.scrollParentRef = ref}>
-                <div className={classes.titleBox}>
-                    <h1 className={classes.title}>COMPANY UPDATES</h1>
-                    <Button className={classes.actionButton} onClick={handleAddUpdateOpen}>Add</Button>
-                    <Modal
-                        open={this.state.addAnnouncement}
-                        onClose={handleAddUpdateClose}
-                    >
-                        {addUpdateBody()}
-                    </Modal>
-
-                </div>
+                <h1 className={classes.title}>COMPANY UPDATES</h1>
                 <InfiniteScroll
                     loadMore={this.getAnnouncements.bind(this)}
                     hasMore={this.state.hasMoreAnnouncements}

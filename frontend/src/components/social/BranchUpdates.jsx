@@ -1,24 +1,23 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {withStyles} from "@material-ui/core/styles";
 import {MenuItem, TextField} from "@material-ui/core";
 import InfiniteScroll from "react-infinite-scroller";
 import Endpoint from "../../config/Constants";
 import {updatePopup} from "./Popup";
 import { Modal } from '@material-ui/core';
-import AddUpdateForm from "./AddUpdateForm";
-import safeFetch from "../../util/Util"
+import safeFetch from "../../util/Util";
 
 const styles = theme => ({
     title: {
         fontFamily: 'Lato',
         textAlign: 'center',
-        marginRight: 25
+        marginLeft: 50
     },
     titleBox: {
         alignItems: 'center',
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'center'
+        justifyContent: 'space-evenly'
     },
     updateBox: {
         background: '#EEF0F2',
@@ -42,28 +41,13 @@ const styles = theme => ({
     },
     announcementText: {
         paddingLeft: 15
-    },
-    actionButton: {
-        background: '#00ADEF',
-        borderRadius: 20,
-        color: 'white',
-        height: '50px',
-        padding: '0 30px',
-        marginTop: '10px',
-        marginBottom: '10px',
-        marginLeft: 20,
-        fontFamily: 'Lato',
-        fontWeight: 'bolder',
-        fontSize: 18
     }
 
 });
 
 class BranchUpdates extends React.Component {
 
-
-
-    state = {
+state = {
         announcementList: [],
         hasMoreAnnouncements: true,
         totalAnnouncements: 0,
@@ -120,7 +104,7 @@ class BranchUpdates extends React.Component {
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/announcement/getTotalBranchAnnouncements", requestOptions)
+        safeFetch(Endpoint + "/announcement/getTotalAnnouncements", requestOptions)
             .then(response => response.text())
             .then(result => {
                 const total = JSON.parse(result);
@@ -163,18 +147,6 @@ class BranchUpdates extends React.Component {
     render() {
         const { classes } = this.props;
 
-        const handleAddUpdateClose = () => {
-            this.setState({addAnnouncement: false})
-        }
-
-        const addUpdateBody = () => {
-            return <AddUpdateForm closeModal={handleAddUpdateClose}/>
-        }
-
-        const handleAddUpdateOpen = () => {
-            this.setState({addAnnouncement: true})
-        }
-
         let announcements = [];
         this.state.announcementList.map((update, i) => {
             announcements.push(
@@ -211,6 +183,7 @@ class BranchUpdates extends React.Component {
                             </MenuItem>
                         ))}
                     </TextField>
+
                 </div>
                 <InfiniteScroll
                     loadMore={this.getAnnouncements.bind(this)}

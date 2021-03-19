@@ -1,10 +1,16 @@
 import { DeskbuddyServer } from "../src/server";
-import supertest from "supertest";
+import supertest, {agent} from "supertest";
 import fs from 'fs';
 import { IOffice } from "../src/interfaces/location.interface";
+import { IMail } from "../src/interfaces/mail.interface";
 
 let server: DeskbuddyServer;
 let request: any;
+//                 vvvvvvvvvvv  replace with fresh token
+const adminToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Im5PbzNaRHJPRFhFSzFqS1doWHNsSFJfS1hFZyJ9.eyJhdWQiOiJkMTExY2RhYi02NjM3LTQ2YmItODZiMS0zNjg1ZGI5ZDc0NGUiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vNjVmNDBjNGEtYWEzMS00YzdjLThlNTMtNWMwY2E4MzJjN2VkL3YyLjAiLCJpYXQiOjE2MTU5NTU2NzYsIm5iZiI6MTYxNTk1NTY3NiwiZXhwIjoxNjE1OTU5NTc2LCJhaW8iOiJBVFFBeS84VEFBQUFmdW9VMDdpaUFIMXhjczF6bkpjNXNFZnRFWG1CSklaQlk5Qmk0N1RCdkd5SlJBUXFaVklVdUtvNlNDUW9uc2Y1IiwiYXpwIjoiNDJhNzI1NzktYTE2My00ZThiLWI0MjctYWE3ZWIxOTdlYjg3IiwiYXpwYWNyIjoiMCIsImdyb3VwcyI6WyJlMzBjYzhjZC0zZjg5LTRhNzgtODBmYy02NzhhMWUwNGE3OTEiLCIyNjI2MTgyNS05MDZjLTQ5OGQtOTcwNi0xMzgxMWI2NTYzNzQiXSwibmFtZSI6Ikdsb2JhbCBBZG1pbiIsIm9pZCI6Ijk5YjlhOWNmLTFjYjAtNDBjMy04N2MwLWFhOThkNmNlNjhkMSIsInByZWZlcnJlZF91c2VybmFtZSI6Imdsb2JhbGFkbWluQGRlc2tidWRkeS5vbm1pY3Jvc29mdC5jb20iLCJyaCI6IjAuQUFBQVNnejBaVEdxZkV5T1Uxd01xRExIN1hrbHAwSmpvWXRPdENlcWZyR1g2NGQ4QUdnLiIsInNjcCI6ImFjY2Vzc19hc191c2VyIiwic3ViIjoiNmxMMW51aVBsdlJLUy1kR2tCRDhVVE5QeG45ZXBEZHpHQXl5TkdORm5GTSIsInRpZCI6IjY1ZjQwYzRhLWFhMzEtNGM3Yy04ZTUzLTVjMGNhODMyYzdlZCIsInV0aSI6IklnWHV5c0ltMDBpRVR5NU5mdUVCQUEiLCJ2ZXIiOiIyLjAiLCJ3aWRzIjpbIjYyZTkwMzk0LTY5ZjUtNDIzNy05MTkwLTAxMjE3NzE0NWUxMCIsImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdfQ.n0ng5GGKMI3WpeaQ8HCgBXEFu48f0AuqBDAAZFUaiPxZP5QaJRziqOBt3CCoxKvrpvmdyUwMq2yB3pZpV-hXWd-aJhQNRXz9r7JyIGBQcctGq-zxXtCvsJLZR6rBSdLJNFQlObo1AO3lSNZ7K-TrCk2zGRz5zu4f25AVLbPZKOWWbm0qbeYWESANG48cqORlO3aG9JhAGY5arzOhVTrziULR3qlZLt3YVegzvhZpg9cGVtgLFapOPbpAqiWGJJlW0f6NdxlxQ-bqBSqxkT_PZ8sghrLQrdHKB2mbxKcaOiqlmLnAd4kNHL4U2twWdmVvvLm4U7wFNJQ8b4WSG9S1WA";
+const userToken = "PLACEHOLDER"
+const adminJSON = {"Authorization": `Bearer ${adminToken}`}
+const userJSON = {"Authorization": `Bearer ${userToken}`}
 
 beforeAll(done => {
     server = new DeskbuddyServer(3000);
@@ -22,7 +28,7 @@ afterAll(done => {
 
 describe("Reservation endpoints tests", () => {
     it("GET /reservation/getAllReservations", async done => {
-        const res = await request.get('/reservation/getAllReservations');
+        const res = await request.get('/reservation/getAllReservations').set(adminJSON);
         expect(res.status).toBe(200);
         done();
     });
@@ -70,14 +76,38 @@ describe("Social feed endpoints tests", () => {
 });
 
 describe("Mail manager endpoints tests", () => {
-    it("dummy", () => {
-        // todo
+    it("POST /mail", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        await mailDeleter(res);
+        done();
     });
+
+    it("POST /mail with null office", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNullOffice.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(404);
+        done();
+    });
+
+    it("POST /mail with null recipient", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNullRecipient.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(404);
+        done();
+    });
+
 });
+
+const mailDeleter = async (res: any) => {
+    const id = JSON.parse(res.text).id;
+    await request.delete(`/mail/${id}`).set(adminJSON);
+}
 
 describe("Miscellaneous tests", () => {
     it("GET /", async done => {
-        const res = await request.get('/');
+        const res = await request.get('/').set(adminJSON);
         expect(res.status).toBe(200);
         done();
     });
@@ -86,7 +116,7 @@ describe("Miscellaneous tests", () => {
 describe("Location endpoint tests", () => {
     it("POST /location", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationNormal.json");
-        const res = await request.post('/location').send(body);
+        const res = await request.post('/location').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         await locationDeleter(res);
         done();
@@ -94,14 +124,14 @@ describe("Location endpoint tests", () => {
 
     it("POST /location with null city", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationMissingCity.json");
-        const res = await request.post('/location').send(body);
+        const res = await request.post('/location').send(body).set(adminJSON);
         expect(res.status).toBe(404);
         done();
     });
 
     it("POST /location with missing address", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationMissingAddress.json");
-        const res = await request.post('/location').send(body);
+        const res = await request.post('/location').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         await locationDeleter(res);
         done();
@@ -109,14 +139,14 @@ describe("Location endpoint tests", () => {
 
     it("POST /location with duplicate floor numbers", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationDuplicateFloors.json");
-        const res = await request.post('/location').send(body);
+        const res = await request.post('/location').send(body).set(adminJSON);
         expect(res.status).toBe(404);
         done();
     });
 
     it("POST /location with duplicate desk IDs", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationDuplicateDesks.json");
-        const res = await request.post('/location').send(body);
+        const res = await request.post('/location').send(body).set(adminJSON);
         expect(res.status).toBe(404);
         done();
     });
@@ -124,9 +154,9 @@ describe("Location endpoint tests", () => {
     // Maximum amount of offices for a single location (i.e. NV) is 100
     it("POST /location twice", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationNormal.json");
-        const resFirst = await request.post('/location').send(body);
+        const resFirst = await request.post('/location').send(body).set(adminJSON);
         expect(resFirst.status).toBe(200);
-        const resSecond = await request.post('/location').send(body);
+        const resSecond = await request.post('/location').send(body).set(adminJSON);
         expect(resSecond.status).toBe(200);
         await locationDeleter(resFirst);
         await locationDeleter(resSecond);
@@ -139,7 +169,7 @@ const locationDeleter = async (res: any) => {
     let cityCode;
     try {
         cityCode = result.split("-");
-        await request.delete(`/location/${cityCode[0]}/${cityCode[1]}`);
+        await request.delete(`/location/${cityCode[0]}/${cityCode[1]}`).set(adminJSON);
     } catch (err) {
         throw new Error(err);
     }

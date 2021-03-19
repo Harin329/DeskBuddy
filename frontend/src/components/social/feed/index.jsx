@@ -27,6 +27,7 @@ import {
   Icon,
   PostingPopup
 } from './styles';
+import safeFetch from "../../../util/Util";
 
 class Feed extends React.Component {
   state = {
@@ -54,7 +55,7 @@ class Feed extends React.Component {
       redirect: 'follow',
     };
 
-    fetch(
+    safeFetch(
       `${Endpoint}/post/getFeedByCategory/${this.channel_id}`,
       requestOptions
     )
@@ -92,7 +93,7 @@ class Feed extends React.Component {
         redirect: 'follow',
       };
 
-      fetch(Endpoint + '/post/createPost', requestOptions)
+      safeFetch(Endpoint + '/post/createPost', requestOptions)
         .then((response) => response.text())
         .then((result) => {
           // console.log(JSON.parse(result));
@@ -126,7 +127,7 @@ class Feed extends React.Component {
       redirect: 'follow',
     };
 
-    fetch(Endpoint + '/post/flagPost', requestOptions)
+    safeFetch(Endpoint + '/post/flagPost', requestOptions)
       .then((response) => response.text())
       .then((result) => {
         console.log(JSON.parse(result));
@@ -152,7 +153,7 @@ class Feed extends React.Component {
       redirect: 'follow',
     };
 
-    fetch(Endpoint + '/post/deletePost', requestOptions)
+    safeFetch(Endpoint + '/post/deletePost', requestOptions)
       .then((response) => response.text())
       .then((result) => {
         this.feed.splice(this.feed.indexOf(el), 1);

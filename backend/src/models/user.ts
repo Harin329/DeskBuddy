@@ -31,3 +31,21 @@ User.insertUser = (newUser: any, result: any) => {
         }
     )
 };
+
+User.getUserOIDByNameAndEmail = (first_name: string, last_name: string, email: string, result: any) => {
+    con.query(
+        'CALL getUserOIDByNameAndEmail(?, ?, ?)',
+        [
+            first_name,
+            last_name,
+            email
+        ],
+        (err: any, res: any) => {
+            if (err) {
+                result(err, null);
+            } else {
+                result(null, res);
+            }
+        }
+    )
+}
