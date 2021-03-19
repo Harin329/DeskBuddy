@@ -2,6 +2,7 @@ import { DeskbuddyServer } from "../src/server";
 import supertest, {agent} from "supertest";
 import fs from 'fs';
 import { IOffice } from "../src/interfaces/location.interface";
+import { IMail } from "../src/interfaces/mail.interface";
 
 let server: DeskbuddyServer;
 let request: any;
@@ -75,10 +76,34 @@ describe("Social feed endpoints tests", () => {
 });
 
 describe("Mail manager endpoints tests", () => {
-    it("dummy", () => {
-        // todo
+    it("POST /mail", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        await mailDeleter(res);
+        done();
     });
+
+    it("POST /mail with null office", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNullOffice.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(404);
+        done();
+    });
+
+    it("POST /mail with null recipient", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNullRecipient.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(404);
+        done();
+    });
+
 });
+
+const mailDeleter = async (res: any) => {
+    const id = JSON.parse(res.text).id;
+    await request.delete(`/mail/${id}`).set(adminJSON);
+}
 
 describe("Miscellaneous tests", () => {
     it("GET /", async done => {
