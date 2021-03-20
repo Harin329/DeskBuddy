@@ -88,7 +88,7 @@ function DeskFilter() {
         setAddLocation(false)
     }
 
-    const handleUpdateLocationOpened = () => {
+    const handleUpdateLocationClosed = () => {
         setIsUpdateLocationOpen(true);
     }
 
