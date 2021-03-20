@@ -12,7 +12,7 @@ router.get('/getCompanyAnnouncements/:startIndex', (req, res: Response) => {
         })
         .catch((err: any) => {
             res.json(err);
-        })
+        });
 })
 
 router.get('/getAllBranchAnnouncements/:startIndex', (req, res: Response) => {

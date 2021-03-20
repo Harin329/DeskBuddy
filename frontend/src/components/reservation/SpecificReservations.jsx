@@ -123,7 +123,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function UpcomingReservations(date) {
+function SpecificReservations(date) {
     const classes = useStyles();
     const [reservationToCancel, setReservationToCancel] = useState();
     const [openCancelRes, setOpenCancelRes] = useState(false);
@@ -297,4 +297,4 @@ function UpcomingReservations(date) {
     );
 }
 
-export default UpcomingReservations;
+export default SpecificReservations;
