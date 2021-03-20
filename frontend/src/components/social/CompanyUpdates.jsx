@@ -2,8 +2,8 @@ import React from 'react';
 import InfiniteScroll from "react-infinite-scroller";
 import {withStyles} from "@material-ui/core/styles";
 import Endpoint from "../../config/Constants";
-import {updatePopup} from "./Popup";
-import {Button, Grid, MenuItem, Modal, TextField} from '@material-ui/core';
+import {updatePopup} from "./UpdatePopup";
+import {Button, Modal} from '@material-ui/core';
 import AddUpdateForm from "./AddUpdateForm";
 import safeFetch from "../../util/Util"
 import { isMobile } from "react-device-detect";
@@ -11,7 +11,9 @@ import { isMobile } from "react-device-detect";
 const styles = theme => ({
     title: {
         fontFamily: 'Lato',
-        textAlign: 'center'
+        textAlign: 'center',
+        fontSize: 30,
+        marginLeft: isMobile? 10: 0
     },
     titleBox: {
         alignItems: 'center',
@@ -26,17 +28,18 @@ const styles = theme => ({
         height: 82,
         margin: 'auto',
         marginTop: 2,
-        marginBottom: 2
+        marginBottom: 2,
     },
     backgroundBox: {
         background: '#FFFCF7',
         borderRadius: 20,
-        width: isMobile ? '95%' : '45%',
+        width: isMobile ? '95%' : '85%',
         height: 500,
-        alignItems: 'center'
+        alignItems: 'center',
+        marginBottom: isMobile? 15 : 0
     },
     announcementName: {
-        fontSize: isMobile ? 20 : 26,
+        fontSize: isMobile ? 19 : 26,
         paddingLeft: 15,
         paddingTop: 5
     },
@@ -55,10 +58,18 @@ const styles = theme => ({
         padding: '0 30px',
         marginTop: '10px',
         marginBottom: '10px',
-        marginLeft: 20,
+        marginRight: isMobile? 10: 0,
+        marginLeft: isMobile? 0: 10,
         fontFamily: 'Lato',
         fontWeight: 'bolder',
         fontSize: 18
+    },
+    popup: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: isMobile? '85%' : '1100px',
+        marginLeft: isMobile? '8%' : 0
     }
 
 });
@@ -147,7 +158,7 @@ class CompanyUpdates extends React.Component {
                     <Modal
                         open={this.state.open}
                         onClose={this.handleClose}
-                        style={{display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        className={classes.popup}
                     >
                         {updatePopup(this.state.currAnnouncement)}
                     </Modal>
