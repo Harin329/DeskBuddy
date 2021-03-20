@@ -186,12 +186,12 @@ function Reservation() {
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
-                {Title('RESERVATION')}
+                {Title('RESERVATION', 2, 8, 2)}
 
                 {window.innerWidth > 1500 && <Grid container>
                     <Grid item xs={2} />
                     <Grid item xs={3} >
-                        <BookingsCalendar userID={userOID}/>
+                        {BookingsCalendar(userOID)}
                     </Grid>
                     <Grid item xs={5}>
                         {Subheader('UPCOMING RESERVATIONS', 3, 6, 3)}
@@ -201,7 +201,7 @@ function Reservation() {
                 </Grid>}
                 {window.innerWidth <= 1500 && <Grid container justify='center'>
                     <Grid item xs={11} >
-                        <BookingsCalendar userID={userOID}/>
+                        {BookingsCalendar(userOID)}
                     </Grid>
                 </Grid>}
                 {window.innerWidth <= 1500 && <Grid container>

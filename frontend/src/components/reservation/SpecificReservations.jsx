@@ -123,7 +123,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function UpcomingReservations() {
+function SpecificReservations(date) {
     const classes = useStyles();
     const [reservationToCancel, setReservationToCancel] = useState();
     const [openCancelRes, setOpenCancelRes] = useState(false);
@@ -216,72 +216,73 @@ function UpcomingReservations() {
         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
             <Grid item xs={12}>
                 <List>
-                    {/* {Show most recent 3} */}
-                    {upcomingReservation.slice(0,3).map((option) => {
-                        if (!isMobile) {
-                            return (
-                                <ListItem className={classes.upcomingResBox}>
-                                    <div className={classes.upcomingResBoxDate}>
-                                        <Typography className={classes.dateText}>
-                                            {convertStartDate(option.start_date)}
-                                        </Typography>
-                                    </div>
-                                    <Divider orientation='vertical'
-                                        style={{ backgroundColor: 'black', height: '80px', width: '1px' }} />
-                                    <div className={classes.upcomingResBoxOffice}>
-                                        <div className={classes.upcomingResBoxCenterSection}>
-                                            <Typography className={classes.deskSectionText}>
-                                                OFFICE: <Typography className={classes.deskText}>
-                                                    {option.name}
-                                                </Typography>
-                                            </Typography>
-                                            <Typography className={classes.deskSectionText}>
-                                                DESK ID: <Typography className={classes.deskText}>
-                                                    {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.fk_desk_id}
-                                                </Typography>
+                    {upcomingReservation.map((option) => {
+                        if (new Date(option.start_date).toUTCString() === date) {
+                            if (!isMobile) {
+                                return (
+                                    <ListItem className={classes.upcomingResBox}>
+                                        <div className={classes.upcomingResBoxDate}>
+                                            <Typography className={classes.dateText}>
+                                                {convertStartDate(option.start_date)}
                                             </Typography>
                                         </div>
-                                    </div>
-                                    <Divider orientation='vertical'
-                                        style={{ backgroundColor: 'black', height: '80px', width: '1px' }} />
-                                    <div className={classes.upcomingResBoxCancel}>
-                                        <Button className={classes.cancelButton} onClick={() => {
-                                            dispatch(getEmployeeCountUpcomingRes(option));
-                                            handleOpenUpcomingRes(option)
-                                        }}>Cancel</Button>
-                                    </div>
-                                </ListItem>
-                            )
-                        } else {
-                            return (
-                                <ListItem className={classes.upcomingResBoxMobile}>
-                                    <div className={classes.upcomingResBoxDate}>
-                                        <Typography className={classes.dateText}>
-                                            {convertStartDate(option.start_date)}
-                                        </Typography>
-                                    </div>
-                                    <div className={classes.upcomingResBoxOfficeMobile}>
-                                        <div className={classes.upcomingResBoxCenterSection}>
-                                            <Typography className={classes.deskSectionText}>
-                                                OFFICE: <Typography className={classes.deskText}>
-                                                    {option.name}
+                                        <Divider orientation='vertical'
+                                            style={{ backgroundColor: 'black', height: '80px', width: '1px' }} />
+                                        <div className={classes.upcomingResBoxOffice}>
+                                            <div className={classes.upcomingResBoxCenterSection}>
+                                                <Typography className={classes.deskSectionText}>
+                                                    OFFICE: <Typography className={classes.deskText}>
+                                                        {option.name}
+                                                    </Typography>
                                                 </Typography>
-                                            </Typography>
-                                            <Typography className={classes.deskSectionText}>
-                                                DESK ID: <Typography className={classes.deskText}>
-                                                    {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.fk_desk_id}
+                                                <Typography className={classes.deskSectionText}>
+                                                    DESK ID: <Typography className={classes.deskText}>
+                                                        {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.fk_desk_id}
+                                                    </Typography>
                                                 </Typography>
+                                            </div>
+                                        </div>
+                                        <Divider orientation='vertical'
+                                            style={{ backgroundColor: 'black', height: '80px', width: '1px' }} />
+                                        <div className={classes.upcomingResBoxCancel}>
+                                            <Button className={classes.cancelButton} onClick={() => {
+                                                dispatch(getEmployeeCountUpcomingRes(option));
+                                                handleOpenUpcomingRes(option)
+                                            }}>Cancel</Button>
+                                        </div>
+                                    </ListItem>
+                                )
+                            } else {
+                                return (
+                                    <ListItem className={classes.upcomingResBoxMobile}>
+                                        <div className={classes.upcomingResBoxDate}>
+                                            <Typography className={classes.dateText}>
+                                                {convertStartDate(option.start_date)}
                                             </Typography>
                                         </div>
-                                    </div>
-                                    <div className={classes.upcomingResBoxCancel}>
-                                        <Button className={classes.cancelButton} onClick={() => {
-                                            dispatch(getEmployeeCountUpcomingRes(option));
-                                            handleOpenUpcomingRes(option)
-                                        }}>Cancel</Button>
-                                    </div>
-                                </ListItem>
-                            )
+                                        <div className={classes.upcomingResBoxOfficeMobile}>
+                                            <div className={classes.upcomingResBoxCenterSection}>
+                                                <Typography className={classes.deskSectionText}>
+                                                    OFFICE: <Typography className={classes.deskText}>
+                                                        {option.name}
+                                                    </Typography>
+                                                </Typography>
+                                                <Typography className={classes.deskSectionText}>
+                                                    DESK ID: <Typography className={classes.deskText}>
+                                                        {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.fk_desk_id}
+                                                    </Typography>
+                                                </Typography>
+                                            </div>
+                                        </div>
+                                        <div className={classes.upcomingResBoxCancel}>
+                                            <Button className={classes.cancelButton} onClick={() => {
+                                                dispatch(getEmployeeCountUpcomingRes(option));
+                                                handleOpenUpcomingRes(option)
+                                            }}>Cancel</Button>
+                                        </div>
+                                    </ListItem>
+                                )
+                            }
                         }
                     })}
                     <Modal
@@ -296,4 +297,4 @@ function UpcomingReservations() {
     );
 }
 
-export default UpcomingReservations;
+export default SpecificReservations;

@@ -3,6 +3,7 @@ import React from 'react';
 import { PopupContainer, PopupTitle, PopupSubtitle, PopupContent } from './PopupStyle';
 
 const updatePopup = (props) => {
+
     return (
         <PopupContainer>
             <PopupTitle>{props.title}</PopupTitle>
