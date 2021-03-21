@@ -1,10 +1,13 @@
-import React from "react";
+import React, {useEffect} from "react";
 import ICBC from "../../assets/ICBC.png";
 import { Link, NavLink } from 'react-router-dom';
 import { useMsal } from "@azure/msal-react";
 import { makeStyles } from '@material-ui/core/styles';
 import { apiConfig, graphConfig } from "../../authConfig";
 import safeFetch, { graphFetch, accountIsAdmin } from "../../util/Util";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchReservations} from "../../actions/reservationActions";
+import {getProfilePhoto} from "../../actions/authenticationActions";
 
 const useStyles = makeStyles({
     linkText: { 
@@ -26,30 +29,13 @@ function NavBar() {
     const userOID = accounts[0].idTokenClaims.oid;
     const isAdmin = accountIsAdmin(accounts[0]);
     const username = accounts[0].username;
+    const displayName = useSelector(state => state.authentication.displayName);
+    const dispatch = useDispatch();
+    const profilePic = useSelector(state => state.authentication.profilePic);
 
-    const callDeskBuddyEndpoint = () => {
-        const options = {
-            method: "GET",
-        };
-        safeFetch(apiConfig.resourceUri + "", options)
-            .then(response => response.text())
-            .then(responseJson => {
-                alert(JSON.stringify(responseJson, null, 2));
-            })
-            .catch(error => console.log(error));
-    }
-
-    const callGraphEndpoint = () => {
-        const options = {
-            method: "GET",
-        };
-        graphFetch(graphConfig.graphMeEndpoint + "", options)
-            .then(response => response.json())
-            .then(responseJson => {
-                alert(JSON.stringify(responseJson, null, 2));
-            })
-            .catch(error => console.log(error));
-    }
+    useEffect(() => {
+        dispatch(getProfilePhoto());
+    }, []);
 
     return (
         <div style={{ background: 'white', flexDirection: 'row', display: 'flex', padding: 20 }}>
@@ -69,16 +55,12 @@ function NavBar() {
                     SOCIAL FEED
                 </NavLink>
                 <div style={{ flex: 15, alignSelf: 'center', justifyContent: 'center' }} >
-                    {/* <button style={{ height: '25px' }} onClick={() => callDeskBuddyEndpoint()} > API CALL </button>
-                    <button style={{ height: '25px' }} onClick={() => callGraphEndpoint()} > MS GRAPH CALL </button> */}
                 </div>
-                <div style={{ color: 'black', alignSelf: 'center', flex: 1, fontFamily: 'Lato' }}>
-                    {username} {"\n"}
-                    {userOID} {"\n"}
-                    {isAdmin ? "Admin" : "User"}
+                <div style={{ color: 'black', alignSelf: 'center', fontFamily: 'Lato' }}>
+                    {displayName}
                 </div>
                 <div style={{ flex: 1 }} />
-                <img src={ICBC} style={{ width: 50, borderRadius: 50, backgroundColor: 'black', flex: 1, objectFit: 'contain' }} />
+                <img src={profilePic} style={{ width: 50, borderRadius: 50, backgroundColor: 'black', flex: 1, objectFit: 'contain' }} />
                 <div style={{ flex: 1 }} />
                 <button style={{ height: '25px', alignSelf: 'center', fontFamily: 'Lato' }} onClick={() => instance.logout()} > LOGOUT </button>
                 <div style={{ flex: 1 }} />

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import ICBC from "../../assets/ICBC.png";
 import { Link, NavLink } from 'react-router-dom';
 import { useMsal } from "@azure/msal-react";
@@ -8,6 +8,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { apiConfig, graphConfig } from "../../authConfig";
 import IconButton from '@material-ui/core/IconButton';
 import safeFetch, { graphFetch, accountIsAdmin } from "../../util/Util";
+import {useDispatch, useSelector} from "react-redux";
+import {getProfilePhoto} from "../../actions/authenticationActions";
 
 const useStyles = makeStyles({
     linkText: {
@@ -32,30 +34,13 @@ function MobileNavBar() {
     const isAdmin = accountIsAdmin(accounts[0]);
     const username = accounts[0].username;
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const displayName = useSelector(state => state.authentication.displayName);
+    const dispatch = useDispatch();
+    const profilePic = useSelector(state => state.authentication.profilePic);
 
-    const callDeskBuddyEndpoint = () => {
-        const options = {
-            method: "GET",
-        };
-        safeFetch(apiConfig.resourceUri + "", options)
-            .then(response => response.text())
-            .then(responseJson => {
-                alert(JSON.stringify(responseJson, null, 2));
-            })
-            .catch(error => console.log(error));
-    }
-
-    const callGraphEndpoint = () => {
-        const options = {
-            method: "GET",
-        };
-        graphFetch(graphConfig.graphMeEndpoint + "", options)
-            .then(response => response.json())
-            .then(responseJson => {
-                alert(JSON.stringify(responseJson, null, 2));
-            })
-            .catch(error => console.log(error));
-    }
+    useEffect(() => {
+        dispatch(getProfilePhoto());
+    }, []);
 
     const toggleDrawer = () => (event) => {
         if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
