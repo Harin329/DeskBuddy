@@ -185,15 +185,15 @@ describe("Location endpoint tests", () => {
         done();
     });
 
-    // it("POST /location with valid image", async done => {
-    //     const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationNormal.json");
-    //     const image: Buffer = fs.readFileSync("test/testImages/test.png");
-    //     body.image = image;
-    //     const res = await request.post('/location').send(body).set(adminJSON);
-    //     expect(res.status).toBe(200);
-    //     // await locationDeleter(res);
-    //     done();
-    // });
+    it("POST /location with valid image", async done => {
+        const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationNormal.json");
+        const image: string = fs.readFileSync("test/testImages/test.jpg").toString('base64');
+        body.image = image
+        const res = await request.post('/location').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        await locationDeleter(res);
+        done();
+    });
 
     it("POST /location with null city", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationMissingCity.json");

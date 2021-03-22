@@ -18,7 +18,7 @@ Office.addOffice = (id: number, office: IOffice, result: any) => {
         office.city,
         office.name,
         office.address,
-        office.image
+        Buffer.from(office.image, 'base64')
     ],
     (err: any, res: any) => {
         if (err) {

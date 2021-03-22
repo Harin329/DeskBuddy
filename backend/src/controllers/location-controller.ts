@@ -22,12 +22,12 @@ export default class LocationController {
         await this.begin(conn);
         try {
             const office: IOffice = req.body;
-            if (office.image === null) {
-                office.image = fs.readFileSync("src/images/defaultBuildingImage.jpg");
+            if (!office.image) {
+                office.image = fs.readFileSync("src/images/defaultBuildingImage.jpg").toString('base64');
             }
             for (const floor in office.floors) {
-                if (office.floors[floor].image === null) {
-                    office.floors[floor].image = fs.readFileSync("src/images/defaultFloorPlanImage.jpg");
+                if (!office.floors[floor].image) {
+                    office.floors[floor].image = fs.readFileSync("src/images/defaultFloorPlanImage.jpg").toString('base64');
                 }
             }
             const unparsedIDs = await this.getOfficeIDs(office.city);
@@ -72,7 +72,7 @@ export default class LocationController {
         return new Promise((resolve, reject) => {
             Office.addOffice(id, office, (err: any, res: any) => {
                 if (err) {
-                    reject(false);
+                    reject(err);
                 } else {
                     resolve(true);
                 }
