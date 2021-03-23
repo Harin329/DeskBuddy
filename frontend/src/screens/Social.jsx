@@ -1,11 +1,11 @@
 import '../App.css';
 import GroupChannel from "../components/social/group-channel/GroupChannel";
 import React from 'react';
-import { subtitle } from '../components/global/subtitle-line/index';
 import CompanyUpdates from "../components/social/CompanyUpdates";
 import BranchUpdates from "../components/social/BranchUpdates";
 import {makeStyles} from "@material-ui/core/styles";
 import { isMobile } from "react-device-detect";
+import Subheader from '../components/global/Subheader';
 
 const useStyles = makeStyles((theme) => ({
     updatesSection: {
@@ -15,8 +15,9 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: isMobile ? 'column' : 'row',
         alignContent: 'center',
-        marginLeft: '140px',
-        marginTop: '20px'
+        marginLeft: isMobile? '28px' : '100px',
+        marginTop: '20px',
+        marginBottom: '50px'
     }
 }));
 
@@ -33,7 +34,8 @@ function Social() {
         <BranchUpdates>
         </BranchUpdates>
        </div>
-       {subtitle("FEED")}
+        {window.innerWidth > 1500 && Subheader('FEED', 4, 2, 4)}
+        {window.innerWidth <= 1500 && Subheader('FEED', 0, 12, 0)}
        <GroupChannel/>
     </div>
   );

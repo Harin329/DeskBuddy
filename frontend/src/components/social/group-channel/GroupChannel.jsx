@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Home from '../../../assets/home.png';
 import LinedHeader from "./LinedHeader";
 import Delete from "../../../assets/delete.png";
-
 import Feed from '../feed';
 import {useMsal} from "@azure/msal-react";
 import safeFetch, {accountIsAdmin} from "../../../util/Util";

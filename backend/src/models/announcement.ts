@@ -12,7 +12,7 @@ export const Announcement = function (this: any, announcement: any) {
 };
 
 Announcement.getCompanyAnnouncements = (start_index: number, result: any) => {
-    con.query("SELECT * FROM company_announcement limit ?, 20",  [
+    con.query("SELECT * FROM company_announcement ORDER BY date DESC limit ?, 20",  [
         start_index
     ], (err: any, res: any) => {
         if (err) {
@@ -27,7 +27,7 @@ Announcement.getCompanyAnnouncements = (start_index: number, result: any) => {
 };
 
 Announcement.getAllBranchAnnouncements = (start_index: number, result: any) => {
-    con.query("SELECT * FROM branch_announcement limit ?, 20",  [
+    con.query("SELECT * FROM branch_announcement ORDER BY date DESC limit ?, 20",  [
         start_index
     ], (err: any, res: any) => {
         if (err) {

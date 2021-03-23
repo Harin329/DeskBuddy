@@ -35,8 +35,18 @@ router.get('/getBranchAnnouncements/:startIndex/:officeloc/:officeid', (req, res
         })
 })
 
-router.get('/getCompanyTotalAnnouncements', (req, res: Response) => {
+router.get('/getTotalCompanyAnnouncements', (req, res: Response) => {
     announcementServer.getTotalCompanyAnnouncements()
+        .then((total: any) => {
+            res.json(total);
+        })
+        .catch((err: any) => {
+            res.json(err);
+        })
+})
+
+router.get('/getTotalBranchAnnouncements', (req, res: Response) => {
+    announcementServer.getTotalBranchAnnouncements()
         .then((total: any) => {
             res.json(total);
         })

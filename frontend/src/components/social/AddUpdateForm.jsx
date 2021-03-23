@@ -4,6 +4,7 @@ import {Button, MenuItem, TextField, Typography} from "@material-ui/core";
 import Endpoint from "../../config/Constants";
 import safeFetch from "../../util/Util"
 import {useMsal} from "@azure/msal-react";
+import {isMobile} from "react-device-detect";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -44,8 +45,8 @@ const useStyles = makeStyles((theme) => ({
     addAnnouncement: {
         position: 'fixed',
         top: '20%',
-        left: '25%',
-        width: '45%',
+        left: isMobile? '5%' : '25%',
+        width: isMobile? '75%' : '45%',
         height: '400',
         background: '#FFFCF7',
         padding: '30px',
@@ -176,7 +177,7 @@ function AddUpdateForm(props) {
                     id="title"
                     label="Title"
                     style={{ margin: 8 }}
-                    placeholder="Announcement Title"
+                    placeholder="Announcement Title (25)"
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -189,7 +190,7 @@ function AddUpdateForm(props) {
                     id="subtitle"
                     label="Subtitle"
                     style={{ margin: 8 }}
-                    placeholder="Announcement Subtitle"
+                    placeholder="Announcement Subtitle (25)"
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -202,7 +203,7 @@ function AddUpdateForm(props) {
                     id="content"
                     label="Content"
                     style={{ margin: 8 }}
-                    placeholder="Announcement Details (500 Characters)"
+                    placeholder="Announcement Details (500)"
                     variant="outlined"
                     fullWidth
                     margin="normal"
