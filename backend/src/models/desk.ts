@@ -105,3 +105,19 @@ Desk.getAllOpenDesks = (reservationQuery: any, result: any) => {
         }
     })
 };
+
+Desk.removeDesks = (id: number, city: string, floorNum: number, result: any) => {
+    con.query('CALL deleteDesks(?, ?, ?)',
+    [
+        id,
+        city,
+        floorNum
+    ],
+    (err: any, res: any) => {
+        if (err) {
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    });
+}

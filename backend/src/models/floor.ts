@@ -43,3 +43,19 @@ Floor.getFloorByOffice = (office_location: string, office_id: number, result: an
         }
     })
 };
+
+Floor.getAllFloorsByOffice = (office_location: string, office_id: number, result: any) => {
+    con.query('CALL getFloorByOffice(?,?)',
+    [
+        office_id,
+        office_location,
+    ],
+    (err: any, res: any) => {
+        if (err) {
+            console.log('Error: ', err);
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    })
+};
