@@ -53,7 +53,7 @@ export const apiConfig = {
     resourceScopes: ["api://d111cdab-6637-46bb-86b1-3685db9d744e/access_as_user"]
 }
 
-export const graphScopes = ["User.Read", "openid", "profile", "offline_access"];
+export const graphScopes = ["User.Read", "openid", "profile"];
 
 /**
  * Scopes you add here will be prompted for user consent during sign-in.
@@ -62,7 +62,7 @@ export const graphScopes = ["User.Read", "openid", "profile", "offline_access"];
  * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
  */
 export const loginRequest = {
-    scopes: [...graphScopes, ...apiConfig.resourceScopes]
+    scopes: [...graphScopes]
 };
 
 // Add here scopes for access token to be used at the API endpoints.

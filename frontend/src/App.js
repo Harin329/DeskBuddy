@@ -11,10 +11,10 @@ import {InteractionType} from '@azure/msal-browser';
 import NavBar from "./components/global/NavBar";
 import MobileNavBar from "./components/global/MobileNavBar";
 import {graphConfig, loginRequest} from "./authConfig";
-import safeFetch, {graphFetch} from "./util/Util";
+import safeFetch, {accountIsAdmin, graphFetch} from "./util/Util";
 import Endpoint from "./config/Constants";
 import {useDispatch, useSelector} from "react-redux";
-import {SET_USER_ADDED_TO_DB} from "./actions/actionTypes";
+import {SET_IS_ADMIN, SET_OID, SET_USER_ADDED_TO_DB, SET_USER_DISPLAY_NAME} from "./actions/actionTypes";
 import { isMobile } from "react-device-detect";
 
 function App() {
@@ -33,10 +33,11 @@ function App() {
 
     useEffect(() => {
         if (addedToDB === false && inProgress === "none" && accounts.length > 0) {
-            userInfo.email = accounts[0].idTokenClaims.email;
+            userInfo.email = accounts[0].idTokenClaims.preferred_username;
             userInfo.family_name = accounts[0].idTokenClaims.family_name;
             userInfo.given_name = accounts[0].idTokenClaims.given_name;
             userInfo.oid = accounts[0].idTokenClaims.oid;
+            // console.log(JSON.stringify(accounts[0].idTokenClaims, null, 2))
             fetchUserInfo()
         }
     }, [inProgress, accounts, instance]);
@@ -48,12 +49,22 @@ function App() {
         };
 
         graphFetch(graphConfig.graphMeEndpoint, options)
-            .then(response => response.json())
-            .then(responseJson => {
-                userInfo.mobilePhone = responseJson.mobilePhone;
-                addUserToDeskBuddyDB(userInfo)
+            .then(response => {
+                if (response != null && response.ok) {
+                    response.json()
+                        .then(responseJson => {
+                            userInfo.mobilePhone = responseJson.mobilePhone;
+                            userInfo.displayName = responseJson.displayName;
+                            addUserToDeskBuddyDB(userInfo);
+                        })
+                } else {
+                    throw Error("Bad response from /me");
+                }
             })
-            .catch(error => console.log(error));
+            .catch(error => {
+                console.log(error);
+                alert("error loading profile, please try again");
+            });
     }
 
     // create or update logged in user in the DeskBuddy database using information from DeskBuddy azure directory (currently oid, firstname, lastname, phone, email)
@@ -68,11 +79,22 @@ function App() {
         };
 
         safeFetch(Endpoint + "/user", requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                dispatch({ type: SET_USER_ADDED_TO_DB, payload: true });
+            .then(response => {
+                if (response != null && response.ok) {
+                    response.json()
+                        .then(responseJson => {
+                            dispatch({type: SET_OID, payload: userInfo.oid});
+                            dispatch({type: SET_IS_ADMIN, payload: accountIsAdmin(accounts[0])});
+                            dispatch({type: SET_USER_DISPLAY_NAME, payload: userInfo.displayName});
+                            dispatch({type: SET_USER_ADDED_TO_DB, payload: true});
+                        })
+                } else {throw Error("Bad response from /user");
+                }
             })
-            .catch(error => console.log('error', error));
+            .catch(error => {
+                console.log('error', error);
+                alert("error loading profile, please try again");
+            });
     }
 
     return (

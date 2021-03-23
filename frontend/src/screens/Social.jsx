@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: isMobile ? 'column' : 'row',
         alignContent: 'center',
-        marginLeft: '140px',
+        marginLeft: isMobile? '28px' : '100px',
         marginTop: '20px'
     }
 }));

@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import multer from "multer";
 
 const router = Router();
 
@@ -27,6 +28,19 @@ router.post('/', (req: Request, res: Response) => {
         .catch((err: any) => {
             res.json(err);
         });
+})
+
+const upload = multer();
+router.post('/photo', upload.single("image"), (req: Request, res: Response) => {
+    // @ts-ignore
+    userServer.updatePhoto(req.authInfo.oid, req.file.buffer)
+        .then((user: any) => {
+            res.json(user);
+        })
+        .catch((err: any) => {
+            res.json(err);
+        });
+
 })
 
 export default router
