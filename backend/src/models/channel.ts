@@ -46,3 +46,17 @@ Channel.deleteChannel = (req: any, result: any) => {
         }
     })
 }
+
+Channel.postAddChannel = (req: any, result: any) => {
+    con.query("INSERT INTO channel (channel_id, channel_name, channel_icon)" +
+        " VALUES (?, ?, ?)" , [
+        req.body.channel_id, req.body.channel_name, req.body.channel_icon
+    ], (err: any, res: any) => {
+        if (err) {
+            console.log("Error: ", err);
+        } else {
+            console.log(res);
+        }
+        console.log(res);
+    })
+}

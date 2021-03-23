@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Endpoint from '../../../config/Constants';
-import {Button, Divider, Grid, List, ListItem, Typography,} from '@material-ui/core';
+import {Button, Modal, Divider, Grid, List, ListItem, Typography,} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Home from '../../../assets/home.png';
 import LinedHeader from "./LinedHeader";
@@ -8,6 +8,8 @@ import Delete from "../../../assets/delete.png";
 import Feed from '../feed';
 import {useMsal} from "@azure/msal-react";
 import safeFetch, {accountIsAdmin} from "../../../util/Util";
+
+import AddChannelForm from "./AddChannelForm";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -44,6 +46,7 @@ function GroupChannel() {
     const classes = useStyles();
     const [channels, setChannels] = useState([]);
     const [selectedChannel, setSelectedChannel] = useState(1);
+    const [addChannel, setAddChannel] = useState(false);
     const { accounts } = useMsal();
     const isAdmin = accountIsAdmin(accounts[0]);
 
@@ -99,9 +102,17 @@ function GroupChannel() {
             .catch(error => console.log('error', error));
         //console.log("Channel will be deleted");
     };
-    const handleAddChannelClicked = (event) => {
-        console.log("Clicked add channel");
+    const handleAddChannelClose = () => {
+        setAddChannel(false);
     };
+
+    const addChannelBody = () => {
+        return <AddChannelForm closeModal={handleAddChannelClose} whatToDoWhenClosed={(bool) => {setAddChannel(bool)}}/>
+    }
+
+    const handleAddChannelOpen = () => {
+        setAddChannel(true);
+    }
 
     return (
         <div style={{display: 'flex', justifyContent: 'space-evenly'}}>
@@ -143,8 +154,14 @@ function GroupChannel() {
                 </div>
             {/*{props.isAdmin && <Divider/>}*/}
             {isAdmin && <div style={{justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
-                <Button onClick={(event) => handleAddChannelClicked(event)} className={classes.addChannelButton}>Add Channel</Button>
+                <Button onClick={(event) => handleAddChannelOpen(event)} className={classes.addChannelButton}>Add Channel</Button>
             </div>}
+            <Modal
+                    open={addChannel}
+                    onClose={handleAddChannelClose}
+                >
+                    {addChannelBody()}
+                </Modal>
             </div>
             <Feed ref={ feedElement } style={{ flex: '1' }}/>
         </div>
