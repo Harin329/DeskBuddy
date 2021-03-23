@@ -17,7 +17,7 @@ Floor.addFloor = (id: number, floor: IFloor, office: IOffice, result: any) => {
         floor.floor_num,
         id,
         office.city,
-        floor.image
+        Buffer.from(floor.image, 'base64')
     ],
     (err: any, res: any) => {
         if (err) {

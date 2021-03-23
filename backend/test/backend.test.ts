@@ -179,7 +179,7 @@ describe("Miscellaneous tests", () => {
 describe("Location endpoint tests", () => {
     it("POST /location", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationNormal.json");
-        const res = await request.post('/location').send(body).set(adminJSON);
+        const res = await request.post('/location').field("body", JSON.stringify(body)).set(adminJSON);
         expect(res.status).toBe(200);
         await locationDeleter(res);
         done();
@@ -187,14 +187,14 @@ describe("Location endpoint tests", () => {
 
     it("POST /location with null city", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationMissingCity.json");
-        const res = await request.post('/location').send(body).set(adminJSON);
+        const res = await request.post('/location').field("body", JSON.stringify(body)).set(adminJSON);
         expect(res.status).toBe(404);
         done();
     });
 
     it("POST /location with missing address", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationMissingAddress.json");
-        const res = await request.post('/location').send(body).set(adminJSON);
+        const res = await request.post('/location').field("body", JSON.stringify(body)).set(adminJSON);
         expect(res.status).toBe(200);
         await locationDeleter(res);
         done();
@@ -202,14 +202,14 @@ describe("Location endpoint tests", () => {
 
     it("POST /location with duplicate floor numbers", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationDuplicateFloors.json");
-        const res = await request.post('/location').send(body).set(adminJSON);
+        const res = await request.post('/location').field("body", JSON.stringify(body)).set(adminJSON);
         expect(res.status).toBe(404);
         done();
     });
 
     it("POST /location with duplicate desk IDs", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationDuplicateDesks.json");
-        const res = await request.post('/location').send(body).set(adminJSON);
+        const res = await request.post('/location').field("body", JSON.stringify(body)).set(adminJSON);
         expect(res.status).toBe(404);
         done();
     });
@@ -217,9 +217,9 @@ describe("Location endpoint tests", () => {
     // Maximum amount of offices for a single location (i.e. NV) is 100
     it("POST /location twice", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationNormal.json");
-        const resFirst = await request.post('/location').send(body).set(adminJSON);
+        const resFirst = await request.post('/location').field("body", JSON.stringify(body)).set(adminJSON);
         expect(resFirst.status).toBe(200);
-        const resSecond = await request.post('/location').send(body).set(adminJSON);
+        const resSecond = await request.post('/location').field("body", JSON.stringify(body)).set(adminJSON);
         expect(resSecond.status).toBe(200);
         await locationDeleter(resFirst);
         await locationDeleter(resSecond);
