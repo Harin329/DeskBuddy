@@ -13,13 +13,13 @@ const PopupContainer = styled.div`
 `;
 
 const PopupTitle = styled.h1`
-  font-size: 50px;
+  font-size: 45px;
   line-height: 60px;
   text-align: center;
 `;
 
 const PopupSubtitle = styled.h3`
-  font-size: 40px;
+  font-size: 35px;
   line-height: 48px;
   text-align: center;
   color: rgba(0, 0, 0, 0.5);
@@ -27,7 +27,7 @@ const PopupSubtitle = styled.h3`
 
 const PopupContent = styled.p`
   font-weight: normal;
-  font-size: 30px;
+  font-size: 25px;
   line-height: 36px;
   margin: 20px 40px;
 `;

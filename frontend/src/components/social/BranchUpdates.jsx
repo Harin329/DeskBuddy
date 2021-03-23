@@ -3,7 +3,7 @@ import {withStyles} from "@material-ui/core/styles";
 import {MenuItem, TextField} from "@material-ui/core";
 import InfiniteScroll from "react-infinite-scroller";
 import Endpoint from "../../config/Constants";
-import {updatePopup} from "./Popup";
+import {updatePopup} from "./UpdatePopup";
 import { Modal } from '@material-ui/core';
 import safeFetch from "../../util/Util";
 import {isMobile} from "react-device-detect";
@@ -12,7 +12,7 @@ const styles = theme => ({
     title: {
         fontFamily: 'Lato',
         textAlign: 'center',
-        marginLeft: 50
+        marginLeft: isMobile? 10: 50
     },
     titleBox: {
         alignItems: 'center',
@@ -23,7 +23,7 @@ const styles = theme => ({
     updateBox: {
         background: '#EEF0F2',
         borderRadius: 10,
-        width: '85%',
+        width: '90%',
         height: 82,
         margin: 'auto',
         marginTop: 2,
@@ -32,12 +32,13 @@ const styles = theme => ({
     backgroundBox: {
         background: '#FFFCF7',
         borderRadius: 20,
-        width: isMobile ? '95%' : '45%',
+        width: isMobile ? '95%' : '85%',
+        marginLeft: isMobile? 0: 40,
         height: 500,
         alignItems: 'center'
     },
     announcementName: {
-        fontSize: isMobile ? 20 : 26,
+        fontSize: isMobile ? 19 : 26,
         paddingLeft: 15,
         paddingTop: 5
     },
@@ -45,6 +46,9 @@ const styles = theme => ({
         fontSize: isMobile ? 16 : 20,
         paddingLeft: 15,
         paddingBottom: 5
+    },
+    officeSelector: {
+        marginRight: isMobile? 15: 0
     }
 
 });
@@ -108,7 +112,7 @@ state = {
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/announcement/getTotalAnnouncements", requestOptions)
+        safeFetch(Endpoint + "/announcement/getTotalBranchAnnouncements", requestOptions)
             .then(response => response.text())
             .then(result => {
                 const total = JSON.parse(result);
@@ -180,7 +184,7 @@ state = {
             <div className={classes.backgroundBox} style= {{height: '500px', overflow: 'auto'}} ref={(ref) => this.scrollParentRef = ref}>
                 <div className={classes.titleBox}>
                     <h1 className={classes.title}>BRANCH UPDATES</h1>
-                    <TextField id="outlined-basic" label="" variant="outlined" select onChange={(e) => this.handleOfficeChange(e)} value={this.state.selectedOffice}>
+                    <TextField className={classes.officeSelector} id="outlined-basic" label="" variant="outlined" select onChange={(e) => this.handleOfficeChange(e)} value={this.state.selectedOffice}>
                         {this.state.officeList.map((option) => (
                             <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
                                 {option.name}
