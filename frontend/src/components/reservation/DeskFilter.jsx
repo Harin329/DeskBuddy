@@ -210,9 +210,6 @@ function DeskFilter() {
                 <Grid item xs={2} />
             </Grid>
             <Grid container item justify='center' alignItems='center' direction={isMobile ? 'column' : 'row'} className={classes.sectionSpacing}>
-
-                <UpdateLocationPopup isOpen={isUpdateLocationClosed} whatToDoWhenClosed={(bool) => { setIsUpdateLocationClosed(bool) }}></UpdateLocationPopup>
-
                 <Grid item xs={isMobile ? 'auto' : 4} style={{width: '90%'}}>
                     {isAdmin &&
                     <Grid item xs={8}>

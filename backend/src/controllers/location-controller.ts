@@ -198,7 +198,7 @@ export default class LocationController {
         } if (floors !== []) {
             office.floors = [{
                 floor_num: parseInt(floors[0].floor_num, 10),
-                image: new Buffer(''),
+                image: (new Buffer('')).toString(),
                 desks: floors[0].desks
             }];
         }
