@@ -185,7 +185,7 @@ describe("Location endpoint tests", () => {
         done();
     });
 
-    it("POST /location with valid image", async done => {
+    it.only("POST /location with valid image", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationNormal.json");
         const image: string = fs.readFileSync("test/testImages/test.jpg").toString('base64');
         body.image = image

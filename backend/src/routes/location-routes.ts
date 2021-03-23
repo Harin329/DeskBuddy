@@ -1,11 +1,13 @@
 import { Router, Request, Response } from 'express';
 import LocationController from '../controllers/location-controller';
+import multer from 'multer';
 
 const router = Router();
 const locationServer = new LocationController();
+const upload = multer();
 
 // POST creates new ICBC office location
-router.post('/', (req: Request, res: Response) => {
+router.post('/', upload.any(), (req: any, res: Response) => {
     if (!req.body) {
         res.status(400).send({
             message: 'Content can not be empty!'

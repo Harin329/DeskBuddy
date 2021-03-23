@@ -106,16 +106,22 @@ class AddLocationForm extends React.Component {
                 city: this.state.city,
                 name: this.state.name,
                 address: this.state.address,
-                image: this.state.image,
                 floors: floors
+            }
+            const jsonData = JSON.stringify(jsonBody);
+
+            const formData = new FormData();
+            formData.append("image", this.state.image);
+            formData.append("body", jsonData);
+            for (const floor of this.state.inputFloors) {
+                formData.append("floor_" + floor.floor_num.toString() + "_image", floor.floor_image);
             }
 
             const requestOptions = {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(jsonBody)
+                body: formData
             };
-            safeFetch(Endpoint + "/location", requestOptions)
+            safeFetch(Endpoint + "/location", requestOptions, formData)
                 .then((response) => response.text())
                 .then(result => {
                     this.props.closeModal();
@@ -171,19 +177,6 @@ class AddLocationForm extends React.Component {
     }
 
     handleFloorImageInput(id, input) {
-        // this.getBase64(input.target.files[0])
-        //     .then(result => {
-        //         this.setState(prevState => ({
-        //             inputFloors: prevState.inputFloors.map((floor) => {
-        //                 if (floor.floor_id === id) {
-        //                     floor.floor_image = result;
-        //                 }
-        //                 return floor;
-        //             })
-        //         }));
-        //     }).catch(error => {
-        //         console.log(error);
-        //     });
         this.setState(prevState => ({
             inputFloors: prevState.inputFloors.map((floor) => {
                 if (floor.floor_id === id) {
@@ -214,14 +207,6 @@ class AddLocationForm extends React.Component {
     }
 
     handleOfficeImageInput(input) {
-        // this.getBase64(input.target.files[0])
-        //     .then(result => {
-        //         this.setState({
-        //             image: result
-        //         });
-        //     }).catch(error => {
-        //         console.log(error);
-        //     });
         this.setState({
             image: input.target.files[0]
         });
