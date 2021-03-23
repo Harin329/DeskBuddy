@@ -45,4 +45,16 @@ router.delete('/:city/:id', (req: Request, res: Response) => {
     }
 })
 
+router.put('/', (req: Request, res: Response) => {
+    locationServer.updateLocation(req)
+        .then((result) => {
+            res.status(200).send(result.toString());
+        })
+        .catch((err: any) => {
+            res.status(500).send({
+                message: err
+            });
+        })
+})
+
 export default router

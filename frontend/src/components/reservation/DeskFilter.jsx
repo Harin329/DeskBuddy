@@ -88,12 +88,21 @@ function DeskFilter() {
         setAddLocation(false)
     }
 
-    const handleUpdateLocationClosed = () => {
+    const handleUpdateLocationOpen = () => {
         setIsUpdateLocationOpen(true);
+    }
+    
+    const handleUpdateLocationClosed = () => {
+        dispatch(fetchOffices());
+        setIsUpdateLocationOpen(false);
     }
 
     const addLocationBody = () => {
         return <AddLocationForm closeModal={handleAddLocationClose} />
+    }
+
+    const updateLocationBody = () => {
+        return <UpdateLocationPopup isOpen={isUpdateLocationOpen} whatToDoWhenClosed={handleUpdateLocationClosed}></UpdateLocationPopup>
     }
 
     const handleOfficeChange = (event) => {
@@ -201,13 +210,17 @@ function DeskFilter() {
                 <Grid item xs={2} />
             </Grid>
             <Grid container item justify='center' alignItems='center' direction={isMobile ? 'column' : 'row'} className={classes.sectionSpacing}>
-
-                <UpdateLocationPopup isOpen={isUpdateLocationOpen} whatToDoWhenClosed={(bool) => { setIsUpdateLocationOpen(bool) }}></UpdateLocationPopup>
-
                 <Grid item xs={isMobile ? 'auto' : 3} style={{width: '90%'}}>
                     {isAdmin &&
-                    <Button className={classes.actionButton} onClick={handleUpdateLocationClosed}>Update
-                        Location</Button>
+                    <Grid item xs={8}>
+                        <Button className={classes.actionButton} onClick={handleUpdateLocationOpen}>Update Location</Button>
+                        <Modal
+                            open={isUpdateLocationOpen}
+                            onClose={handleUpdateLocationClosed}
+                        >
+                        {updateLocationBody()}
+                        </Modal>
+                    </Grid>
                     }
                     {isAdmin &&
                     <Grid item xs={8}>

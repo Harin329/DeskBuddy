@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ImageUploader from 'react-images-upload';
-import { Button, Grid, Typography, TextField, MenuItem } from '@material-ui/core';
+import { Grid, Typography, TextField, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
@@ -38,6 +38,7 @@ const useStyles = makeStyles({
       borderRadius: '20px',
       color: 'white',
       height: '50px',
+      width: '250px',
       padding: '0 30px',
       marginTop: '10px',
       marginBottom: '10px',
@@ -55,6 +56,7 @@ const useStyles = makeStyles({
     borderRadius: '20px',
     color: 'white',
     height: '50px',
+    width: '250px',
     padding: '0 30px',
     marginTop: '10px',
     marginBottom: '10px',
@@ -88,7 +90,7 @@ const useStyles = makeStyles({
       marginBottom: '29px'
   },
   inputBoxes: {
-      width: '90%',
+      width: '30%',
       backgroundColor: 'white',
       borderRadius: 20,
       marginTop: '10px',
@@ -122,59 +124,66 @@ const useStyles = makeStyles({
   pictureUploadContainer: {padding: '0px', margin: '0px', boxShadow: '0px 0px 0px 0px'}
 });
 
-
-const floors = [
-  {
-      value: 1,
-      label: '1',
-  },
-  {
-      value: 2,
-      label: '2',
-  },
-  {
-      value: 3,
-      label: '3',
-  },
-  {
-      value: 4,
-      label: '4',
-  },
-];
-
 function UpdateLocationFloor (props) {
     const classes = useStyles();
-    const [updateLocationFloor, setUpdateLocationFloor] = useState('');
-    const [pictures, setPictures] = useState({pictures: []});
+    let handleFormChange = props.handleFormChange;
+    const [updateLocationFloor, setUpdateLocationFloor] = useState(0);
+    const [pictures, setPictures] = useState([]);
     const [isExistingFloorPlanRemoved, setIsExistingFloorPlanRemoved] = useState(false);
+    let floors = [...props.floorsRetrieved];
 
     const handleUpdateLocationFloorChange = (event) => {
         setUpdateLocationFloor(event.target.value);
-    }
-
-    const onDrop = (newPic) => {
-        setPictures({pictures: [...newPic]});
+        handleFormChange('floors', { level: event.target.value, deskIds: null, photo: null });
     };
 
+    const onDrop = (newPic) => {
+        setPictures(pictures.concat(newPic));
+    };
+
+    useEffect(() => {
+        // timeout is to allow DOM to update if user decides to remove the picture they uploaded
+        // TODO: this image upload approach doesn't work- try another approach
+        setTimeout(async () => {
+            let pic = await document.getElementsByClassName('uploadPicture');
+            if (pic[0]) {
+                pic = pic[0].getAttribute('src').replace(/^data:.+;base64,/, '');
+                handleFormChange('floors', { level: updateLocationFloor, deskIds: null, photo: pic });
+            } else {
+                handleFormChange('floors', { level: updateLocationFloor, deskIds: null, photo: '' });
+            }
+        }, 500);
+    }, [pictures]);
+
     return (<Grid container justify='center' className={classes.dialogLineContainer}>
-    <Grid item xs={2} className={classes.dialogLineLabel}>
-        <Typography>
-        Floor Number
-        </Typography>
-    </Grid>
-    <Grid item xs={12}>
-        <TextField id="outlined-basic" data-testid='update-location-floor-dropdown' label="" variant="outlined" select onChange={handleUpdateLocationFloorChange} value={updateLocationFloor} className={classes.inputBoxes}>
+    
+    <Grid item xs={4}>
+        <TextField id="outlined-basic" data-testid='update-location-floor-dropdown' label="Floor Number" variant="outlined" select onChange={handleUpdateLocationFloorChange} value={updateLocationFloor} className={classes.inputBoxes}>
             {floors.map((floor) => {
-                return <div data-testid={floor.label}>
-                <MenuItem key={floor.label} value={floor.label}>
-                    {floor.label}
-                </MenuItem></div>
+                return <MenuItem key={floor.floor_num} value={floor.floor_num}>
+                    {floor.floor_num}
+                </MenuItem>
             })}
         </TextField>
     </Grid>
-    <Grid item xs={12}>
+    <Grid item xs={7}>
+        <Typography>
+            WIP - can upload image, but not yet saving uploaded image to database
+        </Typography>
         <ImageUploader
-                buttonClassName={classes.attachmentButton}
+                buttonStyles={{
+                    background: '#00ADEF',
+                    borderRadius: 20,
+                    color: 'white',
+                    height: '50px',
+                    width: '250px',
+                    padding: '0 30px',
+                    marginTop: '10px',
+                    marginBottom: '10px',
+                    fontFamily: 'Lato',
+                    fontWeight: 'bolder',
+                    fontSize: 18
+                }}
                 withIcon={false}
                 buttonText='Update Currently Existing Floor Plan'
                 onChange={onDrop}
@@ -183,13 +192,23 @@ function UpdateLocationFloor (props) {
                 withPreview={true}
                 withLabel={false}
                 singleImage={true}
-                fileContainerStyle={{padding: '0px', margin: '0px', boxShadow: '0px 0px 0px 0px'}}
+                fileContainerStyle={{padding: '0px', margin: '0px', boxShadow: '0px 0px 0px 0px', backgroundColor: '#FFFCF7'}}
             />
     </Grid>
     <Grid item xs={12}>
-        <Button className={isExistingFloorPlanRemoved ? classes.selectedAttachmentButton : classes.attachmentButton} onClick={() => {setIsExistingFloorPlanRemoved(!isExistingFloorPlanRemoved)}}>
-            Remove Currently Existing Floor Plan
-        </Button>
+        <TextField
+            id="desks_id"
+            label="Semicolon-separated desk ID's with capacities (Ex. Single person desk with ID 032: 032-1)"
+            style={{ margin: 8, height: '250px' }}
+            placeholder="01-1;02-4;03-11"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            InputLabelProps={{
+                shrink: true,
+            }}
+            onChange={(event) => {handleFormChange('floors', { level: updateLocationFloor, deskIds: event.target.value, photo: null });}}
+        />
     </Grid>
     
 </Grid>);

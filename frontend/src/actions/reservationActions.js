@@ -1,4 +1,4 @@
-import { SET_RESERVATIONS, SET_EMPLOYEE_COUNT, SET_DESKS_RESULTS, CHECK_MORE, SET_PAGE, SET_OFFICES, SET_DESKS, SET_FLOORPLAN_AVAILABLE } from "./actionTypes";
+import { SET_RESERVATIONS, SET_EMPLOYEE_COUNT, SET_DESKS_RESULTS, CHECK_MORE, SET_PAGE, SET_OFFICES, SET_DESKS, SET_FLOORPLAN_AVAILABLE, SET_FLOORS_IN_UPDATE } from "./actionTypes";
 import Endpoint, { resultOnPage } from '../config/Constants';
 import { appendLeadingZeroes } from "../functions/Date";
 import safeFetch from "../util/Util";
@@ -65,7 +65,6 @@ export const fetchOffices = () => dispatch => {
         .then((response) => response.text())
         .then(result => {
             dispatch({ type: SET_OFFICES, payload: JSON.parse(result) });
-            // console.log(JSON.parse(result));
         })
         .catch(error => console.log('error', error));
 }
@@ -134,6 +133,20 @@ export const fetchDesksByOffice = (params) => dispatch => {
             // console.log(JSON.parse(result));
         })
         .catch(error => console.log('error', error));
+}
+
+export const fetchFloorsByOffice = (params) => dispatch => {
+    var requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+    };
+    return safeFetch(Endpoint + "/floor/getFloorsByOffice/" + params[0] + "/" + params[1], requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+            dispatch({ type: SET_FLOORS_IN_UPDATE, payload: JSON.parse(result) })
+        })
+        .catch(error => console.log('error', error));
+    
 }
 
 export const fetchReservations = (userID) => dispatch => {

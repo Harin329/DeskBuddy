@@ -263,9 +263,9 @@ class AddLocationForm extends React.Component {
                 <form>
                     <div><TextField
                         id="city"
-                        label="City"
+                        label="City or Town"
                         style={{ margin: 8 }}
-                        placeholder="SUR"
+                        placeholder="Ex. New Westminister"
                         variant="outlined"
                         fullWidth
                         margin="normal"
@@ -275,23 +275,10 @@ class AddLocationForm extends React.Component {
                         onChange={this.handleCityInput.bind(this)}
                     /></div>
                     <div><TextField
-                        id="name"
-                        label="Name"
-                        style={{ margin: 8 }}
-                        placeholder="ICBC Westminster"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        onChange={this.handleNameInput.bind(this)}
-                    /></div>
-                    <div><TextField
                         id="address"
                         label="Address"
                         style={{ margin: 8 }}
-                        placeholder="10262 152A St"
+                        placeholder="Ex. 1320 3rd Ave"
                         variant="outlined"
                         fullWidth
                         margin="normal"
@@ -299,6 +286,19 @@ class AddLocationForm extends React.Component {
                             shrink: true,
                         }}
                         onChange={this.handleAddressInput.bind(this)}
+                    /></div>
+                    <div><TextField
+                        id="name"
+                        label="Branch Name"
+                        style={{ margin: 8 }}
+                        placeholder="Ex. New Westminster 3rd Ave"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        onChange={this.handleNameInput.bind(this)}
                     /></div>
                     <div>
                         <Button className={classes.actionButton} onClick={this.addFloor.bind(this)}>
