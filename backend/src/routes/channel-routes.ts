@@ -32,21 +32,20 @@ router.delete('/', (req: Request, res: Response) => {
         })
 })
 
-router.post('/postAddChannel', (req: Request, res: Response) => {
+router.post('/', (req: Request, res: Response) => {
     if (!req.body) {
         res.status(400).send({
             message: 'Content can not be empty!'
         });
     }
-    channelServer.postAddChannel(req)
-        .then((result: any) => {
-            res.status(200);
-            res.send();
+    channelServer.addChannel(req)
+        .then((channel: any) => {
+            //res.status(200);
+            res.json(channel)
+            //res.send();
         })
         .catch((err: any) => {
-            res.status(401).send({
-                message: err
-            });
+            res.json(err);
         });
 });
 

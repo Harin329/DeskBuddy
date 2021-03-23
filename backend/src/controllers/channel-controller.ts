@@ -26,9 +26,9 @@ export default class ChannelController {
         })
     }
 
-    postAddChannel(req: any) {
+    addChannel(req: any) {
         return new Promise((resolve, reject) => {
-            Channel.postAddChannel(req, (err: any, result: any) => {
+            Channel.addChannel(req, (err: any, result: any) => {
                 if (err) {
                     reject(err);
                 }
