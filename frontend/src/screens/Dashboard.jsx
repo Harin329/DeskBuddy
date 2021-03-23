@@ -1,7 +1,7 @@
 import '../App.css';
 import { Grid } from '@material-ui/core';
 import Title from '../components/global/Title';
-import Subheader from '../components/reservation/Subheader';
+import Subheader from '../components/global/Subheader';
 import UpcomingReservations from '../components/reservation/UpcomingReservations';
 import { isMobile } from 'react-device-detect';
 

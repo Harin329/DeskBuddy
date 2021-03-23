@@ -9,7 +9,7 @@ import BookingsCalendar from '../components/reservation/BookingsCalendar';
 import { useMsal } from "@azure/msal-react";
 
 import Title from '../components/global/Title';
-import Subheader from '../components/reservation/Subheader';
+import Subheader from '../components/global/Subheader';
 import UpcomingReservations from '../components/reservation/UpcomingReservations';
 import DeskFilter from '../components/reservation/DeskFilter';
 import { SET_EMPLOYEE_COUNT } from '../actions/actionTypes';
@@ -186,18 +186,18 @@ function Reservation() {
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
-                {Title('RESERVATION', 2, 8, 2)}
+                {Title('RESERVATION', 1, 8, 1)}
 
                 {window.innerWidth > 1500 && <Grid container>
-                    <Grid item xs={2} />
+                    <Grid item xs={1} />
                     <Grid item xs={3} >
                         {BookingsCalendar(userOID)}
                     </Grid>
-                    <Grid item xs={5}>
+                    <Grid item xs={7}>
                         {Subheader('UPCOMING RESERVATIONS', 3, 6, 3)}
                         {UpcomingReservations()}
                     </Grid>
-                    <Grid item xs={2} />
+                    <Grid item xs={1} />
                 </Grid>}
                 {window.innerWidth <= 1500 && <Grid container justify='center'>
                     <Grid item xs={11} >
@@ -213,13 +213,13 @@ function Reservation() {
                     <Grid item xs={1} />
                 </Grid>}
 
-                {window.innerWidth > 1500 && Subheader('RESERVE', 3, 2, 3)}
+                {window.innerWidth > 1500 && Subheader('RESERVE', 4, 2, 4)}
                 {window.innerWidth <= 1500 && Subheader('RESERVE', 0, 12, 0)}
 
                 {DeskFilter()}
 
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={isMobile ? 10 : 8}>
+                    <Grid item xs={isMobile ? 10 : 10}>
                         <List>
                             {deskResults.map((option) => {
                                 if (!isMobile) {
