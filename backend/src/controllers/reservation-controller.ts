@@ -90,4 +90,16 @@ export default class ReservationController {
             })
         })
     }
+
+    getReservationByMonth(req: any) {
+        const userID = req.userID;
+        return new Promise((resolve, reject) => {
+            Reservation.getReservationByMonth(userID, (err: any, res: any) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            })
+        })
+    }
 }

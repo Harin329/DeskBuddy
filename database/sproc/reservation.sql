@@ -23,3 +23,14 @@ WHERE `reservation.start_date` >= `CURDATE()` AND `fk_employee_id` = `employee_i
 ORDER BY `reservation.start_date`;
 
 END
+
+CREATE PROCEDURE `getReservationsThisMonth`(IN `employee_id` VARCHAR(50))
+BEGIN
+
+SELECT reservation.reservation_id, reservation.start_date, reservation.end_date, reservation.fk_office_id, reservation.fk_office_location, reservation.fk_floor_num, reservation.fk_desk_id, reservation.fk_employee_id, office.name
+FROM `reservation`
+INNER JOIN `office` ON office.office_id=reservation.fk_office_id AND office.office_location=reservation.fk_office_location
+WHERE MONTH(reservation.start_date) = MONTH(CURDATE()) AND YEAR(reservation.start_date) = YEAR(CURDATE()) AND fk_employee_id = `employee_id`
+ORDER BY reservation.start_date;
+
+END
