@@ -169,73 +169,80 @@ export default class LocationController {
     }
 
     public async updateLocation(req: Request): Promise<any> {
-        // load up original location values
-        const office: IOffice = {
-            city: req.body.originalOffice.office_location,
-            name: req.body.originalOffice.name,
-            address: req.body.originalOffice.address,
-            image: req.body.originalOffice.office_photo,
-            floors: []
-        };
-        const originalId = req.body.originalOffice.office_id;
-        const originalCity = req.body.originalOffice.office_location;
-
-        // load in new edited location values
-        const { city, name, address, image, floors } = req.body.edits;
-        let id = req.body.originalOffice.office_id;
-        if (city !== '') {
-            if (city !== office.city) {
-                // find new available ID for new city if the city has been changed
-                const unparsedIDs = await this.getOfficeIDs(city);
-                const IDs: any[] = JSON.parse(JSON.stringify(unparsedIDs));
-                id = this.computeID(IDs);
+        try {
+            await this.begin(conn);
+            const body = JSON.parse(req.body.body);
+            const office: IOffice = {
+                city: body.originalOffice.office_location,
+                name: body.originalOffice.name,
+                address: body.originalOffice.address,
+                image: "",
+                floors: []
+            };
+            const originalId = body.originalOffice.office_id;
+            const originalCity = body.originalOffice.office_location;
+            // load in new edited location values
+            const { city, name, address, floors } = body.edits;
+            let id = body.originalOffice.office_id;
+            if (city !== '') {
+                if (city !== office.city) {
+                    // find new available ID for new city if the city has been changed
+                    const unparsedIDs = await this.getOfficeIDs(city);
+                    const IDs: any[] = JSON.parse(JSON.stringify(unparsedIDs));
+                    id = this.computeID(IDs);
+                }
+                office.city = city;
+            } if (name !== null) {
+                office.name = name;
+            } if (address !== null) {
+                office.address = address;
+            } if (floors !== []) {
+                office.floors = [{
+                    floor_num: parseInt(floors[0].floor_num, 10),
+                    image: (new Buffer('')).toString(),
+                    desks: floors[0].desks
+                }];
             }
-            office.city = city;
-        } if (name !== null) {
-            office.name = name;
-        } if (address !== null) {
-            office.address = address;
-        } if (floors !== []) {
-            office.floors = [{
-                floor_num: parseInt(floors[0].floor_num, 10),
-                image: (new Buffer('')).toString(),
-                desks: floors[0].desks
-            }];
-        }
-        if (floors[0].desks !== null && floors[0].desks !== undefined && floors[0].desks !== []) {
-            // if there is a floor update, check if a matching floor exists
-            const floorCheckRes = await this.getFloorsByOfficeId(originalId, originalCity);
-            const matchingFloor = floorCheckRes.find((floor) => floor.floor_num === office.floors[0].floor_num);
-            if (floorCheckRes === [] || matchingFloor === undefined) {
-                // if a matching floor doesn't exist, user has entered a non-existing floor number that we can't update
-                // TODO: remove this condition- this can't happen anymore because of dispatch(fetchFloorByOffice) in update pop-up
-                return Promise.reject(floorCheckRes);
+            if (floors[0].desks !== null && floors[0].desks !== undefined && floors[0].desks !== []) {
+                // if there is a floor update, check if a matching floor exists
+                const floorCheckRes = await this.getFloorsByOfficeId(originalId, originalCity);
+                const matchingFloor = floorCheckRes.find((floor) => floor.floor_num === office.floors[0].floor_num);
+                if (floorCheckRes === [] || matchingFloor === undefined) {
+                    // if a matching floor doesn't exist, user has entered a non-existing floor number that we can't update
+                    // TODO: remove this condition- this can't happen anymore because of dispatch(fetchFloorByOffice) in update pop-up
+                    return Promise.reject(floorCheckRes);
+                } else {
+                // confirmed right floor, so update office and desks
+                    this.populateUpdateImages(office, req.files, parseInt(floors[0].floor_num, 10));
+                    const officeRes = await this.updateOffice(id, office, originalId, originalCity);
+                    if (officeRes !== true) {
+                        await this.rollback(conn);
+                        return Promise.reject(officeRes);
+                    } else {
+                        const originalFloorNum = matchingFloor.floor_num;
+                        const deskRes = await this.updateDesks(id, office, originalId, originalCity, originalFloorNum);
+                        if (deskRes === true) {
+                            await this.end(conn);
+                            return Promise.resolve(true);
+                        } else {
+                            await this.rollback(conn);
+                            throw new Error("error: " + deskRes);
+                        }
+                    }
+                }
             } else {
-            // confirmed right floor, so update office and desks
+                // no floor update, so just update the office fields
+                this.populateUpdateImages(office, req.files, 0);
                 const officeRes = await this.updateOffice(id, office, originalId, originalCity);
                 if (officeRes !== true) {
                     await this.rollback(conn);
                     return Promise.reject(officeRes);
-                } else {
-                    const originalFloorNum = matchingFloor.floor_num;
-                    this.updateDesks(id, office, originalId, originalCity, originalFloorNum)
-                        .then((res) => {
-                            return Promise.resolve(true);
-                        })
-                        .catch(async (err) => {
-                            await this.rollback(conn);
-                            return Promise.reject(err);
-                        });
                 }
+                return Promise.resolve(true);
             }
-        } else {
-            // no floor update, so just update the office fields
-            const officeRes = await this.updateOffice(id, office, originalId, originalCity);
-            if (officeRes !== true) {
-                await this.rollback(conn);
-                return Promise.reject(officeRes);
-            }
-            return Promise.resolve(true);
+        } catch (err) {
+            console.log(err);
+            return err;
         }
     }
 
@@ -267,9 +274,9 @@ export default class LocationController {
     private async updateDesks(id: number, office: IOffice, originalId: number, originalCity: string, originalFloorNum: number) {
         const deskPromises: any[] = [];
         return new Promise((resolve, reject) => {
-            Desk.removeDesks(originalId, originalCity, originalFloorNum, (err: any, res: any) => {
-                if (err) {
-                    return reject(err);
+            Desk.removeDesks(originalId, originalCity, originalFloorNum, (removeErr: any, removeRes: any) => {
+                if (removeErr) {
+                    return reject(removeErr);
                 } else {
                     for (const desk of office.floors[0].desks) {
                         const deskPromise = this.updateDesk(id, office, desk);
@@ -277,9 +284,9 @@ export default class LocationController {
                     }
                     return Promise.all(deskPromises)
                     .then((res) => {
-                        return Promise.resolve(res);
+                        return resolve(res);
                     }).catch((err) => {
-                        return Promise.reject(err);
+                        return reject(err);
                     });
                 }})
         });
@@ -370,6 +377,20 @@ export default class LocationController {
         for (let i = 0; i < office.floors.length; i++) {
             if (!office.floors[i].image) {
                 office.floors[i].image = fs.readFileSync("src/images/defaultFloorPlanImage.jpg").toString('base64')
+            }
+        }
+    }
+
+    private populateUpdateImages(office: IOffice, files: any, floor_num: number) {
+        for (const file of files) {
+            if (file.fieldname === 'image') {
+                office.image = Buffer.from(file.buffer).toString('base64');
+            } else if (file.fieldname === 'floor_image') {
+                for (const floor of office.floors) {
+                    if (floor.floor_num === floor_num) {
+                        floor.image = Buffer.from(file.buffer).toString('base64');
+                    }
+                }
             }
         }
     }
