@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Endpoint from '../../../config/Constants';
-import {Button, Divider, Grid, List, ListItem, Typography,} from '@material-ui/core';
+import {Button, Divider, Grid, IconButton, List, ListItem, Modal, Typography,} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Home from '../../../assets/home.png';
 import LinedHeader from "./LinedHeader";
@@ -8,6 +8,8 @@ import Delete from "../../../assets/delete.png";
 import Feed from '../feed';
 import {useMsal} from "@azure/msal-react";
 import safeFetch, {accountIsAdmin} from "../../../util/Util";
+import CancelIcon from "@material-ui/icons/Cancel";
+import {isMobile} from "react-device-detect";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -36,7 +38,36 @@ const useStyles = makeStyles((theme) => ({
         marginTop: 35,
         margin: 20,
         padding: 0,
-    }
+    },
+    paper: {
+        position: 'fixed',
+        top: '30%',
+        left: isMobile ? '3%' : '35%',
+        width: isMobile ? '80%' : '20%',
+        height: 'auto',
+        backgroundColor: 'white',
+        padding: '30px',
+    },
+    confirmButton: {
+        background: '#00ADEF',
+        borderRadius: 20,
+        color: 'white',
+        height: '30px',
+        padding: '0 20px',
+        marginTop: '5px',
+        marginBottom: '5px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 14,
+        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    },
+    confirmationModalText: {
+        color: 'black',
+        fontFamily: 'Lato',
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center'
+    },
 }))
 
 
@@ -46,6 +77,8 @@ function GroupChannel() {
     const [selectedChannel, setSelectedChannel] = useState(1);
     const { accounts } = useMsal();
     const isAdmin = accountIsAdmin(accounts[0]);
+    const [open, setOpen] = useState(false);
+    const [channel, setChannel] = useState();
 
     const getChannels = () => {
         var requestOptions = {
@@ -66,6 +99,15 @@ function GroupChannel() {
         getChannels();
     },[]);
 
+    const handleOpen = (option) => {
+        setChannel(option);
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     const feedElement = React.createRef();
 
     const handleListItemClicked = (event, id) => {
@@ -74,7 +116,7 @@ function GroupChannel() {
         setSelectedChannel(id);
     };
 
-    const handleDeleteChannelClicked = (event, id) => {
+    const handleDeleteChannelClicked = (id) => {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
@@ -94,14 +136,37 @@ function GroupChannel() {
         safeFetch(Endpoint + "/channel", requestOptions)
             .then(response => response.text())
             .then(() => {
-                //getChannels();
+                getChannels();
             })
             .catch(error => console.log('error', error));
         //console.log("Channel will be deleted");
+        handleClose();
     };
     const handleAddChannelClicked = (event) => {
         console.log("Clicked add channel");
     };
+
+
+    const confirmationBody = () => {
+        return (
+            <div className={classes.paper}>
+                <div style={{ width: '105%', marginTop: '-25px', justifyContent: 'flex-end', display: 'flex' }}>
+                    <IconButton size='small' onClick={handleClose}>
+                        <CancelIcon size="small" />
+                    </IconButton>
+                </div>
+                <Typography className={classes.confirmationModalText}>
+                    Do you want to delete the group channel?
+                </Typography>
+                <div style={{ width: '100%', marginTop: '10px', justifyContent: 'center', display: 'flex' }}>
+                    <Button className={classes.confirmButton} onClick={() => {
+                        handleDeleteChannelClicked(channel);
+                    }}>Confirm</Button>
+                </div>
+            </div>)
+    };
+
+
 
     return (
         <div style={{display: 'flex', justifyContent: 'space-evenly'}}>
@@ -131,14 +196,19 @@ function GroupChannel() {
                                     </div>
                                     {(isAdmin) && <div style={{width: '50px', height: '20px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
                                         {(option.channel_id !== 0 && option.channel_id !== 1) &&
-                                        <Button onClick={(event) => handleDeleteChannelClicked(event, option.channel_id)}
-                                                                            style={{ width: 15, height: 15, border: 'none'}}>
+                                        <Button onClick={() => handleOpen(option.channel_id)}
+                                                style={{ width: 15, height: 15, border: 'none'}}>
                                             <img src={Delete} alt="Delete" style={{width: '15px', height: '15px', backgroundColor: 'transparent'}}/>
                                         </Button>}
                                     </div>}
                                 </div>
                             )
                         })}
+                        <Modal
+                            open={open}
+                            onClose={handleClose}>
+                            {channel !== undefined ? confirmationBody() : null}
+                        </Modal>
                     </List>
                 </div>
             {/*{props.isAdmin && <Divider/>}*/}
