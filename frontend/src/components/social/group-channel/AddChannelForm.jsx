@@ -111,10 +111,8 @@ function AddChannelForm(props) {
                 channel_name: title,
                 channel_icon: null
             }
-
-        if (jsonBody.channel_name == "") {
-
-        } else {
+        
+        // TODO: Show screens for duplicate title
 
             console.log(jsonBody);
             requestOptions = {
@@ -130,7 +128,6 @@ function AddChannelForm(props) {
                 .catch(error => console.log('error', error));
             
                 handleAddChannelClose();
-            }
     }
 
     return (
@@ -154,7 +151,7 @@ function AddChannelForm(props) {
                 /></div>
                 <h1 className={classes.iconTitle}>Attach Icon (Optional)</h1>
                 <div>
-                    <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
+                    <Button className={classes.actionButtonCenter} onClick={handleSubmit} disabled={title == '' ? true : false}>
                         Create
                     </Button>
                 </div>
