@@ -63,3 +63,16 @@ User.getUserNameAndEmailByOID = (oid: string, result: any) => {
         }
     )
 }
+
+User.getUserNameByOffice = (office_location: string, office_id: number, result: any) => {
+    con.query("SELECT employee_id, first_name, last_name, email FROM employee where fk_office_location = ? and fk_office_id = ?",  [
+        office_location, office_id
+    ], (err: any, res: any) => {
+        if (err) {
+            console.log("Error: ", err);
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    })
+};

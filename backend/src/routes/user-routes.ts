@@ -29,4 +29,14 @@ router.post('/', (req: Request, res: Response) => {
         });
 })
 
+router.get('/GetUserNameByOffice/:officeloc/:officeid', (req, res: Response) => {
+   userServer.getUserNameByOffice(req.params.officeloc, Number(req.params.officeid))
+        .then((users: any) => {
+            res.json(users);
+        })
+        .catch((err: any) => {
+            res.json(err);
+        })
+})
+
 export default router

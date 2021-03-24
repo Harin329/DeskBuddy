@@ -1,6 +1,7 @@
 import { Mail } from '../models/mail'
 import { User } from '../models/user'
 import { IMail } from '../interfaces/mail.interface';
+import {Announcement} from "../models/announcement";
 
 export default class MailController {
   // tslint:disable-next-line:no-empty
@@ -54,6 +55,9 @@ export default class MailController {
   // posts a mail, returns mail_id
   createMail(body: IMail): Promise<number> {
     return new Promise((resolve, reject) => {
+      console.log(body.recipient_email);
+      console.log(body.recipient_first);
+      console.log(body.recipient_last);
       if (!body.recipient_email || !body.recipient_first || !body.recipient_last) {
         reject("Bad body");
       }
@@ -83,6 +87,16 @@ export default class MailController {
         }
       });
     });
+  }
+  createMailRequest(req: any) {
+    return new Promise((resolve, reject) => {
+      Mail.createMailRequest(req, (err: any, result: any) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(result);
+      })
+    })
   }
   // deletes a mail, returns how many rows have been deleted
   deleteMail(id: number): Promise<number> {

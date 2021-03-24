@@ -1,4 +1,5 @@
 import { User } from '../models/user';
+import {Announcement} from "../models/announcement";
 
 export default class UserController {
     // tslint:disable-next-line:no-empty
@@ -22,5 +23,16 @@ export default class UserController {
             })
         })
 
+    }
+
+    getUserNameByOffice(office_location: string, office_id: number) {
+        return new Promise((resolve, reject) => {
+            User.getUserNameByOffice(office_location, office_id,(err: any, result: any) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(result);
+            })
+        })
     }
 }

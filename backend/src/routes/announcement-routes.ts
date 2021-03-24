@@ -55,16 +55,6 @@ router.get('/getTotalBranchAnnouncements', (req, res: Response) => {
         })
 })
 
-router.get('/getCompanyBranchAnnouncements', (req, res: Response) => {
-    announcementServer.getTotalBranchAnnouncements()
-        .then((total: any) => {
-            res.json(total);
-        })
-        .catch((err: any) => {
-            res.json(err);
-        })
-})
-
 router.post('/postCompanyAnnouncement', (req: Request, res: Response) => {
     if (!req.body) {
         res.status(400).send({

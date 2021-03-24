@@ -29,7 +29,7 @@ export default class AnnouncementController {
 
     }
 
-    getBranchAnnouncements(office_location: string, office_id: number, start_index: number,) {
+    getBranchAnnouncements(office_location: string, office_id: number, start_index: number) {
         return new Promise((resolve, reject) => {
             Announcement.getBranchAnnouncements(office_location, office_id, start_index, (err: any, res: any) => {
                 if (err) {
