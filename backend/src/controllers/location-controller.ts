@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, response } from 'express';
+import e, { Request, Response, NextFunction, response } from 'express';
 import { IOffice, IFloor, IDesk } from '../interfaces/location.interface';
 import { Desk } from '../models/desk';
 import { Floor } from '../models/floor';
@@ -213,12 +213,17 @@ export default class LocationController {
                     return Promise.reject(floorCheckRes);
                 } else {
                 // confirmed right floor, so update office and desks
-                    this.populateUpdateImages(office, req.files, parseInt(floors[0].floor_num, 10));
+                    this.populateUpdateImages(office, req.files, matchingFloor.floor_num);
                     const officeRes = await this.updateOffice(id, office, originalId, originalCity);
                     if (officeRes !== true) {
                         await this.rollback(conn);
                         return Promise.reject(officeRes);
                     } else {
+                        const floorRes = await this.updateFloor(office, matchingFloor.floor_num, originalCity, originalId);
+                        if (floorRes !== true) {
+                            await this.rollback(conn);
+                            throw new Error("error in updating floor image")
+                        }
                         const originalFloorNum = matchingFloor.floor_num;
                         const deskRes = await this.updateDesks(id, office, originalId, originalCity, originalFloorNum);
                         if (deskRes === true) {
@@ -226,7 +231,7 @@ export default class LocationController {
                             return Promise.resolve(true);
                         } else {
                             await this.rollback(conn);
-                            throw new Error("error: " + deskRes);
+                            throw new Error("error at updating desks");
                         }
                     }
                 }
@@ -284,7 +289,7 @@ export default class LocationController {
                     }
                     return Promise.all(deskPromises)
                     .then((res) => {
-                        return resolve(res);
+                        return resolve(true);
                     }).catch((err) => {
                         return reject(err);
                     });
@@ -301,6 +306,28 @@ export default class LocationController {
                     resolve(res);
                 }
             });
+        });
+    }
+
+    private async updateFloor(office: IOffice, floor_num: number, originalCity: string, originalId: number) {
+        let floor_image: string = "";
+        for (const floor of office.floors) {
+            if (floor.floor_num === floor_num) {
+                floor_image = floor.image;
+            }
+        }
+        if (floor_image === "") {
+            return true; // floor image not found, no need to update
+        }
+
+        return new Promise((resolve, reject) => {
+            Floor.updateFloorImage(originalCity, originalId, floor_num, floor_image, (err: any, res: any) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(true);
+                }
+            })
         });
     }
 

@@ -1,5 +1,5 @@
 import DB from '../config/db-handler';
-import { IFloor, IOffice } from '../interfaces/location.interface';
+import { IDesk, IFloor, IOffice } from '../interfaces/location.interface';
 
 const con = DB.getCon();
 
@@ -59,3 +59,22 @@ Floor.getAllFloorsByOffice = (office_location: string, office_id: number, result
         }
     })
 };
+
+Floor.updateFloorImage = (originalCity: string, originalId: number, floor_num: number, image: string, result: any) => {
+    con.query('CALL updateFloorImage(?, ?, ?, ?)',
+    [
+        originalCity,
+        originalId,
+        floor_num,
+        Buffer.from(image, 'base64')
+    ],
+    (err: any, res: any) => {
+        if (err) {
+            console.log('Error: ', err);
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    });
+}
+

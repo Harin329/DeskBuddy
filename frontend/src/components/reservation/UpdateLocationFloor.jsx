@@ -144,7 +144,7 @@ function UpdateLocationFloor (props) {
     useEffect(() => {
         setTimeout(async () => {
             if (pictures) {
-                handleFormChange('floors', { level: updateLocationFloor, deskIds: null, photo: pictures });
+                handleFormChange('floors', { level: updateLocationFloor, deskIds: null, photo: pictures[0] });
             } else {
                 handleFormChange('floors', { level: updateLocationFloor, deskIds: null, photo: '' });
             }
