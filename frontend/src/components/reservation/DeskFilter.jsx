@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
 function DeskFilter() {
     const classes = useStyles();
     const [floorplan, setFloorplan] = useState(false);
-    const [isUpdateLocationClosed, setIsUpdateLocationClosed] = useState(false);
+    const [isUpdateLocationOpen, setIsUpdateLocationOpen] = useState(false);
     const [addLocation, setAddLocation] = useState(false);
 
     const dispatch = useDispatch()
@@ -88,12 +88,21 @@ function DeskFilter() {
         setAddLocation(false)
     }
 
+    const handleUpdateLocationOpen = () => {
+        setIsUpdateLocationOpen(true);
+    }
+    
     const handleUpdateLocationClosed = () => {
-        setIsUpdateLocationClosed(true);
+        dispatch(fetchOffices());
+        setIsUpdateLocationOpen(false);
     }
 
     const addLocationBody = () => {
         return <AddLocationForm closeModal={handleAddLocationClose} />
+    }
+
+    const updateLocationBody = () => {
+        return <UpdateLocationPopup isOpen={isUpdateLocationOpen} whatToDoWhenClosed={handleUpdateLocationClosed}></UpdateLocationPopup>
     }
 
     const handleOfficeChange = (event) => {
@@ -168,7 +177,7 @@ function DeskFilter() {
     return (
         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
             <Grid container item justify='center' alignItems='center' direction={isMobile ? 'column' : 'row'} className={classes.sectionSpacing}>
-                <Grid item xs={isMobile ? 'auto' : 3} style={{width: '90%'}}>
+                <Grid item xs={isMobile ? 'auto' : 4} style={{width: '90%'}}>
                     <Typography className={classes.sectionText}>
                         OFFICE
                         </Typography>
@@ -183,7 +192,7 @@ function DeskFilter() {
                         ))}
                     </TextField>
                 </Grid>
-                <Grid item xs={isMobile ? 'auto' : 3} style={{width: '90%'}}>
+                <Grid item xs={isMobile ? 'auto' : 4} style={{width: '90%'}}>
                     <Typography className={classes.sectionText}>
                         DESK NUMBER
                         </Typography>
@@ -201,13 +210,17 @@ function DeskFilter() {
                 <Grid item xs={2} />
             </Grid>
             <Grid container item justify='center' alignItems='center' direction={isMobile ? 'column' : 'row'} className={classes.sectionSpacing}>
-
-                <UpdateLocationPopup isOpen={isUpdateLocationClosed} whatToDoWhenClosed={(bool) => { setIsUpdateLocationClosed(bool) }}></UpdateLocationPopup>
-
-                <Grid item xs={isMobile ? 'auto' : 3} style={{width: '90%'}}>
+                <Grid item xs={isMobile ? 'auto' : 4} style={{width: '90%'}}>
                     {isAdmin &&
-                    <Button className={classes.actionButton} onClick={handleUpdateLocationClosed}>Update
-                        Location</Button>
+                    <Grid item xs={8}>
+                        <Button className={classes.actionButton} onClick={handleUpdateLocationOpen}>Update Location</Button>
+                        <Modal
+                            open={isUpdateLocationOpen}
+                            onClose={handleUpdateLocationClosed}
+                        >
+                        {updateLocationBody()}
+                        </Modal>
+                    </Grid>
                     }
                     {isAdmin &&
                     <Grid item xs={8}>
@@ -221,7 +234,7 @@ function DeskFilter() {
                     </Grid>
                     }
                 </Grid>
-                <Grid item xs={isMobile ? 'auto' : 5} style={{width: '90%'}}>
+                <Grid item xs={isMobile ? 'auto' : 6} style={{width: '90%'}}>
                     <Button className={classes.actionButton} onClick={handleFloorplanOpen} disabled={officeDisabled}>Floorplan</Button>
                     <Modal
                         open={floorplan}
@@ -236,13 +249,13 @@ function DeskFilter() {
                 </Grid>
             </Grid>
             <Grid container item justify='center' alignItems={isMobile ? 'center' : 'flex-end'} direction={isMobile ? 'column' : 'row'} className={classes.sectionSpacing}>
-                <Grid item xs={isMobile ? 'auto' : 3} style={{width: '90%'}}>
+                <Grid item xs={isMobile ? 'auto' : 4} style={{width: '90%'}}>
                     <Typography className={classes.sectionText}>
                         FROM
                         </Typography>
                     <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleFromChange} value={filter.from} defaultValue={filter.from} />
                 </Grid>
-                <Grid item xs={isMobile ? 'auto' : 3} style={{width: '90%'}}>
+                <Grid item xs={isMobile ? 'auto' : 4} style={{width: '90%'}}>
                     <Typography className={classes.sectionText}>
                         TO
                         </Typography>

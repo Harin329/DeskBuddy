@@ -22,7 +22,17 @@ export default class UserController {
                 resolve(result);
             })
         })
+    }
 
+    updatePhoto(oid: any, data: any) {
+        return new Promise((resolve, reject) => {
+            User.updatePhoto(oid, data, (err: any, result: any) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(result);
+            })
+        })
     }
 
     getUserNameByOffice(office_location: string, office_id: number) {

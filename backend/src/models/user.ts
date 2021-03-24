@@ -76,3 +76,23 @@ User.getUserNameByOffice = (office_location: string, office_id: number, result: 
         }
     })
 };
+
+
+User.updatePhoto = (oid: any, photo: any, result: any) => {
+    con.query(
+        'CALL updateProfilePhoto(?,?)',
+        [
+            oid,
+            photo
+        ],
+        (err: any, res: any) => {
+            if (err) {
+                console.log("Error: ", err);
+                result(err, null);
+            } else {
+                console.log("Photo updated for user: ", oid);
+                result(null, "Photo updated for user: ", oid);
+            }
+        }
+    )
+};
