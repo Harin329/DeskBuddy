@@ -6,6 +6,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import { fetchReservations } from '../../actions/reservationActions'
 import { useMsal } from "@azure/msal-react";
 import { Chart } from "react-google-charts";
+import safeFetch from "../../util/Util";
+import Endpoint from '../../config/Constants';
+
 
 const useStyles = makeStyles({
     titleLines: {
@@ -71,6 +74,7 @@ const useStyles = makeStyles({
 function Today() {
     const classes = useStyles();
     const dateToday = new Date();
+    const [officeDays, setOfficeDays] = useState(0);
 
     const dispatch = useDispatch();
     const upcomingReservation = useSelector(state => state.reservations.upcomingReservations);
@@ -80,6 +84,19 @@ function Today() {
 
     useEffect(() => {
         dispatch(fetchReservations(userOID));
+
+        const requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        safeFetch(Endpoint + "/reservation/month/" + userOID, requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                const res = JSON.parse(result)
+                setOfficeDays(res[0].length)
+            })
+            .catch(error => console.log('error', error))
     }, []);
 
     const convertDate = (date) => {
@@ -95,7 +112,7 @@ function Today() {
 
     return (
         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-            <Grid item xs={6} className={classes.titleLines} >
+            <Grid item xs={isMobile ? 12 : 6} className={classes.titleLines} >
                 <Typography className={classes.titleText}>TODAY: {convertDate(dateToday)}</Typography>
                 {upcomingReservation.filter((res) => convertDate(new Date(res.start_date)) === convertDate(dateToday)).length > 0 && <div className={classes.upcomingResBox}>
                     <div className={classes.upcomingResBoxOffice}>
@@ -123,7 +140,7 @@ function Today() {
                     </div>
                 </div>}
             </Grid>
-            <Grid item xs={6} className={classes.titleLines} >
+            {!isMobile && <Grid item xs={6} className={classes.titleLines} >
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginLeft: 30, marginTop: 15}}>
                     <Chart
                         width={'100%'}
@@ -132,12 +149,13 @@ function Today() {
                         loader={<div>Loading Chart</div>}
                         data={[
                             ['Location', 'Days per Month'],
-                            ['Office', 20],
-                            ['Home', 10],
+                            ['Office', officeDays],
+                            ['Home', 30 - officeDays],
                         ]}
                         options={{
-                            title: 'Days at Office',
+                            title: 'Days at:',
                             backgroundColor: "transparent",
+                            fontName: 'Lato',
                             titleTextStyle: {
                                 color: 'white',
                             },
@@ -150,7 +168,7 @@ function Today() {
                         rootProps={{ 'data-testid': '1' }}
                     />
                 </div>
-            </Grid>
+            </Grid>}
         </Grid>
 
     );

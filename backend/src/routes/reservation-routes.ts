@@ -57,6 +57,18 @@ router.get('/upcoming/:date/:userID', (req, res: Response) => {
         })
 })
 
+// GET reservation this month
+router.get('/month/:userID', (req, res: Response) => {
+    console.log(req.params);
+    reservationServer.getReservationByMonth(req.params)
+        .then((reservation: any) => {
+            res.json(reservation);
+        })
+        .catch((err: any) => {
+            res.json(err);
+        })
+})
+
 // COUNT # of reservations for an office
 router.get("/count/:officeID/:startDate/:endDate", (req, res: Response) => {
     reservationServer.countEmployees(req.params)
