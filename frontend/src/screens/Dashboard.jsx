@@ -4,6 +4,7 @@ import Title from '../components/global/Title';
 import Subheader from '../components/global/Subheader';
 import UpcomingReservations from '../components/reservation/UpcomingReservations';
 import { isMobile } from 'react-device-detect';
+import Today from '../components/dashboard/Today';
 
 function Dashboard() {
   return (
@@ -12,7 +13,7 @@ function Dashboard() {
       <Grid container direction={isMobile ? 'column' : 'row'} justify='center' alignItems='center'>
         <Grid item xs={1} />
         <Grid item xs={isMobile ? 10 : 4} style={{ backgroundColor: '#353B3C', height: '70vh', padding: 20 }} >
-          {Subheader('TODAY (TODO)', 3, 6, 3)}
+          {Today()}
           {Subheader('UPCOMING RESERVATIONS', 2, 8, 2)}
           {UpcomingReservations()}
         </Grid>
