@@ -78,29 +78,8 @@ function MailUpdates() {
 
     const [announcementList, setAnnouncementList] = useState([]);
     const [hasMoreAnnouncements, setHasMoreAnnouncements] = useState(true);
-    const [totalAnnouncements, setTotalAnnouncements] = useState(0);
     const [open, setOpen] = useState(false);
     const [currAnnouncement, setCurrAnnouncement] = useState(null);
-
-    useEffect(() => {
-        getTotalAnnouncements();
-    },[]);
-
-    const getTotalAnnouncements = () => {
-
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        safeFetch(Endpoint + "/announcement/getTotalCompanyAnnouncements", requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                const total = JSON.parse(result);
-                setTotalAnnouncements(Number(total));
-            })
-            .catch(error => console.log('error', error))
-    }
 
     const handleUpdateOpen = (el) => {
         console.log("update is: " + el);
@@ -113,20 +92,19 @@ function MailUpdates() {
         setCurrAnnouncement(null);
     }
 
-    const getAnnouncements = (page) =>{
-        console.log("called");
+    const getAnnouncements = (page) => {
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/announcement/getCompanyAnnouncements/" + announcementList.length, requestOptions)
+        safeFetch(Endpoint + "/announcement/getCompanyAnnouncements", requestOptions)
             .then(response => response.text())
             .then(result => {
-                const announce = JSON.parse(result);
-                console.log(announce);
-                setAnnouncementList(announcementList.concat(announce));
-                setHasMoreAnnouncements(announcementList.length !== totalAnnouncements);
+                const announcements = JSON.parse(result);
+                console.log(announcements);
+                setAnnouncementList(announcements);
+                setHasMoreAnnouncements(false);
             })
             .catch(error => console.log('error', error))
     }
