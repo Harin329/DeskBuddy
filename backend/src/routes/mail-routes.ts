@@ -44,6 +44,24 @@ router.post('/', (req: Request, res: Response) => {
     }
 });
 
+router.post('/CreateMailRequest', (req: Request, res: Response) => {
+    const body = req.body;
+    if (body === undefined || body === {}) {
+        res.status(400).json({
+            err: "Malformed request body"
+        })
+    } else {
+        mailServer.createMailRequest(req.body).then((value: any) => {
+            res.status(200).json({
+            });
+        }).catch((err: any) => {
+            res.status(404).json({
+                err,
+            });
+        })
+    }
+});
+
 router.delete('/:id', (req: Request, res: Response) => {
     const id = parseInt(req.params.id, 10);
     if (!id) {

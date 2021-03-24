@@ -80,7 +80,6 @@ function CompanyUpdates() {
 
     const [announcementList, setAnnouncementList] = useState([]);
     const [hasMoreAnnouncements, setHasMoreAnnouncements] = useState(true);
-    const [totalAnnouncements, setTotalAnnouncements] = useState(0);
     const [open, setOpen] = useState(false);
     const [currAnnouncement, setCurrAnnouncement] = useState(null);
     const [addAnnouncement, setAddAnnouncement] = useState(false);
@@ -88,25 +87,6 @@ function CompanyUpdates() {
     const { accounts } = useMsal();
     const isAdmin = accountIsAdmin(accounts[0]);
 
-    useEffect(() => {
-        getTotalAnnouncements();
-    },[]);
-
-    const getTotalAnnouncements = () => {
-
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        safeFetch(Endpoint + "/announcement/getTotalCompanyAnnouncements", requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                const total = JSON.parse(result);
-                setTotalAnnouncements(Number(total));
-            })
-            .catch(error => console.log('error', error))
-    }
 
     const handleUpdateOpen = (el) => {
         console.log("update is: " + el);
@@ -131,20 +111,19 @@ function CompanyUpdates() {
         setAddAnnouncement(true);
     }
 
-    const getAnnouncements = (page) =>{
-        console.log("called");
+    const getAnnouncements = (page) => {
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/announcement/getCompanyAnnouncements/" + announcementList.length, requestOptions)
+        safeFetch(Endpoint + "/announcement/getCompanyAnnouncements", requestOptions)
             .then(response => response.text())
             .then(result => {
                 const announcements = JSON.parse(result);
                 console.log(announcements);
-                setAnnouncementList(announcementList.concat(announcements));
-                setHasMoreAnnouncements(!(announcementList.length === totalAnnouncements));
+                setAnnouncementList(announcements);
+                setHasMoreAnnouncements(false);
             })
             .catch(error => console.log('error', error))
     }

@@ -55,7 +55,7 @@ const styles = theme => ({
 
 class BranchUpdates extends React.Component {
 
-state = {
+    state = {
         announcementList: [],
         hasMoreAnnouncements: true,
         totalAnnouncements: 0,
@@ -75,7 +75,7 @@ state = {
         this.setState({ open: false, currAnnouncement: null});
     }
 
-     handleOfficeChange(event) {
+    handleOfficeChange(event) {
 
         if (event.target.value !== 'All') {
             const params = event.target.value.split(['-']);
@@ -90,7 +90,7 @@ state = {
             };
 
             setTimeout(() => {
-                safeFetch(Endpoint + "/announcement/getBranchAnnouncements/" + this.state.announcementList.length + "/"
+                safeFetch(Endpoint + "/announcement/getBranchAnnouncements/"
                     + this.state.selectedOfficeLocation + "/" + this.state.selectedOfficeID, requestOptions)
                     .then((response) => response.text())
                     .then(result => {
@@ -107,20 +107,12 @@ state = {
     };
 
     componentDidMount() {
-        const requestOptions = {
+        const officeOptions = {
             method: 'GET',
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/announcement/getTotalBranchAnnouncements", requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                const total = JSON.parse(result);
-                this.setState({totalAnnouncements: Number(total)});
-            })
-            .catch(error => console.log('error', error))
-
-        safeFetch(Endpoint + "/office/getAllOffices", requestOptions)
+        safeFetch(Endpoint + "/office/getAllOffices", officeOptions)
             .then((response) => response.text())
             .then(result => {
                 this.setState({officeList: JSON.parse(result)});
@@ -134,9 +126,7 @@ state = {
             method: 'GET',
             redirect: 'follow'
         };
-
-        if (this.state.selectedOfficeLocation === "" || this.state.selectedOfficeLocation === "ALL") {
-            safeFetch(Endpoint + "/announcement/getAllBranchAnnouncements/" + this.state.announcementList.length, requestOptions)
+            safeFetch(Endpoint + "/announcement/getAllBranchAnnouncements", requestOptions)
                 .then(response => response.text())
                 .then(result => {
                     const announcements = JSON.parse(result);
@@ -145,11 +135,6 @@ state = {
                         hasMoreAnnouncements: !(this.state.announcementList.length === this.state.totalAnnouncements)});
                 })
                 .catch(error => console.log('error', error))
-
-        } else {
-
-        }
-
     }
 
     render() {

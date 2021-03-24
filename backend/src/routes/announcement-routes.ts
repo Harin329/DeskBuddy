@@ -5,7 +5,7 @@ const router = Router();
 import AnnouncementController from '../controllers/announcement-controller';
 const announcementServer = new AnnouncementController();
 
-router.get('/getCompanyAnnouncements/:startIndex', (req, res: Response) => {
+router.get('/getCompanyAnnouncements', (req, res: Response) => {
     announcementServer.getCompanyAnnouncements(Number(req.params.startIndex))
         .then((announcements: any) => {
             res.json(announcements);
@@ -15,8 +15,8 @@ router.get('/getCompanyAnnouncements/:startIndex', (req, res: Response) => {
         });
 })
 
-router.get('/getAllBranchAnnouncements/:startIndex', (req, res: Response) => {
-    announcementServer.getAllBranchAnnouncements(Number(req.params.startIndex))
+router.get('/getAllBranchAnnouncements', (req, res: Response) => {
+    announcementServer.getAllBranchAnnouncements()
         .then((announcements: any) => {
             res.json(announcements);
         })
@@ -25,40 +25,10 @@ router.get('/getAllBranchAnnouncements/:startIndex', (req, res: Response) => {
         })
 })
 
-router.get('/getBranchAnnouncements/:startIndex/:officeloc/:officeid', (req, res: Response) => {
-    announcementServer.getBranchAnnouncements(req.params.officeloc, Number(req.params.officeid), Number(req.params.startIndex))
+router.get('/getBranchAnnouncements/:officeloc/:officeid', (req, res: Response) => {
+    announcementServer.getBranchAnnouncements(req.params.officeloc, Number(req.params.officeid))
         .then((desk: any) => {
             res.json(desk);
-        })
-        .catch((err: any) => {
-            res.json(err);
-        })
-})
-
-router.get('/getTotalCompanyAnnouncements', (req, res: Response) => {
-    announcementServer.getTotalCompanyAnnouncements()
-        .then((total: any) => {
-            res.json(total);
-        })
-        .catch((err: any) => {
-            res.json(err);
-        })
-})
-
-router.get('/getTotalBranchAnnouncements', (req, res: Response) => {
-    announcementServer.getTotalBranchAnnouncements()
-        .then((total: any) => {
-            res.json(total);
-        })
-        .catch((err: any) => {
-            res.json(err);
-        })
-})
-
-router.get('/getCompanyBranchAnnouncements', (req, res: Response) => {
-    announcementServer.getTotalBranchAnnouncements()
-        .then((total: any) => {
-            res.json(total);
         })
         .catch((err: any) => {
             res.json(err);

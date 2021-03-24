@@ -141,6 +141,11 @@ function AddUpdateForm(props) {
                     props.closeModal();
                 })
                 .catch(error => console.log('error', error));
+            safeFetch(Endpoint + "/mail/postMail", requestOptions)
+                .then((response) => response.text())
+                .then(result => {
+                })
+                .catch(error => alert(error));
         } else {
             jsonBody = {
                 user: userOID,

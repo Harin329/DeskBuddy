@@ -184,7 +184,7 @@ function DeskFilter() {
                     <TextField id="outlined-basic" label="" variant="outlined" select onChange={handleOfficeChange} value={filter.office} className={classes.inputBoxes}>
                         <MenuItem key={'All'} value={'All'}>
                             All
-                                </MenuItem>
+                        </MenuItem>
                         {officeList.map((option) => (
                             <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
                                 {option.name}

@@ -1,5 +1,4 @@
 import { Router, Request, Response } from 'express';
-import multer from "multer";
 
 const router = Router();
 
@@ -30,17 +29,14 @@ router.post('/', (req: Request, res: Response) => {
         });
 })
 
-const upload = multer();
-router.post('/photo', upload.single("image"), (req: Request, res: Response) => {
-    // @ts-ignore
-    userServer.updatePhoto(req.authInfo.oid, req.file.buffer)
-        .then((user: any) => {
-            res.json(user);
+router.get('/GetUserNameByOffice/:officeloc/:officeid', (req, res: Response) => {
+   userServer.getUserNameByOffice(req.params.officeloc, Number(req.params.officeid))
+        .then((users: any) => {
+            res.json(users);
         })
         .catch((err: any) => {
             res.json(err);
-        });
-
+        })
 })
 
 export default router
