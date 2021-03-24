@@ -1,5 +1,5 @@
 import DB from '../config/db-handler';
-import { IFloor, IOffice } from '../interfaces/location.interface';
+import { IDesk, IFloor, IOffice } from '../interfaces/location.interface';
 
 const con = DB.getCon();
 
@@ -17,7 +17,7 @@ Floor.addFloor = (id: number, floor: IFloor, office: IOffice, result: any) => {
         floor.floor_num,
         id,
         office.city,
-        floor.image
+        Buffer.from(floor.image, 'base64')
     ],
     (err: any, res: any) => {
         if (err) {
@@ -39,9 +39,42 @@ Floor.getFloorByOffice = (office_location: string, office_id: number, result: an
             console.log('Error: ', err);
             result(err, null);
         } else {
-            console.log(res);
             result(null, res[0]);
         }
-        console.log(res);
     })
 };
+
+Floor.getAllFloorsByOffice = (office_location: string, office_id: number, result: any) => {
+    con.query('CALL getFloorByOffice(?,?)',
+    [
+        office_id,
+        office_location,
+    ],
+    (err: any, res: any) => {
+        if (err) {
+            console.log('Error: ', err);
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    })
+};
+
+Floor.updateFloorImage = (originalCity: string, originalId: number, floor_num: number, image: string, result: any) => {
+    con.query('CALL updateFloorImage(?, ?, ?, ?)',
+    [
+        originalCity,
+        originalId,
+        floor_num,
+        Buffer.from(image, 'base64')
+    ],
+    (err: any, res: any) => {
+        if (err) {
+            console.log('Error: ', err);
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    });
+}
+

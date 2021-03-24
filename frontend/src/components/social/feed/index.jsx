@@ -1,11 +1,13 @@
 import React from 'react';
-import JonSnow from './assets/jonsnow_pic.png';
+// import JonSnow from './assets/jonsnow_pic.png';
 import Redflag from './assets/redflag.svg';
 import Flag from './assets/flag.svg';
 import Thrash from './assets/delete.svg';
 import Endpoint from '../../../config/Constants';
 import Spinner from '../../reservation/map-popup/spinner/spinner';
 import { Modal } from '@material-ui/core';
+import safeFetch, { accountIsAdmin } from "../../../util/Util";
+import { MsalContext } from "@azure/msal-react";
 
 // styles
 import {
@@ -29,6 +31,8 @@ import {
 } from './styles';
 
 class Feed extends React.Component {
+  static contextType = MsalContext;
+
   state = {
     post: '',
     loaded: false,
@@ -43,7 +47,6 @@ class Feed extends React.Component {
     this.feed = null;
     this.channel_id = 1;
     this.init();
-    this.CURR_EMPLOYEE_ID = '99b9a9cf-1cb0-40c3-87c0-aa98d6ce68d1';
   }
 
   init = () => {
@@ -54,7 +57,7 @@ class Feed extends React.Component {
       redirect: 'follow',
     };
 
-    fetch(
+    safeFetch(
       `${Endpoint}/post/getFeedByCategory/${this.channel_id}`,
       requestOptions
     )
@@ -67,7 +70,7 @@ class Feed extends React.Component {
       .catch((error) => this.setState({ loaded: true, error: true }));
   };
 
-  handlePost = () => {
+  handlePost = (oid) => {
     // console.log(`Post the following: ${this.state.post}`);
     this.setState({
       post_error: false,
@@ -77,7 +80,7 @@ class Feed extends React.Component {
       let date = new Date();
 
       const jsonBody = {
-        employee_id: this.CURR_EMPLOYEE_ID,
+        employee_id: oid,
         channel_id: this.channel_id,
         date_posted: `${date.getFullYear()}-${
           date.getMonth() + 1
@@ -92,7 +95,7 @@ class Feed extends React.Component {
         redirect: 'follow',
       };
 
-      fetch(Endpoint + '/post/createPost', requestOptions)
+      safeFetch(Endpoint + '/post/createPost', requestOptions)
         .then((response) => response.text())
         .then((result) => {
           // console.log(JSON.parse(result));
@@ -126,7 +129,7 @@ class Feed extends React.Component {
       redirect: 'follow',
     };
 
-    fetch(Endpoint + '/post/flagPost', requestOptions)
+    safeFetch(Endpoint + '/post/flagPost', requestOptions)
       .then((response) => response.text())
       .then((result) => {
         console.log(JSON.parse(result));
@@ -152,7 +155,7 @@ class Feed extends React.Component {
       redirect: 'follow',
     };
 
-    fetch(Endpoint + '/post/deletePost', requestOptions)
+    safeFetch(Endpoint + '/post/deletePost', requestOptions)
       .then((response) => response.text())
       .then((result) => {
         this.feed.splice(this.feed.indexOf(el), 1);
@@ -165,9 +168,12 @@ class Feed extends React.Component {
     this.channel_id = channel_id;
     this.init();
     this.setState({ flag_load: (this.state.flag_loaded + 1) % 2 });
-  }
+  };
 
   render() {
+    const isAdmin = accountIsAdmin(this.context.accounts[0]);
+    const oid = this.context.accounts[0].idTokenClaims.oid;
+
     let list_of_feed = <Spinner />;
 
     if (this.state.loaded && !this.state.error && Array.isArray(this.feed)) {
@@ -175,8 +181,14 @@ class Feed extends React.Component {
         return (
           <SinglePostContainer key={el.post_id}>
             <UserContainer>
-              <UserPic src={JonSnow} alt="profie pic" />
-              {`${el.employee_id} | `}
+              <UserPic
+                src={
+                  'data:image/png;base64,' +
+                  new Buffer(el.profile_photo, 'binary').toString('base64')
+                }
+                alt="profie pic"
+              />
+              {`${el.first_name} ${el.last_name} | `}
               <DatePostedContainer>
                 {el.date_posted.slice(0, 10)}
               </DatePostedContainer>
@@ -187,7 +199,7 @@ class Feed extends React.Component {
                 src={el.is_flagged ? Redflag : Flag}
                 onClick={() => this.handleFlag(el)}
               />
-              {el.employee_id === this.CURR_EMPLOYEE_ID ? (
+              {el.employee_id === oid || isAdmin ? (
                 <Icon src={Thrash} onClick={() => this.handleDelete(el)} />
               ) : null}
             </ButtonContainers>
@@ -195,7 +207,11 @@ class Feed extends React.Component {
         );
       });
     } else if (this.state.error) {
-      list_of_feed = <div style={{color: 'white'} }>Error loading feed. Try again later.</div>;
+      list_of_feed = (
+        <div style={{ color: 'white' }}>
+          Error loading feed. Try again later.
+        </div>
+      );
     }
 
     let isPosting = null;
@@ -231,7 +247,7 @@ class Feed extends React.Component {
                   <Btn
                     type="button"
                     value="Post"
-                    onClick={this.handlePost}
+                    onClick={() => this.handlePost(oid)}
                     disabled={this.state.post === '' ? true : false}
                   />
                   <div

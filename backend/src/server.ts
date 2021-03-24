@@ -5,9 +5,13 @@ import reservationRoute from './routes/reservation-routes';
 import officeRoute from './routes/office-routes';
 import floorRoute from './routes/floor-routes';
 import deskRoute from './routes/desk-routes';
+import announcementRoute from './routes/announcement-routes';
 import locationRoute from './routes/location-routes';
 import postRoute from './routes/posts-routes';
 import channelRoute from './routes/channel-routes';
+import authRoute from './routes/auth-routes';
+import userRoute from './routes/user-routes';
+import mailRoute from './routes/mail-routes';
 import DB from './config/db-handler';
 
 export class DeskbuddyServer {
@@ -18,15 +22,16 @@ export class DeskbuddyServer {
   constructor(port: number) {
     this.port = port;
     this.app = express();
-
     this.app.use(cors());
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
+    this.app.use(authRoute);
 
     this.app.get('/', (req: Request, res: Response) => {
       res.send('Hello DeskBuddy!');
     });
 
+    this.app.use('/user', userRoute);
     this.app.use('/reservation', reservationRoute);
     this.app.use('/office', officeRoute);
     this.app.use('/floor', floorRoute)
@@ -34,6 +39,8 @@ export class DeskbuddyServer {
     this.app.use('/location', locationRoute);
     this.app.use('/post', postRoute);
     this.app.use('/channel', channelRoute);
+    this.app.use('/announcement', announcementRoute);
+    this.app.use('/mail', mailRoute);
   }
 
   public getApp() {

@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Typography, TextField } from '@material-ui/core';
 import { withStyles } from "@material-ui/core/styles";
 import Endpoint from '../../config/Constants';
+import safeFetch from "../../util/Util";
 
 const styles = theme => ({
     actionButton: {
@@ -78,7 +79,7 @@ class AddLocationForm extends React.Component {
     }
 
     addFloor() {
-        const floor = { floor_id: this.getLowestID.bind(this), floor_num: 0, floor_desks: "" }
+        const floor = { floor_id: this.getLowestID.bind(this), floor_num: 0, floor_desks: "", floor_image: null }
         this.setState(prevState => ({
             inputFloors: [...prevState.inputFloors, floor]
         }));
@@ -105,22 +106,27 @@ class AddLocationForm extends React.Component {
                 city: this.state.city,
                 name: this.state.name,
                 address: this.state.address,
-                image: this.state.image,
                 floors: floors
+            }
+            const jsonData = JSON.stringify(jsonBody);
+
+            const formData = new FormData();
+            formData.append("image", this.state.image);
+            formData.append("body", jsonData);
+            for (const floor of this.state.inputFloors) {
+                formData.append("floor_" + floor.floor_num.toString() + "_image", floor.floor_image);
             }
 
             const requestOptions = {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(jsonBody)
+                body: formData
             };
-
-            fetch(Endpoint + "/location", requestOptions)
+            safeFetch(Endpoint + "/location", requestOptions, formData)
                 .then((response) => response.text())
                 .then(result => {
                     this.props.closeModal();
                 })
-                .catch(error => console.log('error', error));
+                .catch(error => alert(error));
         }
     }
 
@@ -170,6 +176,18 @@ class AddLocationForm extends React.Component {
         }));
     }
 
+    handleFloorImageInput(id, input) {
+        this.setState(prevState => ({
+            inputFloors: prevState.inputFloors.map((floor) => {
+                if (floor.floor_id === id) {
+                    floor.floor_image = input.target.files[0];
+                }
+                return floor;
+            })
+        }));
+    }
+
+
     handleCityInput(input) {
         this.setState({
             city: input.target.value
@@ -185,6 +203,21 @@ class AddLocationForm extends React.Component {
     handleAddressInput(input) {
         this.setState({
             address: input.target.value
+        });
+    }
+
+    handleOfficeImageInput(input) {
+        this.setState({
+            image: input.target.files[0]
+        });
+    }
+
+    getBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
         });
     }
 
@@ -207,8 +240,9 @@ class AddLocationForm extends React.Component {
                         }}
                         onChange={this.handleFloorNumberInput.bind(this, floor.floor_id)}
                     />
-                    <Button className={classes.actionButton}>
-                        Attach Image
+                    <Button className={classes.actionButton} component="label">
+                        Attach Image &nbsp; <b>{floor.floor_image ? 'Y' : 'N'}</b>
+                        <input type='file' accept='image/*' hidden onChange={this.handleFloorImageInput.bind(this, floor.floor_id)} />
                     </Button>
                     <Button className={classes.actionButton} onClick={this.deleteFloor.bind(this, floor.floor_id)}>
                         Remove Floor
@@ -245,9 +279,9 @@ class AddLocationForm extends React.Component {
                 <form>
                     <div><TextField
                         id="city"
-                        label="City"
+                        label="City or Town"
                         style={{ margin: 8 }}
-                        placeholder="SUR"
+                        placeholder="Ex. New Westminister"
                         variant="outlined"
                         fullWidth
                         margin="normal"
@@ -257,23 +291,10 @@ class AddLocationForm extends React.Component {
                         onChange={this.handleCityInput.bind(this)}
                     /></div>
                     <div><TextField
-                        id="name"
-                        label="Name"
-                        style={{ margin: 8 }}
-                        placeholder="ICBC Westminster"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        onChange={this.handleNameInput.bind(this)}
-                    /></div>
-                    <div><TextField
                         id="address"
                         label="Address"
                         style={{ margin: 8 }}
-                        placeholder="10262 152A St"
+                        placeholder="Ex. 1320 3rd Ave"
                         variant="outlined"
                         fullWidth
                         margin="normal"
@@ -282,12 +303,26 @@ class AddLocationForm extends React.Component {
                         }}
                         onChange={this.handleAddressInput.bind(this)}
                     /></div>
+                    <div><TextField
+                        id="name"
+                        label="Branch Name"
+                        style={{ margin: 8 }}
+                        placeholder="Ex. New Westminster 3rd Ave"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        onChange={this.handleNameInput.bind(this)}
+                    /></div>
                     <div>
                         <Button className={classes.actionButton} onClick={this.addFloor.bind(this)}>
                             Add Floor
                         </Button>
-                        <Button className={classes.actionButton}>
-                            Attach Image
+                        <Button className={classes.actionButton} component="label">
+                            Attach Image &nbsp; {this.state.image ? 'Y' : 'N'}
+                            <input type='file' accept='image/*' hidden onChange={this.handleOfficeImageInput.bind(this)} />
                         </Button>
                     </div>
                     {this.renderFloors.bind(this)()}

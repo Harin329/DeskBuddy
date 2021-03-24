@@ -6,6 +6,7 @@ import { SET_EMPLOYEE_COUNT } from "../../actions/actionTypes";
 import { makeStyles } from '@material-ui/core/styles';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { isMobile } from 'react-device-detect';
+import { useMsal } from "@azure/msal-react";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -128,17 +129,20 @@ function UpcomingReservations() {
     const [openCancelRes, setOpenCancelRes] = useState(false);
 
     const dispatch = useDispatch();
-    const filter = useSelector(state => state.searchFilter);
-    const upcomingReservation = useSelector(state => state.upcomingReservations);
-    const employeeCountUpcomingRes = useSelector(state => state.deskEmployeeCount);
+    const filter = useSelector(state => state.reservations.searchFilter);
+    const upcomingReservation = useSelector(state => state.reservations.upcomingReservations);
+    const employeeCountUpcomingRes = useSelector(state => state.reservations.deskEmployeeCount);
+
+    const { accounts } = useMsal();
+    const userOID = accounts[0].idTokenClaims.oid;
 
     useEffect(() => {
-        dispatch(fetchReservations());
+        dispatch(fetchReservations(userOID));
     }, []);
 
     const cancelReservation = (reservation) => {
         const rawBody = JSON.stringify({ "reservation_id": Number(reservation.reservation_id) });
-        dispatch(cancelReservations(rawBody, filter));
+        dispatch(cancelReservations(userOID, rawBody, filter));
         handleCloseUpcomingRes();
     }
 
@@ -212,7 +216,8 @@ function UpcomingReservations() {
         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
             <Grid item xs={12}>
                 <List>
-                    {upcomingReservation.map((option) => {
+                    {/* {Show most recent 3} */}
+                    {upcomingReservation.slice(0,3).map((option) => {
                         if (!isMobile) {
                             return (
                                 <ListItem className={classes.upcomingResBox}>

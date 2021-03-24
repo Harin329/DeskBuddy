@@ -2,13 +2,13 @@ export interface IOffice {
     city: string,
     name: string,
     address: string,
-    image: Buffer,
+    image: string,
     floors: IFloor[]
 }
 
 export interface IFloor {
     floor_num: number,
-    image: Buffer,
+    image: string,
     desks: IDesk[]
 }
 

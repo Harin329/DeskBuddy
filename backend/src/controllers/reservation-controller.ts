@@ -37,9 +37,10 @@ export default class ReservationController {
         })
     }
 
-    findUpcomingReservations() {
+    findUpcomingReservations(req: any) {
+        const userID = req.userID;
         return new Promise((resolve, reject) => {
-            Reservation.getUpcomingReservations((err: any, res: any) => {
+            Reservation.getUpcomingReservations(userID, (err: any, res: any) => {
               if (err) {
                     reject(err);
                 }
@@ -78,9 +79,22 @@ export default class ReservationController {
     }
 
     getReservationByDate(req: any) {
-        const date = req;
+        const date = req.date;
+        const userID = req.userID;
         return new Promise((resolve, reject) => {
-            Reservation.getReservationByDate(date,(err: any, res: any) => {
+            Reservation.getReservationByDate(date, userID, (err: any, res: any) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(res);
+            })
+        })
+    }
+
+    getReservationByMonth(req: any) {
+        const userID = req.userID;
+        return new Promise((resolve, reject) => {
+            Reservation.getReservationByMonth(userID, (err: any, res: any) => {
                 if (err) {
                     reject(err);
                 }

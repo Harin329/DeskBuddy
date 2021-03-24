@@ -6,9 +6,10 @@ import { useSelector, useDispatch } from 'react-redux'
 import { fetchDesks, makeReservation, getEmployeeCount } from '../actions/reservationActions';
 import CancelIcon from '@material-ui/icons/Cancel';
 import BookingsCalendar from '../components/reservation/BookingsCalendar';
+import { useMsal } from "@azure/msal-react";
 
 import Title from '../components/global/Title';
-import Subheader from '../components/reservation/Subheader';
+import Subheader from '../components/global/Subheader';
 import UpcomingReservations from '../components/reservation/UpcomingReservations';
 import DeskFilter from '../components/reservation/DeskFilter';
 import { SET_EMPLOYEE_COUNT } from '../actions/actionTypes';
@@ -103,11 +104,14 @@ function Reservation() {
     const [confirmationDesk, setConfirmationDesk] = useState();
 
     const dispatch = useDispatch()
-    const filter = useSelector(state => state.searchFilter);
-    const deskResults = useSelector(state => state.deskResults);
-    const more = useSelector(state => state.hasMore);
-    const page = useSelector(state => state.pageCount);
-    const employeeCount = useSelector(state => state.deskEmployeeCount);
+    const filter = useSelector(state => state.reservations.searchFilter);
+    const deskResults = useSelector(state => state.reservations.deskResults);
+    const more = useSelector(state => state.reservations.hasMore);
+    const page = useSelector(state => state.reservations.pageCount);
+    const employeeCount = useSelector(state => state.reservations.deskEmployeeCount);
+
+    const { accounts } = useMsal();
+    const userOID = accounts[0].idTokenClaims.oid;
 
     useEffect(() => {
         dispatch(fetchDesks(filter, false, 0, deskResults));
@@ -122,9 +126,8 @@ function Reservation() {
         setOpen(false);
     };
 
-    // TODO GET EMPLOYEE ID
     const reserve = (deskObj) => {
-        dispatch(makeReservation(329, deskObj, filter))
+        dispatch(makeReservation(userOID, deskObj, filter))
         handleClose();
         // Replace this with promises followed by then one day... :)
         setTimeout(() => dispatch(fetchDesks(filter, false, 0, deskResults)), 3000);
@@ -183,22 +186,22 @@ function Reservation() {
     return (
         <div className={classes.background}>
             <Grid container direction='column' justify='center' alignItems='center'>
-                {Title('RESERVATION')}
+                {Title('RESERVATION', 1, 8, 1)}
 
                 {window.innerWidth > 1500 && <Grid container>
-                    <Grid item xs={2} />
+                    <Grid item xs={1} />
                     <Grid item xs={3} >
-                        <BookingsCalendar />
+                        {BookingsCalendar(userOID)}
                     </Grid>
-                    <Grid item xs={5}>
+                    <Grid item xs={7}>
                         {Subheader('UPCOMING RESERVATIONS', 3, 6, 3)}
                         {UpcomingReservations()}
                     </Grid>
-                    <Grid item xs={2} />
+                    <Grid item xs={1} />
                 </Grid>}
                 {window.innerWidth <= 1500 && <Grid container justify='center'>
                     <Grid item xs={11} >
-                        <BookingsCalendar />
+                        {BookingsCalendar(userOID)}
                     </Grid>
                 </Grid>}
                 {window.innerWidth <= 1500 && <Grid container>
@@ -210,13 +213,13 @@ function Reservation() {
                     <Grid item xs={1} />
                 </Grid>}
 
-                {window.innerWidth > 1500 && Subheader('RESERVE', 3, 2, 3)}
+                {window.innerWidth > 1500 && Subheader('RESERVE', 4, 2, 4)}
                 {window.innerWidth <= 1500 && Subheader('RESERVE', 0, 12, 0)}
 
                 {DeskFilter()}
 
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={isMobile ? 10 : 8}>
+                    <Grid item xs={isMobile ? 10 : 10}>
                         <List>
                             {deskResults.map((option) => {
                                 if (!isMobile) {

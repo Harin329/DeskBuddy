@@ -63,3 +63,19 @@ INSERT INTO `desk` (`desk_id`, `fk_floor_num`, `fk_office_id`, `fk_office_locati
 	VALUES (`desk_id`, `floor_num`, `office_id`, `office_location`, `capacity`);
 
 END
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE `deleteDesks` (IN `id` INT(8), IN `city` VARCHAR(50), IN `floorNum` INT(8))
+BEGIN
+
+DELETE FROM `desk` 
+	WHERE `fk_office_id` = `id` AND `fk_office_location` = `city` AND `fk_floor_num` = `floorNum`;
+
+END
+
+DELIMITER ;
+
+DELIMITER $$

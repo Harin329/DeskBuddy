@@ -1,4 +1,4 @@
-import { SET_RESERVATIONS, SET_EMPLOYEE_COUNT, SET_DESKS_RESULTS, CHECK_MORE, SET_PAGE, SET_FILTER, SET_OFFICES, SET_FLOORPLAN_AVAILABLE, SET_DESKS } from "../actions/actionTypes";
+import { SET_RESERVATIONS, SET_EMPLOYEE_COUNT, SET_DESKS_RESULTS, CHECK_MORE, SET_PAGE, SET_FILTER, SET_OFFICES, SET_FLOORPLAN_AVAILABLE, SET_DESKS, SET_FLOORS_IN_UPDATE } from "../actions/actionTypes";
 import { combineReducers } from "redux";
 import { appendLeadingZeroes } from "../functions/Date";
 
@@ -116,4 +116,16 @@ const deskEmployeeCount = (state = initialNumState, action) => {
     }
   };
 
-export default combineReducers({ upcomingReservations, deskEmployeeCount, deskResults, hasMore, pageCount, searchFilter, offices, hasFloorplan, desks });
+const floorsPerOfficeInUpdate = (state = initialState, action) => {
+  switch (action.type) {
+    case SET_FLOORS_IN_UPDATE: {
+      return action.payload;
+    }
+    default: {
+      return state;
+    }
+  }
+}
+
+export default combineReducers({ upcomingReservations, deskEmployeeCount, deskResults, hasMore, pageCount, searchFilter, offices, hasFloorplan, desks, floorsPerOfficeInUpdate });
+

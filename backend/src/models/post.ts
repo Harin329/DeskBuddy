@@ -7,7 +7,7 @@ export const Post = function (this: any, post: any) {
 }
 
 Post.getPostByCategory = (category: number, result: any) => {
-  con.query('CALL getPostByCategory(?)',
+  con.query('CALL getPostByCategoryWithEmployeeInfo(?)',
     [category],
     (err: any, res: any) => {
       if (err) {

@@ -1,6 +1,7 @@
-import { SET_RESERVATIONS, SET_EMPLOYEE_COUNT, SET_DESKS_RESULTS, CHECK_MORE, SET_PAGE, SET_OFFICES, SET_DESKS, SET_FLOORPLAN_AVAILABLE } from "./actionTypes";
+import { SET_RESERVATIONS, SET_EMPLOYEE_COUNT, SET_DESKS_RESULTS, CHECK_MORE, SET_PAGE, SET_OFFICES, SET_DESKS, SET_FLOORPLAN_AVAILABLE, SET_FLOORS_IN_UPDATE } from "./actionTypes";
 import Endpoint, { resultOnPage } from '../config/Constants';
 import { appendLeadingZeroes } from "../functions/Date";
+import safeFetch from "../util/Util";
 
 export const makeReservation = (userID, deskObj, filter) => dispatch => {
     var day = new Date(filter.from)
@@ -24,11 +25,11 @@ export const makeReservation = (userID, deskObj, filter) => dispatch => {
             redirect: 'follow'
         };
 
-        fetch(Endpoint + "/reservation", requestOptions)
+        safeFetch(Endpoint + "/reservation", requestOptions)
             .then(response => response.text())
             .then(result => console.log(result))
             .then(() => {
-                dispatch(fetchReservations())
+                dispatch(fetchReservations(userID))
             })
             .catch(error => console.log('error', error));
     }
@@ -40,7 +41,7 @@ export const hasFloorplan = (params) => dispatch => {
         redirect: 'follow'
     };
 
-    return fetch(Endpoint + "/floor/getFloorsByOffice/" + params[0] + "/" + params[1], requestOptions)
+    return safeFetch(Endpoint + "/floor/getFloorsByOffice/" + params[0] + "/" + params[1], requestOptions)
         .then((response) => response.text())
         .then(result => {
             const res = JSON.parse(result)
@@ -60,11 +61,10 @@ export const fetchOffices = () => dispatch => {
         redirect: 'follow'
     };
 
-    return fetch(Endpoint + "/office/getAllOffices", requestOptions)
+    return safeFetch(Endpoint + "/office/getAllOffices", requestOptions)
         .then((response) => response.text())
         .then(result => {
             dispatch({ type: SET_OFFICES, payload: JSON.parse(result) });
-            // console.log(JSON.parse(result));
         })
         .catch(error => console.log('error', error));
 }
@@ -83,7 +83,7 @@ export const fetchDesks = (filter, append, pageStart, deskResults) => dispatch =
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
-    var raw = JSON.stringify({
+    const raw = JSON.stringify({
         "desk_id": String(deskParam[1]),
         "floor_num": Number(deskParam[0]),
         "office_id": Number(officeParam[1]),
@@ -94,8 +94,6 @@ export const fetchDesks = (filter, append, pageStart, deskResults) => dispatch =
         "numOnPage": resultOnPage
     });
 
-    console.log(raw);
-
     var requestOptions = {
         method: 'POST',
         headers: myHeaders,
@@ -103,11 +101,10 @@ export const fetchDesks = (filter, append, pageStart, deskResults) => dispatch =
         redirect: 'follow'
     };
 
-    return fetch(Endpoint + "/desk/getOpenDesks", requestOptions)
+    return safeFetch(Endpoint + "/desk/getOpenDesks", requestOptions)
         .then(response => response.text())
         .then(result => {
             const res = JSON.parse(result)
-            console.log(res)
             if (deskResults.length === 0 || !append) {
                 dispatch({ type: SET_DESKS_RESULTS, payload: res })
             } else {
@@ -129,7 +126,7 @@ export const fetchDesksByOffice = (params) => dispatch => {
         redirect: 'follow'
     };
 
-    return fetch(Endpoint + "/desk/getDesksByOffice/" + params[0] + "/" + params[1], requestOptions)
+    return safeFetch(Endpoint + "/desk/getDesksByOffice/" + params[0] + "/" + params[1], requestOptions)
         .then((response) => response.text())
         .then(result => {
             dispatch({ type: SET_DESKS, payload: JSON.parse(result) })
@@ -138,13 +135,27 @@ export const fetchDesksByOffice = (params) => dispatch => {
         .catch(error => console.log('error', error));
 }
 
-export const fetchReservations = () => dispatch => {
+export const fetchFloorsByOffice = (params) => dispatch => {
+    var requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+    };
+    return safeFetch(Endpoint + "/floor/getFloorsByOffice/" + params[0] + "/" + params[1], requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+            dispatch({ type: SET_FLOORS_IN_UPDATE, payload: JSON.parse(result) })
+        })
+        .catch(error => console.log('error', error));
+    
+}
+
+export const fetchReservations = (userID) => dispatch => {
     var requestOptions = {
         method: 'GET',
         redirect: 'follow'
     };
 
-    return fetch(Endpoint + "/reservation/getUpcomingReservations", requestOptions)
+    return safeFetch(Endpoint + "/reservation/upcomingByUID/" + userID, requestOptions)
         .then(response => response.text())
         .then(result => {
             const res = JSON.parse(result)
@@ -154,7 +165,7 @@ export const fetchReservations = () => dispatch => {
         .catch(error => console.log('error', error));
 }
 
-export const cancelReservations = (rawBody, filter) => dispatch => {
+export const cancelReservations = (userID, rawBody, filter) => dispatch => {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     console.log(rawBody);
@@ -166,11 +177,11 @@ export const cancelReservations = (rawBody, filter) => dispatch => {
         redirect: 'follow'
     };
 
-    return fetch(Endpoint + "/reservation/deleteReservation", requestOptions)
+    return safeFetch(Endpoint + "/reservation/deleteReservation", requestOptions)
         .then(response => response.text())
         .then(result => console.log(result))
         .then(() => {
-            dispatch(fetchReservations());
+            dispatch(fetchReservations(userID));
             dispatch(fetchDesks(filter, false, 0, []));
         })
         .catch(error => console.log('error', error));
@@ -182,7 +193,7 @@ export const getEmployeeCount = (deskObj, filter) => dispatch => {
         redirect: 'follow'
     };
 
-    return fetch(Endpoint + "/reservation/getCount/" + deskObj.office_id + "/" + filter.from + "/" + filter.to, requestOptions)
+    return safeFetch(Endpoint + "/reservation/count/" + deskObj.office_id + "/" + filter.from + "/" + filter.to, requestOptions)
         .then(response => response.text())
         .then(result => {
             const res = JSON.parse(result)
@@ -201,7 +212,7 @@ export const getEmployeeCountUpcomingRes = (reservationObj) => dispatch => {
         redirect: 'follow'
     };
 
-    return fetch(Endpoint + "/reservation/getCount/" + reservationObj.fk_office_id + "/" + reservationObj.start_date.split("T")[0] + "/" + reservationObj.end_date.split("T")[0], requestOptions)
+    return safeFetch(Endpoint + "/reservation/count/" + reservationObj.fk_office_id + "/" + reservationObj.start_date.split("T")[0] + "/" + reservationObj.end_date.split("T")[0], requestOptions)
         .then(response => response.text())
         .then(result => {
             const res = JSON.parse(result)
