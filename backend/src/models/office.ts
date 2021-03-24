@@ -66,14 +66,15 @@ Office.getAllOffices = (result: any) => {
 };
 
 Office.updateOffice = (id: number, office: IOffice, originalId: number, originalCity: string, result: any) => {
-    con.query('CALL updateOffice(?, ?, ?, ?, ?, ?)',
+    con.query('CALL updateOffice(?, ?, ?, ?, ?, ?, ?)',
     [
         id,
         office.city,
         office.name,
         office.address,
         originalId,
-        originalCity
+        originalCity,
+        Buffer.from(office.image, 'base64')
     ],
     (err: any, res: any) => {
         if (err) {
