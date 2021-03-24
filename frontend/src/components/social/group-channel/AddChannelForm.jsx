@@ -70,10 +70,10 @@ function AddChannelForm(props) {
     const [title, setTitle] = useState("");
     const [icon, setChannelIcon] = useState("");
     const [channels, setChannel] = useState([]);
-
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
     const classes = useStyles();
+    var dup_title = false;
 
     useEffect( () => {
         const requestOptions = {
@@ -101,7 +101,19 @@ function AddChannelForm(props) {
         
     }
 
+    const handleDuplicateTitle = () => {
+        dup_title = false;
+
+        channels.forEach(function (channel) {
+            var channelName = channel.channel_name;
+            if (title == channelName) {
+                dup_title = true;
+            }
+        });
+    }
+
     const handleSubmit = (event) => {
+
 
         let jsonBody;
         let requestOptions;
@@ -113,6 +125,7 @@ function AddChannelForm(props) {
             }
         
         // TODO: Show screens for duplicate title
+        handleDuplicateTitle();
 
             console.log(jsonBody);
             requestOptions = {
