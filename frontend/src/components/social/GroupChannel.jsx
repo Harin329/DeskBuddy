@@ -5,8 +5,21 @@ import { makeStyles } from '@material-ui/core/styles';
 import Home from '../../assets/home.png';
 import Subheader from "../reservation/Subheader";
 import Delete from "../../assets/delete.png";
+import styled from 'styled-components';
 
 import Feed from '../social/feed/index';
+
+const Container = styled.div`
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+    align-items: center;
+
+    @media (min-width: 1240px) {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+`;
 
 const useStyles = makeStyles((theme) => ({
     channelText: {
@@ -100,7 +113,7 @@ function GroupChannel(props) {
     };
 
     return (
-        <div style={{display: 'flex', justifyContent: 'space-evenly'}}>
+        <Container>
             <Grid container justify='center' alignItems='center' style={{width: '350px', height: '500px', backgroundColor: 'red'}}>
                 <Grid item xs={12}>
                     <Typography className={classes.title}>GENERAL</Typography>
@@ -144,7 +157,7 @@ function GroupChannel(props) {
             {props.isAdmin && <Button onClick={(event) => handleAddChannelClicked(event)} className={classes.addChannelButton}>Add Channel</Button>}
             </Grid>
             <Feed ref={ feedElement } style={{ flex: '1' }}/>
-        </div>
+        </Container>
     )
 }
 export default GroupChannel;

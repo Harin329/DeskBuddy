@@ -195,7 +195,7 @@ class Feed extends React.Component {
         );
       });
     } else if (this.state.error) {
-      list_of_feed = <div>Error loading feed. Try again later.</div>;
+      list_of_feed = <div style={{color: 'white'} }>Error loading feed. Try again later.</div>;
     }
 
     let isPosting = null;
