@@ -5,7 +5,7 @@ import MailRequestForm from "../components/mail/MailRequestForm";
 function Mail() {
   return (
     <div className="App">
-      <NewMailForm></NewMailForm>
+      <MailRequestForm></MailRequestForm>
     </div>
   );
 }

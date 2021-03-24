@@ -37,7 +37,6 @@ const useStyles = makeStyles((theme) => ({
     },
     inputBoxes: {
         width: '90%',
-        backgroundColor: 'white',
         borderRadius: 20,
         marginTop: '10px',
         margin: 8
@@ -54,16 +53,15 @@ const useStyles = makeStyles((theme) => ({
         top: '20%',
         left: isMobile? '5%' : '25%',
         width: isMobile? '75%' : '45%',
-        height: '400',
+        height: '450',
         background: '#FFFCF7',
         padding: '30px',
-        overflow: 'auto'
+        overflow: 'auto',
     },
-    typeInput: {
-        marginTop: 10,
-        marginBottom: 15
+    titles: {
+        marginLeft: 8,
+        fontFamily: 'Lato'
     }
-
 }));
 
 
@@ -192,7 +190,7 @@ function NewMailForm(props) {
                 New Mail Form
             </Typography>
             <form>
-                <Typography>
+                <Typography className={classes.titles}>
                     Office
                 </Typography>
                 <TextField id="outlined-basic" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
@@ -202,7 +200,7 @@ function NewMailForm(props) {
                         </MenuItem>
                     ))}
                 </TextField>
-                <Typography>
+                <Typography className={classes.titles}>
                     Recipient
                 </Typography>
                 <TextField id="outlined-basic" variant="outlined" select onChange={handleEmployeeChange} value={employee} className={classes.inputBoxes}>
@@ -212,7 +210,7 @@ function NewMailForm(props) {
                         </MenuItem>
                     ))}
                 </TextField>
-                <Typography>
+                <Typography className={classes.titles}>
                     Mail Type
                 </Typography>
                 <TextField className={classes.inputBoxes} id="outlined-basic" variant="outlined" select onChange={handleTypeChange} value={mailType}>
@@ -222,13 +220,13 @@ function NewMailForm(props) {
                         </MenuItem>
                     ))}
                 </TextField>
-                <Typography>
+                <Typography className={classes.titles}>
                     Arrival Date
                 </Typography>
                 <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleDateChange}/>
                 <div><TextField
                     id="sender"
-                    style={{ margin: 8 }}
+                    style={{ margin: 8, width: '90%' }}
                     placeholder="Sender Information (255)"
                     variant="outlined"
                     fullWidth
@@ -240,7 +238,7 @@ function NewMailForm(props) {
                 /></div>
                 <div><TextField
                     id="dimensions"
-                    style={{ margin: 8 }}
+                    style={{ margin: 8, width: '90%' }}
                     placeholder="Mail dimensions (LxWxH)"
                     variant="outlined"
                     fullWidth
@@ -252,7 +250,7 @@ function NewMailForm(props) {
                 /></div>
                 <div><TextField
                     id="comments"
-                    style={{ margin: 8 }}
+                    style={{ margin: 8, width: '90%' }}
                     placeholder="Additional Comments (255)"
                     variant="outlined"
                     fullWidth
