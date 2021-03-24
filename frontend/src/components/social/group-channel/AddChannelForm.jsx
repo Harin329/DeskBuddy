@@ -52,9 +52,6 @@ const useStyles = makeStyles((theme) => ({
         padding: '30px',
         overflow: 'auto'
     },
-    officeSelector: {
-        marginLeft : 8
-    },
     iconTitle: {
         marginLeft: 8,
         color: 'black',
@@ -90,15 +87,15 @@ function AddChannelForm(props) {
     });
 
     const handleTitleInput = (input) => {
-        setTitle(input.target.value)
+        setTitle(input.target.value);
     }
 
     const handleAddChannelClose = () => {
         props.whatToDoWhenClosed();
     }
 
-    const handleIconChange = (event) => {
-        
+    const handleChannelIconInput = (input) => {
+        setChannelIcon(input.target.files[0]);
     }
 
     const handleDuplicateTitle = () => {
@@ -127,6 +124,8 @@ function AddChannelForm(props) {
         // TODO: Show screens for duplicate title
         handleDuplicateTitle();
 
+        if (dup_title == false) {
+
             console.log(jsonBody);
             requestOptions = {
                 method: 'POST',
@@ -141,6 +140,9 @@ function AddChannelForm(props) {
                 .catch(error => console.log('error', error));
             
                 handleAddChannelClose();
+            } else {
+                console.log("FAILED")
+            }
     }
 
     return (
@@ -161,8 +163,13 @@ function AddChannelForm(props) {
                         shrink: true,
                     }}
                     onChange={handleTitleInput}
+                    //onChange={handleChannelIconInput}
                 /></div>
                 <h1 className={classes.iconTitle}>Attach Icon (Optional)</h1>
+                <Button className={classes.actionButton} component="label">
+                        Attach Image &nbsp; <b>{icon ? 'Y' : 'N'}</b>
+                        <input type='file' accept='image/*' hidden onChange={handleChannelIconInput} />
+                </Button>
                 <div>
                     <Button className={classes.actionButtonCenter} onClick={handleSubmit} disabled={title == '' ? true : false}>
                         Create
