@@ -1,26 +1,30 @@
 import styled from 'styled-components';
 
 const Container = styled.div`
+  width: 300px;
+  margin-top: 50px;
+
+  @media (min-width: 1000px) {
+    width: 800px;
+    margin-top: 0px;
+  }
 `;
 
 const SocialFeed = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 800px;
+  width: 100%;
 `;
 
 const ShareContainer = styled.div`
-  width: 100%;
+  width: 80%;
 `;
 
 const ShareForm = styled.form``;
 
 const ShareTextArea = styled.textarea`
-  font-family: Lato;
+  font-family: 'Lato';
   font-style: normal;
   font-weight: 300;
-  font-size: 25px;
+  font-size: 15px;
   line-height: 30px;
   padding: 20px;
   outline: none;
@@ -29,6 +33,10 @@ const ShareTextArea = styled.textarea`
   height: 169px;
   background: #fffcf7;
   border-radius: 10px;
+
+  @media (min-width: 1000px) {
+    font-size: 25px;
+  }
 `;
 
 const Btn = styled.input`
@@ -74,29 +82,35 @@ const SinglePostContainer = styled.div`
 const UserContainer = styled.div`
   display: flex;
   align-items: center;
-
   font-family: Lato;
   font-style: normal;
   font-weight: 500;
-  font-size: 25px;
+  font-size: 17px;
   line-height: 30px;
   color: #1e1e24;
   padding-top: 10px;
-
   margin-bottom: 10px;
+
+  @media (min-width: 1000px) {
+    font-size: 25px;
+  }
 `;
 
 const UserPic = styled.img`
   margin-left: 20px;
   margin-right: 20px;
-  width: 67px;
+  width: 50px;
+
+  @media (min-width: 1000px) {
+    width: 67px;
+  }
 `;
 
 const TextContainer = styled.div`
   font-family: Lato;
   font-style: normal;
   font-weight: 300;
-  font-size: 22px;
+  font-size: 15px;
   line-height: 30px;
   width: 95%;
   height: 169px;
@@ -107,7 +121,10 @@ const TextContainer = styled.div`
   justify-content: center;
   align-items: center;
   align-self: center;
-  ${'' /* background: white; */}
+
+  @media (min-width: 1000px) {
+    font-size: 22px;
+  }
 `;
 
 const ButtonContainers = styled.div`
@@ -116,14 +133,20 @@ const ButtonContainers = styled.div`
 `;
 
 const DatePostedContainer = styled.div`
-  font-size: 15px;
-
+  font-size: 10px;
+  @media (min-width: 1000px) {
+    font-size: 15px;
+  }
 `;
 
 const Icon = styled.img`
-  width: 35px;
+  width: 25px;
   margin: 15px;
   cursor: pointer;
+
+  @media (min-width: 1000px) {
+    width: 35px;
+  }
 `;
 
 const PostingPopup = styled.div`

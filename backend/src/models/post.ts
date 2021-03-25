@@ -6,15 +6,19 @@ export const Post = function (this: any, post: any) {
   // TODO based on DBs attributes of posts
 }
 
-Post.getPostByOffice = (category: number, result: any) => {
-  con.query('CALL getPostByCategory(?)',
+Post.getPostByCategory = (category: number, result: any) => {
+  con.query('CALL getPostByCategoryWithEmployeeInfo(?)',
     [category],
     (err: any, res: any) => {
       if (err) {
         console.log(`Error: ${err}`);
         result(err, null);
       } else {
-        result(null, res[0]);
+        let voi = res[0];
+        if (Array.isArray(voi) && voi.length > 30) {
+          voi = voi.slice(voi.length - 30, voi.length);
+        }
+        result(null, voi);
       }
     }
   )

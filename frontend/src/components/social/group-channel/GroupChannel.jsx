@@ -9,7 +9,8 @@ import Feed from '../feed';
 import {useMsal} from "@azure/msal-react";
 import safeFetch, {accountIsAdmin} from "../../../util/Util";
 import CancelIcon from "@material-ui/icons/Cancel";
-import {isMobile} from "react-device-detect";
+import { isMobile } from "react-device-detect";
+import styled from 'styled-components';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -70,6 +71,17 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
+const Container = styled.div`
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+    align-items: center;
+
+    @media (min-width: 1240px) {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+`;
 
 function GroupChannel() {
     const classes = useStyles();
@@ -169,7 +181,7 @@ function GroupChannel() {
 
 
     return (
-        <div style={{display: 'flex', justifyContent: 'space-evenly'}}>
+        <Container>
             <div style={{ justifyContent: 'center', alignItems: 'center', width: '350px', height: '500px', backgroundColor: '#353B3C', borderRadius: 25}}>
                 <Typography className={classes.title}>GENERAL</Typography>
                 {LinedHeader('YOUR GROUPS', 3, 3, 3)}
@@ -217,7 +229,7 @@ function GroupChannel() {
             </div>}
             </div>
             <Feed ref={ feedElement } style={{ flex: '1' }}/>
-        </div>
+        </Container>
     )
 }
 export default GroupChannel;

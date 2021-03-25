@@ -7,7 +7,7 @@ export default class PostController {
   // functions
   findPostByCategory(category: number) {
     return new Promise((resolve, reject) => {
-      Post.getPostByOffice(category, (err: any, res: any) => {
+      Post.getPostByCategory(category, (err: any, res: any) => {
         if (err) {
           reject(err);
         }
