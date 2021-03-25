@@ -4,6 +4,7 @@ const router = Router();
 
 import UserController from '../controllers/user-controller';
 import {oidMatchesRequest} from "../util";
+import multer from "multer";
 const userServer = new UserController();
 
 // POST user endpoint. creates or updates user in database using Azure AD account info
@@ -37,6 +38,19 @@ router.get('/GetUserNameByOffice/:officeloc/:officeid', (req, res: Response) => 
         .catch((err: any) => {
             res.json(err);
         })
+})
+
+const upload = multer();
+router.post('/photo', upload.single("image"), (req: Request, res: Response) => {
+    // @ts-ignore
+    userServer.updatePhoto(req.authInfo.oid, req.file.buffer)
+        .then((user: any) => {
+            res.json(user);
+        })
+        .catch((err: any) => {
+            res.json(err);
+        });
+
 })
 
 export default router
