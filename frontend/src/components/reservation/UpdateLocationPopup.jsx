@@ -345,7 +345,8 @@ function UpdateLocationPopup (props) {
                             marginBottom: '10px',
                             fontFamily: 'Lato',
                             fontWeight: 'bolder',
-                            fontSize: 18
+                            fontSize: 18,
+                            alignSelf: 'flex-start'
                         }}
                         withIcon={false}
                         buttonText='Update Location Photo'
