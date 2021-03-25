@@ -118,7 +118,7 @@ function AddChannelForm(props) {
             jsonBody = {
                 user: userOID,
                 channel_name: title,
-                channel_icon: null
+                channel_icon: icon
             }
         
         // TODO: Show screens for duplicate title
