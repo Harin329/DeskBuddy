@@ -25,3 +25,17 @@ BEGIN
 SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID`;
 
 END
+
+CREATE PROCEDURE `createRequest` (IN `mailID` INT, IN `employeeID` VARCHAR(50), IN `employeeName` VARCHAR(50), IN `employeeEmail` VARCHAR(50), IN `employeePhone` VARCHAR(50),
+    IN `requestType` VARCHAR(50), IN `forwardLocation` VARCHAR(50), IN `additionalInstructions` VARCHAR(500), IN `reqCompletionDate` DATE, IN `modified_at`)
+
+BEGIN
+
+INSERT INTO `mail_request` (`mail_id`, `employee_id`, `employee_name`, `employee_email`, `employee_phone`,
+                    `request_type`, `forward_location`, `additional_instructions`, `req_completion_date`,
+                    `completion_date`, `status`, `admin_eid`, 'response', 'modifiedAt')
+VALUES (`mailID`, `employeeID`, `employeeName`, `employeeEmail`, `employeePhone`, `requestType`, `forwardLocation`,
+                            `additionalInstructions`, `reqCompletionDate`, null, null, null, null, `modified_at`);
+END
+
+CREATE PROCEDURE `updateRequest` (IN `mailID` INT, IN `employeeID` VARCHAR(50), IN ``)
