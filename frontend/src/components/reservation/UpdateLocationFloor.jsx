@@ -163,9 +163,6 @@ function UpdateLocationFloor (props) {
         </TextField>
     </Grid>
     <Grid item xs={7}>
-        <Typography>
-            WIP - can upload image, but not yet saving uploaded image to database
-        </Typography>
         <ImageUploader
                 buttonStyles={{
                     background: '#00ADEF',
