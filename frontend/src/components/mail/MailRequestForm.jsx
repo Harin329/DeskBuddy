@@ -104,15 +104,14 @@ function MailRequestForm(props) {
     const handleSubmit = (event) => {
 
         let jsonBody = {
-            mail_id: 0,
+            mail_id: props.id,
             employee_id: userOID,
             employee_name: accounts[0].name,
             employee_email: accounts[0].idTokenClaims.email,
             request_type: type,
             forward_location: forwardingLocation,
             additional_instructions: instructions,
-            req_completion_date: requestedDate,
-            completion_date: new Date()
+            req_completion_date: requestedDate
         }
         const requestOptions = {
             method: 'POST',

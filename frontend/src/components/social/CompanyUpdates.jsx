@@ -117,7 +117,7 @@ function CompanyUpdates() {
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/announcement/getCompanyAnnouncements", requestOptions)
+        safeFetch(Endpoint + "/mail/getCompanyAnnouncements", requestOptions)
             .then(response => response.text())
             .then(result => {
                 const announcements = JSON.parse(result);

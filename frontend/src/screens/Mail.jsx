@@ -8,8 +8,8 @@ import React, {useState} from "react";
 import NewMailForm from "../components/mail/NewMailForm";
 import {useMsal} from "@azure/msal-react";
 import {accountIsAdmin} from "../util/Util";
-import {updatePopup} from "../components/social/UpdatePopup";
-import AddUpdateForm from "../components/social/AddUpdateForm";
+import MailRequestForm from "../components/mail/MailRequestForm";
+import RequestModule from "../components/mail/RequestModule";
 
 const useStyles = makeStyles((theme) => ({
     background: {
@@ -39,10 +39,10 @@ const useStyles = makeStyles((theme) => ({
 function Mail() {
   const [open, setOpen] = useState(false);
 
-    const { accounts } = useMsal();
-    const isAdmin = accountIsAdmin(accounts[0]);
+  const { accounts } = useMsal();
+  const isAdmin = accountIsAdmin(accounts[0]);
 
-    const classes = useStyles();
+  const classes = useStyles();
 
   const handleNewMail = () => {
         setOpen(true);
@@ -63,7 +63,7 @@ function Mail() {
           <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
             {MailModule(4, "NEW MAIL")}
             <Grid item xs={2}></Grid>
-            {MailModule(4, "ALL REQUESTS")}
+            {RequestModule(4, "ALL REQUESTS")}
           </Grid>
 
           {window.innerWidth > 1500 && Subheader('MANAGE REQUESTS', 4, 2, 4)}
