@@ -251,13 +251,13 @@ function DeskFilter() {
             <Grid container item justify='center' alignItems={isMobile ? 'center' : 'flex-end'} direction={isMobile ? 'column' : 'row'} className={classes.sectionSpacing}>
                 <Grid item xs={isMobile ? 'auto' : 4} style={{width: '90%'}}>
                     <Typography className={classes.sectionText}>
-                        FROM
+                        RESERVATION START DATE
                         </Typography>
                     <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleFromChange} value={filter.from} defaultValue={filter.from} />
                 </Grid>
                 <Grid item xs={isMobile ? 'auto' : 4} style={{width: '90%'}}>
                     <Typography className={classes.sectionText}>
-                        TO
+                        RESERVATION END DATE
                         </Typography>
                     <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleToChange} value={filter.to} defaultValue={filter.to} />
                 </Grid>

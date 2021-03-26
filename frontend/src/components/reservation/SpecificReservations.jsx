@@ -215,6 +215,9 @@ function SpecificReservations(date) {
     return (
         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
             <Grid item xs={12}>
+                {upcomingReservation.filter((item) => new Date(item.start_date).toUTCString() === date).length === 0 && 
+                <Typography style={{ alignSelf: 'center' }}>
+                    No Reservations Booked Today</Typography>}
                 <List>
                     {upcomingReservation.map((option) => {
                         if (new Date(option.start_date).toUTCString() === date) {
