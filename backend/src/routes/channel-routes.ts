@@ -32,4 +32,21 @@ router.delete('/', (req: Request, res: Response) => {
         })
 })
 
+router.post('/', (req: Request, res: Response) => {
+    if (!req.body) {
+        res.status(400).send({
+            message: 'Content can not be empty!'
+        });
+    }
+    channelServer.addChannel(req)
+        .then((channel: any) => {
+            //res.status(200);
+            res.json(channel)
+            //res.send();
+        })
+        .catch((err: any) => {
+            res.json(err);
+        });
+});
+
 export default router

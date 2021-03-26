@@ -12,6 +12,8 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import { isMobile } from "react-device-detect";
 import styled from 'styled-components';
 
+import AddChannelForm from "./AddChannelForm";
+
 
 const useStyles = makeStyles((theme) => ({
     channelText: {
@@ -87,6 +89,7 @@ function GroupChannel() {
     const classes = useStyles();
     const [channels, setChannels] = useState([]);
     const [selectedChannel, setSelectedChannel] = useState(1);
+    const [addChannel, setAddChannel] = useState(false);
     const { accounts } = useMsal();
     const isAdmin = accountIsAdmin(accounts[0]);
     const [open, setOpen] = useState(false);
@@ -154,10 +157,17 @@ function GroupChannel() {
         //console.log("Channel will be deleted");
         handleClose();
     };
-    const handleAddChannelClicked = (event) => {
-        console.log("Clicked add channel");
+    const handleAddChannelClose = () => {
+        setAddChannel(false);
     };
 
+    const addChannelBody = () => {
+        return <AddChannelForm closeModal={handleAddChannelClose} whatToDoWhenClosed={(bool) => {setAddChannel(bool)}}/>
+    }
+
+    const handleAddChannelOpen = () => {
+        setAddChannel(true);
+    }
 
     const confirmationBody = () => {
         return (
@@ -177,7 +187,6 @@ function GroupChannel() {
                 </div>
             </div>)
     };
-
 
 
     return (
@@ -225,8 +234,14 @@ function GroupChannel() {
                 </div>
             {/*{props.isAdmin && <Divider/>}*/}
             {isAdmin && <div style={{justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
-                <Button onClick={(event) => handleAddChannelClicked(event)} className={classes.addChannelButton}>Add Channel</Button>
+                <Button onClick={(event) => handleAddChannelOpen(event)} className={classes.addChannelButton}>Add Channel</Button>
             </div>}
+            <Modal
+                    open={addChannel}
+                    onClose={handleAddChannelClose}
+                >
+                    {addChannelBody()}
+                </Modal>
             </div>
             <Feed ref={ feedElement } style={{ flex: '1' }}/>
         </Container>
