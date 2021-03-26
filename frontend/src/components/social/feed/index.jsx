@@ -52,6 +52,7 @@ class Feed extends React.Component {
     this.init();
   }
 
+  // Load list of posts to be rendered
   init = () => {
     this.setState({ loaded: false, error: false });
 
@@ -66,15 +67,14 @@ class Feed extends React.Component {
     )
       .then((response) => response.text())
       .then((result) => {
-        // console.log(JSON.parse(result));
         this.feed = JSON.parse(result);
         this.setState({ loaded: true });
       })
       .catch((error) => this.setState({ loaded: true, error: true }));
   };
 
+  // request to POST a post
   handlePost = (oid) => {
-    // console.log(`Post the following: ${this.state.post}`);
     this.setState({
       post_error: false,
       post_loaded: (this.state.post_loaded + 1) % 2,
@@ -118,6 +118,7 @@ class Feed extends React.Component {
     }, 1000);
   };
 
+  // request to POST a report of a post 
   handleReport = (id) => {
     const raw = JSON.stringify({
       post_id: id,
@@ -146,6 +147,7 @@ class Feed extends React.Component {
       });
   };
 
+  // request to POST an unreport to a post
   handleUnreport = (id) => {
     const raw = JSON.stringify({
       post_id: id,
@@ -174,10 +176,12 @@ class Feed extends React.Component {
       });
   };
 
+  // handle change in textarea of post
   handleChange = (arg) => {
     this.setState({ post: arg.target.value.substr(0, 240) });
   };
 
+  // request to DELETE a post
   handleDelete = (el) => {
     const raw = JSON.stringify({
       post_id: el.post_id,
@@ -199,6 +203,7 @@ class Feed extends React.Component {
       .catch((error) => console.log('error', error));
   };
 
+  // handle which channel the social feed is currently displaying posts from
   handleChannelChange = (channel_id) => {
     this.channel_id = channel_id;
     this.init();
