@@ -2,25 +2,24 @@ import React, {useEffect, useState} from 'react';
 import InfiniteScroll from "react-infinite-scroller";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
 import Endpoint from "../../config/Constants";
-import {updatePopup} from "./UpdatePopup";
 import {Button, Modal} from '@material-ui/core';
-import AddUpdateForm from "./AddUpdateForm";
 import safeFetch, {accountIsAdmin} from "../../util/Util";
 import { isMobile } from "react-device-detect";
 import {useMsal} from "@azure/msal-react";
+import { updatePopup } from '../social/UpdatePopup';
 
 const useStyles = makeStyles((theme) => ({
     title: {
         fontFamily: 'Lato',
         textAlign: 'center',
-        fontSize: 30,
-        marginLeft: isMobile? 10: 0
+        fontSize: 24,
+        marginLeft: isMobile? 10: 0,
+        color: 'white'
     },
     titleBox: {
         alignItems: 'center',
-        display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     updateBox: {
         background: '#EEF0F2',
@@ -32,10 +31,9 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: 2,
     },
     backgroundBox: {
-        background: '#FFFCF7',
+        background: 'transparent',
         borderRadius: 20,
-        width: isMobile ? '95%' : '85%',
-        height: 500,
+        width: '100%',
         alignItems: 'center',
         marginBottom: isMobile? 15 : 0
     },
@@ -75,18 +73,13 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-function CompanyUpdates() {
+function DashboardUpdates() {
     const classes = useStyles();
 
     const [announcementList, setAnnouncementList] = useState([]);
     const [hasMoreAnnouncements, setHasMoreAnnouncements] = useState(true);
     const [open, setOpen] = useState(false);
     const [currAnnouncement, setCurrAnnouncement] = useState(null);
-    const [addAnnouncement, setAddAnnouncement] = useState(false);
-
-    const { accounts } = useMsal();
-    const isAdmin = accountIsAdmin(accounts[0]);
-
 
     const handleUpdateOpen = (el) => {
         console.log("update is: " + el);
@@ -97,18 +90,6 @@ function CompanyUpdates() {
     const handleClose = () => {
         setOpen(false);
         setCurrAnnouncement(null);
-    }
-
-    const handleAddUpdateClose = () => {
-        setAddAnnouncement(false);
-    }
-
-    const addUpdateBody = () => {
-        return <AddUpdateForm closeModal={handleAddUpdateClose} whatToDoWhenClosed={(bool) => {setAddAnnouncement(bool)}}/>
-    }
-
-    const handleAddUpdateOpen = () => {
-        setAddAnnouncement(true);
     }
 
     const getAnnouncements = (page) => {
@@ -154,17 +135,9 @@ function CompanyUpdates() {
     });
 
     return(
-        <div className={classes.backgroundBox} style= {{height: '500px', overflow: 'auto'}}>
+        <div className={classes.backgroundBox} style= {{height: 300, overflow: 'auto'}}>
             <div className={classes.titleBox}>
                 <h1 className={classes.title}>COMPANY UPDATES</h1>
-                {isAdmin && <Button className={classes.actionButton} onClick={handleAddUpdateOpen}>Add</Button>}
-                <Modal
-                    open={addAnnouncement}
-                    onClose={handleAddUpdateClose}
-                >
-                    {addUpdateBody()}
-                </Modal>
-
             </div>
             <InfiniteScroll
                 loadMore={getAnnouncements}
@@ -177,4 +150,4 @@ function CompanyUpdates() {
         </div>
     )
 }
-export default CompanyUpdates;
+export default DashboardUpdates;

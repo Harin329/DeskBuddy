@@ -93,6 +93,17 @@ Reservation.getReservationByDate = (date: any, userID: any, result: any) => {
     })
 };
 
+Reservation.getReservationByMonth = (userID: any, result: any) => {
+    con.query("CALL getReservationsThisMonth(?)", [userID], (err: any, res: any) => {
+        if (err) {
+            console.log('Error: ', err);
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    })
+};
+
 Reservation.deleteReservation = (reservationID: any, result: any) => {
     con.query("CALL deleteReservation(?)", [reservationID], (err: any, res: any) => {
         if (err) {

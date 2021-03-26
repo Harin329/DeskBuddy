@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express';
-import multer from "multer";
 
 const router = Router();
 
 import UserController from '../controllers/user-controller';
 import {oidMatchesRequest} from "../util";
+import multer from "multer";
 const userServer = new UserController();
 
 // POST user endpoint. creates or updates user in database using Azure AD account info
@@ -28,6 +28,16 @@ router.post('/', (req: Request, res: Response) => {
         .catch((err: any) => {
             res.json(err);
         });
+})
+
+router.get('/GetUserNameByOffice/:officeloc/:officeid', (req, res: Response) => {
+   userServer.getUserNameByOffice(req.params.officeloc, Number(req.params.officeid))
+        .then((users: any) => {
+            res.json(users);
+        })
+        .catch((err: any) => {
+            res.json(err);
+        })
 })
 
 const upload = multer();

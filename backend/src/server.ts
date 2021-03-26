@@ -31,7 +31,7 @@ export class DeskbuddyServer {
       res.send('Hello DeskBuddy!');
     });
 
-    this.app.use('/user',userRoute);
+    this.app.use('/user', userRoute);
     this.app.use('/reservation', reservationRoute);
     this.app.use('/office', officeRoute);
     this.app.use('/floor', floorRoute)

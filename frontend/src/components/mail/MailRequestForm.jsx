@@ -67,12 +67,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function MailAssistanceForm(props) {
+function MailRequestForm(props) {
 
     const [name, setName] = useState("");
     const [type, setType] = useState("");
     const [forwardingLocation, setForwardingLocation] = useState("");
     const [instructions, setInstructions] = useState(0);
+    const [requestedDate, setRequestedDate] = useState(new Date());
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
@@ -91,6 +92,10 @@ function MailAssistanceForm(props) {
         setForwardingLocation(input.target.value);
     }
 
+    const handleDateInput = (input) => {
+        setRequestedDate(input.target.value);
+    }
+
     const handleInstructionsInput = (input) => {
         setInstructions(input.target.value);
     }
@@ -101,17 +106,33 @@ function MailAssistanceForm(props) {
 
     const handleSubmit = (event) => {
 
-        let requestOptions;
+        let jsonBody = {
+            mail_id: 0,
+            employee_id: userOID,
+            employee_name: name,
+            employee_email: "5",
+            employee_phone: "604",
+            request_type: type,
+            forward_location: forwardingLocation,
+            additional_instructions: instructions,
+            req_completion_date: requestedDate,
+            completion_date: new Date(),
+            status: null,
+            adminID: null
+        }
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify(jsonBody)
+        };
 
-            // TODO: Put endpoint
-            safeFetch(Endpoint + "", requestOptions)
-                .then((response) => response.text())
-                .then(result => {
-                    props.closeModal();
-                })
-                .catch(error => console.log('error', error));
+        safeFetch(Endpoint + "/mail/CreateMailRequest", requestOptions)
+            .then((response) => response.text())
+            .then(result => {
+                props.closeModal();
+            })
+            .catch(error => console.log('error', error));
 
-        handleUpdateLocationClose();
     }
 
     return (
@@ -172,7 +193,7 @@ function MailAssistanceForm(props) {
                     <Typography style={{ margin: 8 }}>
                         Requested Completion Date
                     </Typography>
-                    <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes}/>
+                    <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onClick={handleDateInput}/>
                 <div>
                     <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
                         Send
@@ -184,4 +205,4 @@ function MailAssistanceForm(props) {
 
 }
 
-export default MailAssistanceForm;
+export default MailRequestForm;
