@@ -24,6 +24,24 @@ Post.getPostByCategory = (category: number, result: any) => {
   )
 }
 
+Post.getReportedPosts = (category: number, result: any) => {
+  con.query('CALL getReportedPosts()',
+    [],
+    (err: any, res: any) => {
+      if (err) {
+        console.log(`Error: ${err}`);
+        result(err, null);
+      } else {
+        let voi = res[0];
+        if (Array.isArray(voi) && voi.length > 30) {
+          voi = voi.slice(voi.length - 30, voi.length);
+        }
+        result(null, voi);
+      }
+    }
+  )
+}
+
 Post.createPost = (newPost: any, result: any) => {
   // console.log(newPost);
   con.query('CALL createPost(?,?,?,?,?,?,?)',
@@ -46,17 +64,31 @@ Post.createPost = (newPost: any, result: any) => {
   )
 };
 
-Post.flagPost = (flag: any, result: any) => {
-  con.query('CALL flagPost(?,?)',
+Post.flagPost = (post: any, result: any) => {
+  con.query('CALL reportPost(?)',
     [
-      flag.post_id,
-      flag.is_flagged
+      post,
     ],
     (err: any, res: any) => {
       if (err) {
         result(err, null);
       } else {
-        result(null, flag);
+        result(null, post);
+      }
+    }
+  )
+};
+
+Post.unreportPost = (post: any, result: any) => {
+  con.query('CALL clearReports(?)',
+    [
+      post,
+    ],
+    (err: any, res: any) => {
+      if (err) {
+        result(err, null);
+      } else {
+        result(null, post);
       }
     }
   )
