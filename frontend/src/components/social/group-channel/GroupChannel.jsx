@@ -204,7 +204,7 @@ function GroupChannel() {
                                                 {(option.channel_icon != null)
                                                     ? <img src={'data:image/png;base64,' + new Buffer(option.channel_icon, 'binary')
                                                         .toString('base64')}
-                                                           alt style={{height:'15px', width: '15px', borderRadius: 10, backgroundColor: 'transparent'}} />
+                                                           alt={""} style={{height:'15px', width: '15px', borderRadius: 10, backgroundColor: 'transparent'}} />
                                                     : <img src={Home} alt={"home"} style={{ width: '15px', height: '15px', backgroundColor: 'transparent', borderRadius: 10}} />}
                                             </div>
                                             <div style={{ width: '80%', height: '15px',  alignItems: 'center'}}>
@@ -218,7 +218,7 @@ function GroupChannel() {
                                         {(option.channel_id !== 0 && option.channel_id !== 1) &&
                                         <Button onClick={() => handleOpen(option.channel_id)}
                                                 style={{ width: 15, height: 15, border: 'none'}}>
-                                            <img src={Delete} alt="Delete" style={{width: '15px', height: '15px', backgroundColor: 'transparent'}}/>
+                                            <img src={Delete} alt={"Delete"} style={{width: '15px', height: '15px', backgroundColor: 'transparent'}}/>
                                         </Button>}
                                     </div>}
                                 </div>
