@@ -1,19 +1,18 @@
 import { Mail } from '../models/mail'
 import { User } from '../models/user'
 import { IMail } from '../interfaces/mail.interface';
-import {Announcement} from "../models/announcement";
 
 export default class MailController {
   // tslint:disable-next-line:no-empty
   constructor() { }
 
-  getMail(employeeID: string): Promise<IMail[]> {
+  getMail(employeeID: string, filter: string | undefined): Promise<IMail[]> {
     return new Promise((resolve, reject) => {
       User.getUserNameAndEmailByOID(employeeID, (nameErr: any, nameRes: any) => {
         if (nameErr) {
           reject (nameErr);
         } else {
-          Mail.getMail(employeeID, (err: any, res: any) => {
+          Mail.getMail(employeeID ,filter, (err: any, res: any) => {
             if (err) {
               reject(err);
             } else {
@@ -55,9 +54,6 @@ export default class MailController {
   // posts a mail, returns mail_id
   createMail(body: IMail): Promise<number> {
     return new Promise((resolve, reject) => {
-      console.log(body.recipient_email);
-      console.log(body.recipient_first);
-      console.log(body.recipient_last);
       if (!body.recipient_email || !body.recipient_first || !body.recipient_last) {
         reject("Bad body");
       }

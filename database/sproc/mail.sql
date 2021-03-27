@@ -25,3 +25,22 @@ BEGIN
 SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID`;
 
 END
+
+CREATE PROCEDURE `getNewMail` (IN `employeeID` VARCHAR(50))
+
+BEGIN
+
+SELECT `*` FROM `mail` AS `M` 
+WHERE M.`fk_employee_id` = `employeeID` AND 
+      NOT EXISTS (SELECT * FROM `mail_request` AS `R` WHERE M.`mail_id` = R.`mail_id`);
+
+END
+
+CREATE PROCEDURE `getFilteredMail` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50))
+
+BEGIN
+
+SELECT `M.*` FROM `mail` AS `M`, `mail_request` AS `R` 
+WHERE `M.fk_employee_id` = `employeeID` AND `M.mail_id` = `R.mail_id` AND `R.status` = `filter`;
+
+END

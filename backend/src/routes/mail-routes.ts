@@ -6,14 +6,30 @@ import MailController from '../controllers/mail-controller';
 import { IMail } from '../interfaces/mail.interface';
 const mailServer = new MailController();
 
+const filterTypes = {
+    New: "new",
+    AwaitAdmin: "await_admin",
+    AwaitEmployee: "await_employee",
+    Closed: "closed",
+    CannotComplete: "cannot_complete"
+}
+
 router.get('/:employeeID', (req: Request, res: Response) => {
     const employeeID = req.params.employeeID;
-    if (!employeeID) {
+    const filter = req.query.filter;
+    // if it is not a string or undefined, or a string
+    if (typeof filter !== "undefined" &&
+        (typeof filter !== "string" || !Object.values(filterTypes).includes(filter))) {
+        res.status(400).json({
+            err: "Bad filter"
+        });
+    }
+    else if (!employeeID) {
         res.status(400).json({
             err: "Malformed request body"
         });
     } else {
-        mailServer.getMail(employeeID).then((mailInfo: IMail[]) => {
+        mailServer.getMail(employeeID, filter as string | undefined).then((mailInfo: IMail[]) => {
             res.status(200).json({
                 mails: mailInfo
             });
@@ -30,7 +46,7 @@ router.post('/', (req: Request, res: Response) => {
     if (body === undefined || body === {}) {
         res.status(400).json({
             err: "Malformed request body"
-        })
+        });
     } else {
         mailServer.createMail(req.body).then((value: number) => {
             res.status(200).json({
