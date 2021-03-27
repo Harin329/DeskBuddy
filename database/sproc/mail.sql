@@ -41,6 +41,6 @@ CREATE PROCEDURE `getFilteredMail` (IN `employeeID` VARCHAR(50), IN `filter` VAR
 BEGIN
 
 SELECT `M.*` FROM `mail` AS `M`, `mail_request` AS `R` 
-WHERE `M.fk_employee_id` = `employeeID` AND `M.mail_id` = `R.mail_id` AND `R.status` = `filter`;
+WHERE M.`fk_employee_id` = `employeeID` AND M.`mail_id` = `R.mail_id` AND R.`status` = `filter`;
 
 END
