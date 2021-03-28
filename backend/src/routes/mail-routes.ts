@@ -77,4 +77,72 @@ router.delete('/:id', (req: Request, res: Response) => {
     }
 });
 
+router.post('/requests', (req, res) => {
+    const body = req.body;
+    if (body === undefined || body.employee_name === null || body.request_type === null) {
+        res.status(400).json({
+            message: "Malformed request body"
+        });
+    }
+    else {
+        mailServer.createRequest(req.body)
+            .then((result: any) => {
+                res.json(result);
+            })
+            .catch((err: any) => {
+                res.json(err);
+            });
+    }
+});
+router.get('/requests/:employeeID', (req, res) => {
+    if (!req.params.employeeID) {
+        res.status(400).json({
+            message: "must provide an employee_ID"
+        });
+    }
+    else {
+        mailServer.getAllRequests(req.params.employeeID)
+            .then((result: any) => {
+                res.json(result);
+            })
+            .catch((err: any) => {
+                res.status(404).json(err);
+            });
+    }
+});
+
+router.delete('/requests', (req, res) => {
+    if (!req.body.employee_id || !req.body.mail_id) {
+        res.status(400).json({
+            message: "malformed request body"
+        });
+    }
+    else {
+        mailServer.deleteRequest(req.body)
+            .then((result: any) => {
+                res.json(result);
+            })
+            .catch((err: any) => {
+                res.status(400).json(err);
+            });
+    }
+});
+
+router.put('/requests', (req, res) => {
+    if (!req.body.employee_id || !req.body.mail_id) {
+        res.status(400).json({
+            message: "malformed request body"
+        })
+    }
+    else {
+        mailServer.updateRequest(req)
+            .then((result: any) => {
+                res.json(result);
+            })
+            .catch((err: any) => {
+                res.status(400).json(err);
+            })
+    }
+})
+
 export default router;
