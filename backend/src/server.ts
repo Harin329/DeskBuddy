@@ -12,6 +12,7 @@ import channelRoute from './routes/channel-routes';
 import authRoute from './routes/auth-routes';
 import userRoute from './routes/user-routes';
 import mailRoute from './routes/mail-routes';
+import requestRoute from './routes/request-routes';
 import DB from './config/db-handler';
 
 export class DeskbuddyServer {
@@ -41,6 +42,7 @@ export class DeskbuddyServer {
     this.app.use('/channel', channelRoute);
     this.app.use('/announcement', announcementRoute);
     this.app.use('/mail', mailRoute);
+    this.app.use('/request', requestRoute);
   }
 
   public getApp() {
