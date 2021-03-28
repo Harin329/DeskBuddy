@@ -1,12 +1,12 @@
 import { Mail } from '../models/mail'
 import { User } from '../models/user'
-import { IMail } from '../interfaces/mail.interface';
+import { IMail, IMailResponse } from '../interfaces/mail.interface';
 
 export default class MailController {
   // tslint:disable-next-line:no-empty
   constructor() { }
 
-  getMail(employeeID: string, filter: string | undefined): Promise<IMail[]> {
+  getMail(employeeID: string, filter: string | undefined): Promise<IMailResponse[]> {
     return new Promise((resolve, reject) => {
       User.getUserNameAndEmailByOID(employeeID, (nameErr: any, nameRes: any) => {
         if (nameErr) {
@@ -19,13 +19,14 @@ export default class MailController {
               try {
                 const employeeInfo = JSON.parse(JSON.stringify(nameRes))[0];
                 const result = JSON.parse(JSON.stringify(res));
-                const output: IMail[] = [];
+                const output: IMailResponse[] = [];
                 for (const mail of result) {
                   let date = mail.date_arrived;
                   if (date !== null) {
                     date = date.substring(0, 10); // truncates time
                   }
-                  const parsedMail: IMail = {
+                  const parsedMail: IMailResponse = {
+                    mailID: mail.mail_id,
                     officeID: mail.fk_office_id,
                     officeLocation: mail.fk_office_location,
                     recipient_first: employeeInfo.first_name,

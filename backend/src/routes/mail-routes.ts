@@ -3,7 +3,7 @@ import { Router, Request, Response, response } from 'express';
 const router = Router();
 
 import MailController from '../controllers/mail-controller';
-import { IMail } from '../interfaces/mail.interface';
+import { IMail, IMailResponse } from '../interfaces/mail.interface';
 const mailServer = new MailController();
 
 const filterTypes = {
@@ -40,7 +40,7 @@ router.get('/:employeeID', (req: Request, res: Response) => {
             err: "Malformed request body"
         });
     } else {
-        mailServer.getMail(employeeID, filter as string | undefined).then((mailInfo: IMail[]) => {
+        mailServer.getMail(employeeID, filter as string | undefined).then((mailInfo: IMailResponse[]) => {
             res.status(200).json({
                 mails: mailInfo
             });
