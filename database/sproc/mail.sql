@@ -22,7 +22,7 @@ CREATE PROCEDURE `createRequest` (IN `mailID` INT, IN `employeeID` VARCHAR(50), 
 BEGIN
 INSERT INTO `mail_request` (`mail_id`, `employee_id`, `employee_name`, `employee_email`, `employee_phone`,
                     `request_type`, `forward_location`, `additional_instructions`, `req_completion_date`,
-                    `completion_date`, `status`, `admin_eid`, 'response', 'modifiedAt')
+                    `completion_date`, `status`, `admin_eid`, `response`, `modified_at`)
 VALUES (`mailID`, `employeeID`, `employeeName`, `employeeEmail`, `employeePhone`, `requestType`, `forwardLocation`,
                             `additionalInstructions`, `reqCompletionDate`, null, null, null, null, `modified_at`);
 END

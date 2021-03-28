@@ -104,7 +104,7 @@ function MailRequestForm(props) {
     const handleSubmit = (event) => {
 
         let jsonBody = {
-            mail_id: props.id,
+            mail_id: 135,
             employee_id: userOID,
             employee_name: accounts[0].name,
             employee_email: accounts[0].idTokenClaims.email,
@@ -118,7 +118,6 @@ function MailRequestForm(props) {
             headers: { 'Content-Type': 'application/json'},
             body: JSON.stringify(jsonBody)
         };
-
         safeFetch(Endpoint + "/mail/CreateMailRequest", requestOptions)
             .then((response) => response.text())
             .then(result => {
@@ -135,13 +134,13 @@ function MailRequestForm(props) {
             </Typography>
             <form>
                 <div>
-                    <input type="radio" id="hold" name="type" value="hold" onSelect={handleTypeInput}/>
+                    <input type="radio" id="hold" name="type" value="hold" onChange={handleTypeInput}/>
                     <label  className={classes.typeInput}>Hold</label>
-                    <input type="radio" id="forward" name="type" value="forward" onSelect={handleTypeInput}/>
+                    <input type="radio" id="forward" name="type" value="forward" onChange={handleTypeInput}/>
                     <label  className={classes.typeInput}>Forward</label>
-                    <input type="radio" id="open" name="type" value="open" onSelect={handleTypeInput}/>
+                    <input type="radio" id="open" name="type" value="open" onChange={handleTypeInput}/>
                     <label  className={classes.typeInput}>Open</label>
-                    <input type="radio" id="assist" name="type" value="assist" onSelect={handleTypeInput}/>
+                    <input type="radio" id="assist" name="type" value="assist" onChange={handleTypeInput}/>
                     <label  className={classes.typeInput}>Assist</label>
                 </div>
                 <div><TextField
@@ -171,7 +170,7 @@ function MailRequestForm(props) {
                     <Typography style={{ marginTop: 20, fontFamily: 'Lato'}}>
                         Requested Completion Date
                     </Typography>
-                    <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onClick={handleDateInput}/>
+                    <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleDateInput}/>
                 <div>
                     <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
                         Send

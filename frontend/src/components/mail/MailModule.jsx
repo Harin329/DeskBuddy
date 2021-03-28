@@ -80,7 +80,7 @@ function MailModule(size, text) {
     let mail = [];
     mailList.map((update, i) => {
         mail.push(
-            <ListItem className={classes.reservationCard}>
+            <ListItem className={classes.reservationCard} key={mailList[i].mail_id}>
                 <div style={{ width: '25%', height: '100px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                     <Typography className={classes.officeText}>
                         {mailList[i].type}
