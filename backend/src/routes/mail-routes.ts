@@ -14,12 +14,23 @@ const filterTypes = {
     CannotComplete: "cannot_complete"
 }
 
+const sortTypes = {
+}
+
 router.get('/:employeeID', (req: Request, res: Response) => {
     const employeeID = req.params.employeeID;
     const filter = req.query.filter;
+    const sort = req.query.sort;
     // if it is not a string or undefined, or a string
     if (typeof filter !== "undefined" &&
         (typeof filter !== "string" || !Object.values(filterTypes).includes(filter))) {
+        res.status(400).json({
+            err: "Bad filter"
+        });
+    }
+    // same thing for sort
+    if (typeof sort !== "undefined" &&
+        (typeof sort !== "string" || !Object.values(sortTypes).includes(sort))) {
         res.status(400).json({
             err: "Bad filter"
         });
