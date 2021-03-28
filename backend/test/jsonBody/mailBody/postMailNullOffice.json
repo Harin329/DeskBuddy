@@ -1,9 +1,9 @@
 {
     "officeID": null,
     "officeLocation": null,
-    "recipient_first": "Dana",
-    "recipient_last": "White",
-    "recipient_email": "dana@deskbuddy.onmicrosoft.com",
+    "recipient_first": "Test",
+    "recipient_last": "User",
+    "recipient_email": "test@deskbuddy.onmicrosoft.com",
     "type": "Parcel",
     "approx_date": "2021-03-18",
     "sender": "Amazon",

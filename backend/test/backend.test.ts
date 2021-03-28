@@ -11,7 +11,7 @@ const adminToken = "PLACEHOLDER"; // token for Global Admin administrator
 const userToken = "PLACEHOLDER"; // token for Dana White user
 const adminJSON = {"Authorization": `Bearer ${adminToken}`};
 const userJSON = {"Authorization": `Bearer ${userToken}`};
-const testUserOID = `faa7c922-18f4-469a-9d0e-8999d0a783a4`;
+const testUserOID = `606ac3ca-afce-4337-b0b7-831f4c2dad90`;
 
 beforeAll(done => {
     server = new DeskbuddyServer(3000);
@@ -77,7 +77,7 @@ describe("Social feed endpoints tests", () => {
 });
 
 describe("Mail manager endpoints tests", () => {
-    // these tests assume the existence of a test user Dana White, who has no mails to begin with
+    // these tests assume the existence of a test user 'Test User', who has no mails to begin with
     it("POST /mail", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
@@ -156,8 +156,26 @@ describe("Mail manager endpoints tests", () => {
         } catch(err) {
             await mailDeleter(res1);
             await mailDeleter(res2);
-            throw new Error(JSON.stringify(getRes));
             throw new Error("Test failed: " + err);
+        }
+        done();
+    });
+
+    it("GET new /mail where there is one", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        // User currently has mail stored
+        const getRes = await request.get(`/mail/${testUserOID}?filter=new`).set(userJSON);
+        try {
+            const output = JSON.parse(getRes.text);
+            const results: IMail[] = output.mails;
+            expect(results.length).toBe(1);
+            expect(results[0]).toStrictEqual(body);
+            await mailDeleter(res);
+        } catch(err) {
+            await mailDeleter(res);
+            throw new Error(err);
         }
         done();
     });

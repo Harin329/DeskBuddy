@@ -179,15 +179,13 @@ function UpdateLocationPopup (props) {
         case 'cityOrTown':
             currLocationEdits.cityOrTown = input.target.value;
             break; 
-        // TODO: Find a way to compress image size
-        // case 'locationPhoto':
-        //     currLocationEdits.locationPhoto = locationPhoto;
-        //     break;
+        case 'locationPhoto':
+            currLocationEdits.locationPhoto = input[0];
+            break;
         case 'floors':
             currLocationEdits.floor.level = input.level;
-            // TODO: Find a way to compress image size
-            // if (input.photo !== null)
-            //     currLocationEdits.floor.photo = input.photo;
+            if (input.photo !== null)
+                currLocationEdits.floor.photo = input.photo;
             if (input.deskIds !== null && input.deskIds !== '')
                 currLocationEdits.floor.deskIds = input.deskIds;
             break;
@@ -208,17 +206,14 @@ function UpdateLocationPopup (props) {
         const originalCity = office.split('-')[0];
         const id = office.split('-')[1];
         const originalOffice = officeList.find(existingOffice => existingOffice.office_location == originalCity && existingOffice.office_id == id);
-        // const buffer = new Buffer(originalOffice.office_photo, 'binary').toString('base64'); 
-        // TODO: Put compressed photo here
-        originalOffice.office_photo = '';
+        const formData = new FormData();
 
         let parsedDesks;
         if (currLocationEdits.floor.deskIds) {
             parsedDesks = parseDesksFromSring(currLocationEdits.floor.deskIds);
         }
-        const floor = [{
+        const floors = [{
             floor_num: currLocationEdits.floor.level,
-            image: currLocationEdits.floor.photo,
             desks: parsedDesks
         }]
         const jsonBody = {
@@ -226,15 +221,16 @@ function UpdateLocationPopup (props) {
                 city: currLocationEdits.cityOrTown,
                 name: currLocationEdits.name,
                 address: currLocationEdits.address,
-                image: currLocationEdits.locationPhoto,
-                floors: floor
+                floors: floors
             },
             originalOffice
         }
+        formData.append("body", JSON.stringify(jsonBody));
+        formData.append("image", currLocationEdits.locationPhoto);
+        formData.append("floor_image", currLocationEdits.floor.photo);
         const requestOptions = {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(jsonBody)
+            body: formData
         };
         safeFetch(Endpoint + `/location`, requestOptions)
             .then((response) => {
@@ -338,9 +334,6 @@ function UpdateLocationPopup (props) {
                     <Typography>
                         Photo of Location
                     </Typography>
-                    <Typography>
-                        WIP - can upload image, but not yet saving uploaded image to database
-                    </Typography>
                     <ImageUploader
                         buttonStyles={{
                             background: '#00ADEF',
@@ -352,7 +345,8 @@ function UpdateLocationPopup (props) {
                             marginBottom: '10px',
                             fontFamily: 'Lato',
                             fontWeight: 'bolder',
-                            fontSize: 18
+                            fontSize: 18,
+                            alignSelf: 'flex-start'
                         }}
                         withIcon={false}
                         buttonText='Update Location Photo'

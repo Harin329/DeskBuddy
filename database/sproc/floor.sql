@@ -21,3 +21,12 @@ FROM `floor`
 WHERE `fk_office_id`=`office_id` AND `fk_office_location`=`office_location`;
 
 END
+
+CREATE PROCEDURE `updateFloorImage` (IN `office_location` VARCHAR(50), IN `office_id` INT(8), IN `orig_floor_num` INT(8), IN `floor_plan` MEDIUMBLOB)
+BEGIN
+
+UPDATE `floor`
+SET `floor_plan` = `floor_plan`
+WHERE `fk_office_id` = `office_id` AND `fk_office_location` = `office_location` AND `floor_num` = `orig_floor_num`;
+
+END

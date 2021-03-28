@@ -142,13 +142,9 @@ function UpdateLocationFloor (props) {
     };
 
     useEffect(() => {
-        // timeout is to allow DOM to update if user decides to remove the picture they uploaded
-        // TODO: this image upload approach doesn't work- try another approach
         setTimeout(async () => {
-            let pic = await document.getElementsByClassName('uploadPicture');
-            if (pic[0]) {
-                pic = pic[0].getAttribute('src').replace(/^data:.+;base64,/, '');
-                handleFormChange('floors', { level: updateLocationFloor, deskIds: null, photo: pic });
+            if (pictures) {
+                handleFormChange('floors', { level: updateLocationFloor, deskIds: null, photo: pictures[0] });
             } else {
                 handleFormChange('floors', { level: updateLocationFloor, deskIds: null, photo: '' });
             }
@@ -167,9 +163,6 @@ function UpdateLocationFloor (props) {
         </TextField>
     </Grid>
     <Grid item xs={7}>
-        <Typography>
-            WIP - can upload image, but not yet saving uploaded image to database
-        </Typography>
         <ImageUploader
                 buttonStyles={{
                     background: '#00ADEF',
