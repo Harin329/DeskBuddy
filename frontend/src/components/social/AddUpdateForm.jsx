@@ -142,11 +142,6 @@ function AddUpdateForm(props) {
                     props.closeModal();
                 })
                 .catch(error => console.log('error', error));
-            safeFetch(Endpoint + "/mail/postMail", requestOptions)
-                .then((response) => response.text())
-                .then(result => {
-                })
-                .catch(error => alert(error));
         } else {
             jsonBody = {
                 user: userOID,
@@ -218,14 +213,14 @@ function AddUpdateForm(props) {
                     }}
                     onChange={handleContentInput}
                 /></div>
-                <h1 className={classes.branchTitle}>Branch (Optional)</h1>
-                <TextField className={classes.officeSelector} id="outlined-basic" variant="outlined" select onChange={(e) => handleOfficeChange(e)}>
+                {!props.global && <h1 className={classes.branchTitle}>Branch (Optional)</h1>}
+                {!props.global && <TextField className={classes.officeSelector} id="outlined-basic" variant="outlined" select onChange={(e) => handleOfficeChange(e)}>
                     {officeList.map((option) => (
                         <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
                             {option.name}
                         </MenuItem>
                     ))}
-                </TextField>
+                </TextField>}
                 <div>
                     <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
                         Post
