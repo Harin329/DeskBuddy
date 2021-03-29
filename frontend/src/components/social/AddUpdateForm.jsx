@@ -53,7 +53,8 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'auto'
     },
     officeSelector: {
-        marginLeft : 8
+        marginLeft : 8,
+        width: '80%'
     },
     branchTitle: {
         marginLeft: 8,
@@ -218,7 +219,7 @@ function AddUpdateForm(props) {
                     onChange={handleContentInput}
                 /></div>
                 <h1 className={classes.branchTitle}>Branch (Optional)</h1>
-                <TextField className={classes.officeSelector} id="outlined-basic" variant="outlined" select onChange={(e) => handleOfficeChange(e)} value={selectedOfficeLocation}>
+                <TextField className={classes.officeSelector} id="outlined-basic" variant="outlined" select onChange={(e) => handleOfficeChange(e)}>
                     {officeList.map((option) => (
                         <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
                             {option.name}
