@@ -57,7 +57,7 @@ Post.createPost = (newPost: any, result: any) => {
       if (err) {
         result(err, null);
       } else {
-        result(null, newPost)
+        result(null, res[0][0]['LAST_INSERT_ID()'])
       }
     }
   )
@@ -119,7 +119,7 @@ Post.deletePostAssertUser = (post_id: number, oid: string, result: any) => {
             } else if (res.affectedRows === 0){
                 result(new Error("No matching posts"), null);
             } else {
-                result(null, res);
+                result(null, post_id);
             }
         }
     )

@@ -7,8 +7,8 @@ import { IMail } from "../src/interfaces/mail.interface";
 let server: DeskbuddyServer;
 let request: any;
 
-const adminToken = "PLACEHOLDER"; // token for Global Admin administrator
-const userToken = "PLACEHOLDER"; // token for Dana White user
+const adminToken = ""; // token for Global Admin administrator
+const userToken = ""; // token for Dana White user
 const adminJSON = {"Authorization": `Bearer ${adminToken}`};
 const userJSON = {"Authorization": `Bearer ${userToken}`};
 const testUserOID = `faa7c922-18f4-469a-9d0e-8999d0a783a4`;
@@ -71,10 +71,185 @@ describe("Reservation endpoints tests", () => {
 });
 
 describe("Social feed endpoints tests", () => {
-    it("dummy", () => {
-        // todo
+    it("POST /createPost with empty body", async done => {
+        const body = {};
+        const res = await request.post('/post/createPost').send(body).set(userJSON);
+        expect(res.status).toBe(400);
+        done();
     });
+
+    it("POST /createPost with null channel_id", async done => {
+        const body = loadJSON("test/jsonBody/postBody/postPostNullChannel.json");
+        const res = await request.post('/post/createPost').send(body).set(userJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /createPost with null employee_id", async done => {
+        const body = loadJSON("test/jsonBody/postBody/postPostNullEmployee.json");
+        const res = await request.post('/post/createPost').send(body).set(userJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /createPost to reports channel", async done => {
+        const body = loadJSON("test/jsonBody/postBody/postPostAdminChannel.json");
+        const res = await request.post('/post/createPost').send(body).set(adminJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /createPost with non-authenticated employee_id", async done => {
+        const body = loadJSON("test/jsonBody/postBody/postPostWrongOID.json");
+        const res = await request.post('/post/createPost').send(body).set(userJSON);
+        expect(res.status).toBe(401);
+        done();
+    });
+
+    it("POST /createPost normal", async done => {
+        const body = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        const res = await request.post('/post/createPost').send(body).set(userJSON);
+        expect(res.status).toBe(200);
+        await postDeleter(res);
+        done();
+    });
+
+    it("POST /flagPost with empty body", async done => {
+        const body = {};
+        const res = await request.post('/post/flagPost').send(body).set(userJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /flagPost with null post_id", async done => {
+        const body = {
+            post_id: null
+        };
+        const res = await request.post('/post/flagPost').send(body).set(userJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /flagPost normal", async done => {
+        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
+        expect(res1.status).toBe(200);
+        const body2 = {
+            post_id: res1.body.post_id
+        };
+        const res2 = await request.post('/post/flagPost').send(body2).set(userJSON);
+        expect(res2.status).toBe(200);
+        await postDeleter(res1);
+        done();
+    });
+
+    it("POST /unreportPost with empty body", async done => {
+        const body = {};
+        const res = await request.post('/post/unreportPost').send(body).set(adminJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /unreportPost with null post_id", async done => {
+        const body = {
+            post_id: null
+        };
+        const res = await request.post('/post/unreportPost').send(body).set(adminJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /unreportPost as non-admin", async done => {
+        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
+        expect(res1.status).toBe(200);
+        const body2 = {
+            post_id: res1.body.post_id
+        };
+        const res2 = await request.post('/post/flagPost').send(body2).set(userJSON);
+        expect(res2.status).toBe(200);
+        const res3 = await request.post('/post/unreportPost').send(body2).set(userJSON);
+        expect(res3.status).toBe(401);
+        await postDeleter(res1);
+        done();
+    });
+
+    it("POST /unreportPost normal", async done => {
+        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
+        expect(res1.status).toBe(200);
+        const body2 = {
+            post_id: res1.body.post_id
+        };
+        const res2 = await request.post('/post/flagPost').send(body2).set(userJSON);
+        expect(res2.status).toBe(200);
+        const res3 = await request.post('/post/unreportPost').send(body2).set(adminJSON);
+        expect(res3.status).toBe(200);
+        await postDeleter(res1);
+        done();
+    });
+
+    it("DELETE /deletePost with empty body", async done => {
+        const body = {};
+        const res = await request.delete('/post/deletePost').send(body).set(adminJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("DELETE /deletePost with null post_id", async done => {
+        const body = {
+            post_id: null
+        };
+        const res = await request.delete('/post/deletePost').send(body).set(adminJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("DELETE /deletePost as user for same user's post", async done => {
+        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
+        expect(res1.status).toBe(200);
+        const body2 = {
+            post_id: res1.body.post_id
+        };
+        const res2 = await request.delete('/post/deletePost').send(body2).set(userJSON);
+        expect(res2.status).toBe(200);
+        done();
+    });
+
+    it("DELETE /deletePost as user for different user's post", async done => {
+        const body1 = loadJSON("test/jsonBody/postBody/postPostNormalAdmin.json");
+        const res1 = await request.post('/post/createPost').send(body1).set(adminJSON);
+        expect(res1.status).toBe(200);
+        const body2 = {
+            post_id: res1.body.post_id
+        };
+        const res2 = await request.delete('/post/deletePost').send(body2).set(userJSON);
+        expect(res2.status).toBe(404);
+        await postDeleter(res1);
+        done();
+    });
+
+    it("DELETE /deletePost as admin for different user's post", async done => {
+        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
+        expect(res1.status).toBe(200);
+        const body2 = {
+            post_id: res1.body.post_id
+        };
+        const res2 = await request.delete('/post/deletePost').send(body2).set(adminJSON);
+        expect(res2.status).toBe(200);
+        done();
+    });
+
+
 });
+
+const postDeleter = async (res: any) => {
+    const id = res.body.post_id;
+    const body = {"post_id" : id};
+    await request.delete(`/post/deletePost`).send(body).set(adminJSON);
+}
 
 describe("Mail manager endpoints tests", () => {
     // these tests assume the existence of a test user Dana White, who has no mails to begin with

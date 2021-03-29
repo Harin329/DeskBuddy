@@ -33,12 +33,12 @@ router.post('/createPost', (req: any, res: Response) => {
         res.status(400).json({
             err: 'Empty body'
         });
-    } else if (req.body.employee_id === undefined || req.body.channel_id === undefined || req.body.post_content === undefined) {
+    } else if (!req.body.employee_id || !req.body.channel_id || !req.body.post_content) {
         res.status(400).json({
             err: 'Malformed body'
         });
-    } else if (req.body.channel_id === 0 && !requestIsAdmin(req.authInfo)) {
-        res.status(401).json({
+    } else if (req.body.channel_id === 0) {
+        res.status(400).json({
             err: 'Unauthorized'
         });
     } else if (!oidMatchesRequest(req.authInfo, req.body.employee_id)) {
@@ -48,7 +48,9 @@ router.post('/createPost', (req: any, res: Response) => {
     } else {
         postServer.createPost(req)
             .then((post: any) => {
-                res.status(200).json(post);
+                res.status(200).json({
+                    post_id : post
+                });
             })
             .catch((err: any) => {
                 res.status(404).json(err);
@@ -62,7 +64,7 @@ router.post('/flagPost', (req: any, res: Response) => {
         res.status(400).json({
             err: 'Empty body'
         });
-    } else if (req.body.post_id === undefined) {
+    } else if (!req.body.post_id) {
         res.status(400).json({
             err: 'Malformed body'
         });
@@ -82,7 +84,7 @@ router.post('/unreportPost', (req: any, res: Response) => {
         res.status(400).json({
             err: 'Empty body'
         });
-    } else if (req.body.post_id === undefined) {
+    } else if (!req.body.post_id) {
         res.status(400).json({
             err: 'Malformed body'
         });
@@ -107,7 +109,7 @@ router.delete('/deletePost', (req: any, res: Response) => {
         res.status(400).json({
             err: 'Empty body'
         });
-    } else if (req.body.post_id === undefined) {
+    } else if (!req.body.post_id) {
         res.status(400).json({
             err: 'Malformed body'
         });
