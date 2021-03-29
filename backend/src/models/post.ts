@@ -44,15 +44,14 @@ Post.getReportedPosts = (category: number, result: any) => {
 
 Post.createPost = (newPost: any, result: any) => {
   // console.log(newPost);
-  con.query('CALL createPost(?,?,?,?,?,?,?)',
+  con.query('CALL createPostNow(?,?,?,?,?,?)',
     [
       newPost.employee_id,
       newPost.channel_id,
-      newPost.date_posted,
       newPost.post_title,
       newPost.post_content,
       newPost.post_image,
-      newPost.is_flagged
+      newPost.num_reports
     ],
     (err: any, res: any) => {
       if (err) {
@@ -106,5 +105,22 @@ Post.deletePost = (post_id: number, result: any) => {
         result(null, post_id);
     }
   )
+}
 
+Post.deletePostAssertUser = (post_id: number, oid: string, result: any) => {
+    con.query('CALL deletePostAssertUser(?,?)',
+        [
+            post_id,
+            oid
+        ],
+        (err: any, res: any) => {
+            if (err) {
+                result(err, null);
+            } else if (res.affectedRows === 0){
+                result(new Error("No matching posts"), null);
+            } else {
+                result(null, res);
+            }
+        }
+    )
 }
