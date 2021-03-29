@@ -1,4 +1,6 @@
 import {Request} from "../models/request";
+import {requestIsAdmin} from "../util";
+import { User } from '../models/user'
 
 export default class RequestController {
     // tslint:disable-next-line:no-empty
@@ -7,11 +9,22 @@ export default class RequestController {
 
     createRequest(req: any) {
         return new Promise((resolve, reject) => {
-            Request.createRequest(req, (err: any, res: any) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(res);
+            User.getUserNameAndEmailByOID(req.authInfo.oid, (errGet: any, resGet: any) => {
+                if (errGet) {
+                    reject(errGet);
+                }
+                else {
+                    const employeeInfo = JSON.parse(JSON.stringify(resGet))[0];
+                    req.body.employee_id = req.authInfo.oid;
+                    req.body.employee_name = employeeInfo.first_name + " " + employeeInfo.last_name;
+                    req.body.employee_email = employeeInfo.email;
+                    Request.createRequest(req.body, (err: any, res: any) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(res);
+                        }
+                    })
                 }
             })
         })
@@ -31,7 +44,8 @@ export default class RequestController {
 
     closeRequest(req: any) {
         return new Promise((resolve, reject) => {
-            Request.closeRequest(req, (err: any, res: any) => {
+            req.body.employee_id = req.authInfo.oid;
+            Request.closeRequest(req.body, (err: any, res: any) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -43,7 +57,8 @@ export default class RequestController {
 
     updateRequestEmployee(req: any) {
         return new Promise((resolve, reject) => {
-            Request.updateRequestEmployee(req, (err: any, res: any) => {
+            req.body.employee_id = req.authInfo.oid;
+            Request.updateRequestEmployee(req.body, (err: any, res: any) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -55,7 +70,11 @@ export default class RequestController {
 
     updateRequestAdmin(req: any) {
         return new Promise((resolve, reject) => {
-            Request.updateRequestAdmin(req, (err: any, res: any) => {
+            if (!requestIsAdmin(req.authInfo)) {
+                reject("unauthorized user");
+            }
+            req.body.admin_eid = req.authInfo.oid;
+            Request.updateRequestAdmin(req.body, (err: any, res: any) => {
                 if (err) {
                     reject(err);
                 } else {
