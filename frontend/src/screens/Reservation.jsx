@@ -13,6 +13,7 @@ import Subheader from '../components/global/Subheader';
 import UpcomingReservations from '../components/reservation/UpcomingReservations';
 import DeskFilter from '../components/reservation/DeskFilter';
 import { SET_EMPLOYEE_COUNT } from '../actions/actionTypes';
+import Spinner from '../components/reservation/map-popup/spinner/spinner';
 
 const useStyles = makeStyles((theme) => ({
     background: {
@@ -102,8 +103,10 @@ function Reservation() {
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [confirmationDesk, setConfirmationDesk] = useState();
+    const [confirmed, setConfirmed] = useState(false);
 
     const dispatch = useDispatch()
+    const loading = useSelector(state => state.global.loading);
     const filter = useSelector(state => state.reservations.searchFilter);
     const deskResults = useSelector(state => state.reservations.deskResults);
     const more = useSelector(state => state.reservations.hasMore);
@@ -118,6 +121,7 @@ function Reservation() {
     }, []);
 
     const handleOpen = (option) => {
+        setConfirmed(false);
         setConfirmationDesk(option);
         setOpen(true);
     };
@@ -128,9 +132,11 @@ function Reservation() {
 
     const reserve = (deskObj) => {
         dispatch(makeReservation(userOID, deskObj, filter))
-        handleClose();
         // Replace this with promises followed by then one day... :)
-        setTimeout(() => dispatch(fetchDesks(filter, false, 0, deskResults)), 3000);
+        setTimeout(() => dispatch(fetchDesks(filter, false, 0, deskResults)), 100);
+        setConfirmed(true);
+        // ??? Auto close -> confirmation
+        // handleClose();
     }
 
     const count = (deskObj) => {
@@ -176,9 +182,10 @@ function Reservation() {
                     Do you want to confirm this reservation?
                                             </Typography>
                 <div style={{ width: '100%', marginTop: '10px', justifyContent: 'center', display: 'flex' }}>
-                    <Button className={classes.reserveButton} onClick={() => {
+                    {!confirmed && <Button className={classes.reserveButton} onClick={() => {
                         reserve(confirmationDesk);
-                    }}>Confirm</Button>
+                    }}>Confirm</Button>}
+                    {confirmed && <Typography>Desk Confirmed!</Typography>}
                 </div>
             </div>)
     };
@@ -217,10 +224,11 @@ function Reservation() {
                 {window.innerWidth <= 1500 && Subheader('RESERVE', 0, 12, 0)}
 
                 {DeskFilter()}
-
+                {console.log(loading)}
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-                    <Grid item xs={isMobile ? 10 : 10}>
+                    <Grid item xs={10}>
                         <List>
+                            {loading && <Spinner />}
                             {deskResults.map((option) => {
                                 if (!isMobile) {
                                     return (
