@@ -1,7 +1,8 @@
-import React from 'react';
-import { Typography, Grid, ListItem, Divider } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Typography, Grid, ListItem, Divider, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InfiniteScroll from "react-infinite-scroller";
+import MailNotification from './MailNotification';
 
 
 const useStyles = makeStyles({
@@ -29,17 +30,56 @@ const useStyles = makeStyles({
         fontSize: 16,
         textAlign: 'center'
     },
-    reservationCard: { backgroundColor: '#E5E5E5', height: '110px', marginBottom: '10px', },
+    reservationCardTruncated: {
+        backgroundColor: '#E5E5E5',
+        height: '110px',
+        marginBottom: '10px',
+        '&:hover': {
+          backgroundColor: '#FFFCF7'
+        }
+    },
+    reservationCardExpanded: {
+        backgroundColor: '#E5E5E5',
+        height: '180px',
+        marginBottom: '10px',
+        '&:hover': {
+          backgroundColor: '#FFFCF7'
+        }
+    },
+    actionButton: {
+        background: '#00ADEF',
+        borderRadius: 20,
+        color: 'white',
+        height: '50px',
+        padding: '0 30px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 18
+    },
 });
 
 
 function MailModule(size, text) {
     const classes = useStyles();
+    const [isExpanded, setIsExpanded] = useState(false);
 
-    const mockData = ["ABC", "DEF"];
+    const mockData = ["ABC", "DEFG", "HIJ", "KLM", "NOP", "QRS", "TUV"];
+    const getNotifClass = () => {
+        return isExpanded ? classes.reservationCardExpanded : classes.reservationCardTruncated;
+    }
+
+    let expandedNotif;
+    if (isExpanded) {
+        expandedNotif = <div>
+            <Typography>HELLO</Typography>
+            <Button className={classes.actionButton}>Button 1</Button>
+        </div>
+    }
 
     return (
-        <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null }}>
+        <Grid item xs={size} style={{ height: '500px', borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll' }}>
             <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: '20%', height: 30, textAlign: 'center', marginTop: -10, fontSize: 20, position: 'absolute' }}>{text}</h1>
             <InfiniteScroll
                 style={{ padding: 30, width: '90%' }}
@@ -47,28 +87,7 @@ function MailModule(size, text) {
             >
                 {mockData.map((option) => {
                     return (
-                        <ListItem className={classes.reservationCard}>
-                            <div style={{ width: '25%', height: '100px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                <Typography className={classes.officeText}>
-                                    PARCEL
-                      </Typography>
-                            </div>
-                            <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '90px', width: '3px' }} />
-                            <div style={{ width: '80%', height: '100px', alignItems: 'center', display: 'flex', flexDirection: 'row', marginLeft: 30 }}>
-                                <div style={{ width: '40%', height: '100px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                    <Typography className={classes.deskSectionText}>
-                                        MAIL ID: <Typography className={classes.deskText}>
-                                            {option}
-                                        </Typography>
-                                    </Typography>
-                                    <Typography className={classes.deskSectionText}>
-                                        DATE ARRIVED: <Typography className={classes.deskText}>
-                                            Date
-                                                </Typography>
-                                    </Typography>
-                                </div>
-                            </div>
-                        </ListItem>
+                        <MailNotification data={option}></MailNotification>
                     )
                 })}
             </InfiniteScroll>
