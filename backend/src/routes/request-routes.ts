@@ -10,14 +10,14 @@ const requestServer = new RequestController();
 
 // endpoint for creating a new request
 router.post('/', (req: Request, res: Response) => {
-    const body = req.body;
-    if (!body || body.employee_name === null || body.request_type === null) {
+    // console.log(req.authInfo);
+    if (!req.body) {
         res.status(400).json({
             message: "Malformed request body"
         });
     }
     else {
-        requestServer.createRequest(req.body)
+        requestServer.createRequest(req)
             .then((result: any) => {
                 res.json(result);
             })
@@ -47,13 +47,13 @@ router.get('/:employeeID', (req: Request, res: Response) => {
 
 // endpoint for closing a request
 router.put('/close', (req: Request, res: Response) => {
-    if (req.body.employee_id === null || req.body.mail_id === null) {
+    if (!req.body || !req.body.mail_id) {
         res.status(400).json({
             message: "malformed request body"
         });
     }
     else {
-        requestServer.closeRequest(req.body)
+        requestServer.closeRequest(req)
             .then((result: any) => {
                 res.json(result);
             })
@@ -65,7 +65,7 @@ router.put('/close', (req: Request, res: Response) => {
 
 // endpoint for updating a request for employee
 router.put('/employee', (req: Request, res: Response) => {
-    if (req.body.employee_id === null || req.body.mail_id === null) {
+    if (!req.body || req.body.mail_id === null) {
         res.status(400).json({
             message: "malformed request body"
         })
@@ -83,12 +83,7 @@ router.put('/employee', (req: Request, res: Response) => {
 
 // endpoint for updating a request for admin
 router.put('/admin', (req: Request, res: Response) => {
-    if (!requestIsAdmin(req.authInfo)) {
-        res.status(401).json({
-            message: "unauthorized user"
-        })
-    }
-    else if (req.body.employee_id === null || req.body.mail_id === null) {
+    if (!req.body || req.body.mail_id == null) {
         res.status(400).json({
             message: "malformed request body"
         })
