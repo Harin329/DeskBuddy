@@ -2,7 +2,7 @@ import { DeskbuddyServer } from "../src/server";
 import supertest from "supertest";
 import fs from 'fs';
 import { IOffice } from "../src/interfaces/location.interface";
-import { IMail, IMailResponse } from "../src/interfaces/mail.interface";
+import { IMail } from "../src/interfaces/mail.interface";
 
 let server: DeskbuddyServer;
 let request: any;
@@ -118,7 +118,7 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
-            expect(results[0]).toStrictEqual(body);
+            expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
             await mailDeleter(res);
@@ -171,7 +171,7 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
-            expect(results[0]).toStrictEqual(body);
+            expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
             await mailDeleter(res);
@@ -179,16 +179,28 @@ describe("Mail manager endpoints tests", () => {
         }
         done();
     });
+
+    it("GET /mail filtered on awaiting admin action only", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        const getRes = await request.get(`/mail/${testUserOID}?filter=await_admin`).set(userJSON);
+        try {
+            const output = JSON.parse(getRes.text);
+            const results: IMail[] = output.mails;
+            expect(results.length).toBe(0);
+            await mailDeleter(res);
+        } catch(err) {
+            await mailDeleter(res);
+            throw new Error(err);
+        }
+        done();
+    })
 });
 
 const mailDeleter = async (res: any) => {
     const id = JSON.parse(res.text).id;
     await request.delete(`/mail/${id}`).set(adminJSON);
-}
-
-const testMailEquality = (mail: IMail, response: IMailResponse) => {
-    // TODO: implement
-    return true;
 }
 
 describe("Miscellaneous tests", () => {

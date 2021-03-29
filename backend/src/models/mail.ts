@@ -32,17 +32,29 @@ Mail.getMail = (employeeID: string, filter: string | undefined, sort: string | u
       query = `CALL getFilteredMail(?, ?)`;
       parameters = [employeeID, filter as string];
       break;
-    case filter === undefined && processed_sort !== undefined:
-      query = `CALL getMailSorted(?, ?)`; // TODO
-      parameters = [employeeID, processed_sort as string, direction];
+    case filter === undefined && processed_sort !== undefined && direction === "ASC":
+      query = `CALL getMailSortedAsc(?, ?)`; // TODO
+      parameters = [employeeID, processed_sort as string];
       break;
-    case filter === "new" && processed_sort !== undefined:
-      query = `CALL getNewMailSorted(?, ?)`; // TODO
-      parameters = [employeeID, processed_sort as string, direction];
+    case filter === undefined && processed_sort !== undefined && direction === "DESC":
+      query = `CALL getMailSortedDesc(?, ?)`; // TODO
+      parameters = [employeeID, processed_sort as string];
       break;
-    case (filter !== undefined && filter !== "new") && processed_sort !== undefined:
-      query = `CALL getFilteredMailSorted(?, ?, ?)`; // TODO
-      parameters = [employeeID, filter as string, processed_sort as string, direction];
+    case filter === "new" && processed_sort !== undefined && direction === "ASC":
+      query = `CALL getNewMailSortedAsc(?, ?)`; // TODO
+      parameters = [employeeID, processed_sort as string];
+      break;
+    case filter === "new" && processed_sort !== undefined && direction === "DESC":
+      query = `CALL getNewMailSortedDesc(?, ?)`; // TODO
+      parameters = [employeeID, processed_sort as string];
+      break;
+    case (filter !== undefined && filter !== "new") && processed_sort !== undefined && direction === "ASC":
+      query = `CALL getFilteredMailSortedAsc(?, ?, ?)`; // TODO
+      parameters = [employeeID, filter as string, processed_sort as string];
+      break;
+    case (filter !== undefined && filter !== "new") && processed_sort !== undefined && direction === "DESC":
+      query = `CALL getFilteredMailSortedDesc(?, ?, ?)`; // TODO
+      parameters = [employeeID, filter as string, processed_sort as string];
       break;
     default:
       result("Error: filter or sort were bad types", null)

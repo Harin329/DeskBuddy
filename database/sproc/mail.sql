@@ -26,11 +26,19 @@ SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID`;
 
 END
 
-CREATE PROCEDURE `getMailSorted` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `direction` VARCHAR(50))
+CREATE PROCEDURE `getMailSortedAsc` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50))
 
 BEGIN
 
-SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID` ORDER BY `sort` IF(`direction` = `ASC`, ASC, DESC);
+SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID` ORDER BY `sort` ASC;
+
+END
+
+CREATE PROCEDURE `getMailSortedDesc` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50))
+
+BEGIN
+
+SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID` ORDER BY `sort` DESC;
 
 END
 
@@ -44,14 +52,25 @@ WHERE M.`fk_employee_id` = `employeeID` AND
 
 END
 
-CREATE PROCEDURE `getNewMailSorted` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `direction` VARCHAR(50))
+CREATE PROCEDURE `getNewMailSortedAsc` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50))
 
 BEGIN
 
 SELECT `*` FROM `mail` AS `M` 
 WHERE M.`fk_employee_id` = `employeeID` AND 
       NOT EXISTS (SELECT * FROM `mail_request` AS `R` WHERE M.`mail_id` = R.`mail_id`)
-ORDER BY `sort` `direction`;
+ORDER BY `sort` ASC;
+
+END
+
+CREATE PROCEDURE `getNewMailSortedDesc` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50))
+
+BEGIN
+
+SELECT `*` FROM `mail` AS `M` 
+WHERE M.`fk_employee_id` = `employeeID` AND 
+      NOT EXISTS (SELECT * FROM `mail_request` AS `R` WHERE M.`mail_id` = R.`mail_id`)
+ORDER BY `sort` DESC;
 
 END
 
@@ -64,12 +83,22 @@ WHERE M.`fk_employee_id` = `employeeID` AND M.`mail_id` = R.`mail_id` AND R.`sta
 
 END
 
-CREATE PROCEDURE `getFilteredMailSorted` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), IN `sort` VARCHAR(50), IN `direction` VARCHAR(50))
+CREATE PROCEDURE `getFilteredMailSortedAsc` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), IN `sort` VARCHAR(50))
 
 BEGIN
 
 SELECT M.`*` FROM `mail` AS `M`, `mail_request` AS `R` 
 WHERE M.`fk_employee_id` = `employeeID` AND M.`mail_id` = R.`mail_id` AND R.`status` = `filter`
-ORDER BY `sort` `direction`;
+ORDER BY `sort` ASC;
+
+END
+
+CREATE PROCEDURE `getFilteredMailSortedDesc` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), IN `sort` VARCHAR(50))
+
+BEGIN
+
+SELECT M.`*` FROM `mail` AS `M`, `mail_request` AS `R` 
+WHERE M.`fk_employee_id` = `employeeID` AND M.`mail_id` = R.`mail_id` AND R.`status` = `filter`
+ORDER BY `sort` DESC;
 
 END
