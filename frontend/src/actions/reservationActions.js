@@ -2,6 +2,7 @@ import { SET_RESERVATIONS, SET_EMPLOYEE_COUNT, SET_DESKS_RESULTS, CHECK_MORE, SE
 import Endpoint, { resultOnPage } from '../config/Constants';
 import { appendLeadingZeroes } from "../functions/Date";
 import safeFetch from "../util/Util";
+import { setLoading } from "./globalActions";
 
 export const makeReservation = (userID, deskObj, filter) => dispatch => {
     var day = new Date(filter.from)
@@ -70,6 +71,7 @@ export const fetchOffices = () => dispatch => {
 }
 
 export const fetchDesks = (filter, append, pageStart, deskResults) => dispatch => {
+    dispatch(setLoading(true));
     var deskParam = ['0', '0']
     var officeParam = ['0', '0']
 
@@ -116,8 +118,12 @@ export const fetchDesks = (filter, append, pageStart, deskResults) => dispatch =
             const more = ((deskResults.length + res.length) % resultOnPage === 0 && res[0] !== undefined) || !append
             dispatch({ type: CHECK_MORE, payload: more })
             dispatch({ type: SET_PAGE, payload: pageStart + resultOnPage })
+            dispatch(setLoading(false));
         })
-        .catch(error => console.log('error', error));
+        .catch(error => {
+            console.log('error', error);
+            dispatch(setLoading(false));
+        });
 }
 
 export const fetchDesksByOffice = (params) => dispatch => {
