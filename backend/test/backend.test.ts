@@ -2,7 +2,7 @@ import { DeskbuddyServer } from "../src/server";
 import supertest from "supertest";
 import fs from 'fs';
 import { IOffice } from "../src/interfaces/location.interface";
-import { IMail } from "../src/interfaces/mail.interface";
+import { IMail, IMailResponse } from "../src/interfaces/mail.interface";
 
 let server: DeskbuddyServer;
 let request: any;
@@ -184,6 +184,11 @@ describe("Mail manager endpoints tests", () => {
 const mailDeleter = async (res: any) => {
     const id = JSON.parse(res.text).id;
     await request.delete(`/mail/${id}`).set(adminJSON);
+}
+
+const testMailEquality = (mail: IMail, response: IMailResponse) => {
+    // TODO: implement
+    return true;
 }
 
 describe("Miscellaneous tests", () => {
