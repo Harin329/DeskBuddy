@@ -105,7 +105,7 @@ Mail.getAllRequests = (employeeID: any, result: any) => {
 
 Mail.updateRequest = (req: any, result: any) => {
     const date = new Date();
-    const currDate = getFormattedDate(date);
+    const currDate = getFormattedDate();
 };
 
 Mail.deleteRequest = (req: any, result: any) => {

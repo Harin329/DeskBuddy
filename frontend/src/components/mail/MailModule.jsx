@@ -45,11 +45,14 @@ const useStyles = makeStyles({
 function MailModule(size, text) {
     const [open, setOpen] = useState(false);
     const [mailList, setMailList] = useState([]);
+    const [currMail, setCurrMail] = useState(null);
 
     const classes = useStyles();
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
+
+    console.log(accounts[0]);
 
     useEffect( () => {
         const requestOptions = {
@@ -66,16 +69,18 @@ function MailModule(size, text) {
             .catch(error => console.log('error', error));
     });
 
-    const handleMailRequest = () => {
+    const handleMailRequest = (item) => {
         setOpen(true);
+        setCurrMail(item);
     }
 
     const closeMailRequest = () => {
         setOpen(false);
+        setCurrMail(false);
     }
 
     const mailRequestPopup = () => {
-        return <MailResponseForm closeModal={closeMailRequest} whatToDoWhenClosed={(bool) => {setOpen(bool)}}/>
+        return <MailRequestForm closeModal={closeMailRequest} whatToDoWhenClosed={(bool) => {setOpen(bool)}}>{currMail}</MailRequestForm>
     }
 
     let mail = [];
@@ -88,8 +93,8 @@ function MailModule(size, text) {
                     </Typography>
                 </div>
                 <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '90px', width: '3px' }} />
-                <div style={{ width: '80%', height: '100px', alignItems: 'center', display: 'flex', flexDirection: 'row', marginLeft: 30 }}>
-                    <div style={{ width: '40%', height: '100px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }} onClick={handleMailRequest}>
+                <div style={{ width: '80%', height: '90px', alignItems: 'center', display: 'flex', flexDirection: 'row', marginLeft: 30 }}>
+                    <div style={{ width: '60%', height: '100px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }} onClick={() => handleMailRequest(update)}>
                         <Typography className={classes.deskSectionText}>
                             MAIL ID: <Typography className={classes.deskText}>
                             {mailList[i].mailID}

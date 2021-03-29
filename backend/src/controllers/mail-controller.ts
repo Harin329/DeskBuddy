@@ -107,55 +107,5 @@ export default class MailController {
       })
     })
   }
-
-  createRequest(req: any) {
-    return new Promise((resolve, reject) => {
-      Mail.createRequest(req, (err: any, res: any) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(res);
-        }
-      })
-    })
-  }
-
-  getAllRequests(employeeID: any) {
-    return new Promise((resolve, reject) => {
-      Mail.getAllRequests(employeeID, (err: any, res: any) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(res);
-        }
-      })
-    })
-  }
-
-  deleteRequest(req: any) {
-    return new Promise((resolve, reject) => {
-      Mail.deleteRequest(req, (err: any, res: any) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(res);
-        }
-      })
-    })
-  }
-
-  updateRequest(req: any) {
-    return new Promise((resolve, reject) => {
-      Mail.updateRequest(req, (err: any, res: any) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(res);
-        }
-      })
-    })
-  }
-
-
 }
 

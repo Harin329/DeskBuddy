@@ -51,6 +51,21 @@ function RequestModule(size, text) {
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
 
+    // useEffect( () => {
+    //     const requestOptions = {
+    //         method: 'GET',
+    //         redirect: 'follow'
+    //     };
+    //
+    //     safeFetch(Endpoint + "/request/" + userOID, requestOptions)
+    //         .then((response) => response.text())
+    //         .then(result => {
+    //             const requests = JSON.parse(result);
+    //             setRequestList(requests);
+    //         })
+    //         .catch(error => console.log('error', error));
+    // });
+
     const handleMailResponse = () => {
         setOpen(true);
     }
@@ -63,7 +78,7 @@ function RequestModule(size, text) {
         return <MailResponseForm closeModal={closeMailResponse} whatToDoWhenClosed={(bool) => {setOpen(bool)}}/>
     }
 
-    let requests = ["134", "135"];
+    let requests = [];
     console.log(requestList);
     requestList.map((update, i) => {
         requests.push(

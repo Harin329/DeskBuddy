@@ -191,7 +191,7 @@ class BranchUpdates extends React.Component {
             <div className={classes.backgroundBox} style= {{height: '500px', overflow: 'auto'}} ref={(ref) => this.scrollParentRef = ref}>
                 <div className={classes.titleBox}>
                     <h1 className={classes.title}>BRANCH UPDATES</h1>
-                    <TextField className={classes.officeSelector} id="outlined-basic" label="" variant="outlined" select onChange={(e) => this.handleOfficeChange(e)} value={this.state.selectedOffice}>
+                    <TextField className={classes.officeSelector} id="outlined-basic" label="" variant="outlined" select onChange={(e) => this.handleOfficeChange(e)}>
                         {this.state.officeList.map((option) => (
                             <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
                                 {option.name}

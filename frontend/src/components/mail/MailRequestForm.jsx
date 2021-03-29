@@ -77,9 +77,7 @@ function MailRequestForm(props) {
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
-    console.log(accounts[0]);
     const classes = useStyles();
-
 
     const handleTypeInput = (input) => {
         setType(input.target.value);
@@ -95,18 +93,20 @@ function MailRequestForm(props) {
 
     const handleInstructionsInput = (input) => {
         setInstructions(input.target.value);
+        console.log(requestedDate);
     }
 
-    const handleUpdateLocationClose = () => {
+    const handleRequestFormClose = () => {
         props.whatToDoWhenClosed();
     }
 
     const handleSubmit = (event) => {
 
         let jsonBody = {
-            mail_id: 135,
+            mail_id: props.children.mailID,
             employee_id: userOID,
             employee_name: accounts[0].name,
+            employee_phone: null,
             employee_email: accounts[0].idTokenClaims.email,
             request_type: type,
             forward_location: forwardingLocation,
@@ -118,17 +118,17 @@ function MailRequestForm(props) {
             headers: { 'Content-Type': 'application/json'},
             body: JSON.stringify(jsonBody)
         };
-        safeFetch(Endpoint + "/mail/CreateMailRequest", requestOptions)
+        safeFetch(Endpoint + "/request", requestOptions)
             .then((response) => response.text())
             .then(result => {
                 props.closeModal();
             })
             .catch(error => console.log('error', error));
-
+        handleRequestFormClose();
     }
 
     return (
-        <div className={classes.makeRequest} onClose={handleUpdateLocationClose}>
+        <div className={classes.makeRequest} onClose={handleRequestFormClose}>
             <Typography className={classes.sectionTextModal}>
                 Mail Assistance Form
             </Typography>
