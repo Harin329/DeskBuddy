@@ -6,6 +6,7 @@ import MailRequestForm from "./MailRequestForm";
 import safeFetch from "../../util/Util";
 import Endpoint from "../../config/Constants";
 import {useMsal} from "@azure/msal-react";
+import MailResponseForm from "./MailResponseForm";
 
 
 const useStyles = makeStyles({
@@ -74,7 +75,7 @@ function MailModule(size, text) {
     }
 
     const mailRequestPopup = () => {
-        return <MailRequestForm closeModal={closeMailRequest} whatToDoWhenClosed={(bool) => {setOpen(bool)}}/>
+        return <MailResponseForm closeModal={closeMailRequest} whatToDoWhenClosed={(bool) => {setOpen(bool)}}/>
     }
 
     let mail = [];
@@ -91,7 +92,7 @@ function MailModule(size, text) {
                     <div style={{ width: '40%', height: '100px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }} onClick={handleMailRequest}>
                         <Typography className={classes.deskSectionText}>
                             MAIL ID: <Typography className={classes.deskText}>
-                            {mailList[i].mail_id}
+                            {mailList[i].mailID}
                         </Typography>
                         </Typography>
                         <Typography className={classes.deskSectionText}>

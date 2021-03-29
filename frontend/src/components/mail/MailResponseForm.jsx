@@ -2,6 +2,9 @@ import {Button, MenuItem, TextField, Typography} from "@material-ui/core";
 import React, {useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import {isMobile} from "react-device-detect";
+import safeFetch, {accountIsAdmin} from "../../util/Util";
+import Endpoint from "../../config/Constants";
+import {useMsal} from "@azure/msal-react";
 
 const useStyles = makeStyles((theme) => ({
     actionButton: {
@@ -42,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: 'Lato',
         fontWeight: 'bolder',
         fontSize: 20,
-        textAlign: 'center',
         marginBottom: 20
     },
     makeRequest: {
@@ -71,6 +73,9 @@ function MailResponseForm(props){
 
     const classes = useStyles();
 
+    const { accounts } = useMsal();
+    const isAdmin = accountIsAdmin(accounts[0]);
+
     const handleResponseInput = (event) => {
         setResponse(event.target.value);
     }
@@ -80,6 +85,21 @@ function MailResponseForm(props){
     }
 
     const handleSubmit = () => {
+        let jsonBody = {
+            mail_id: 135,
+            employee_id: 123,
+        }
+        const requestOptions = {
+            method: 'PUT',
+            redirect: 'follow',
+            body: JSON.stringify(jsonBody)
+        };
+
+        safeFetch(Endpoint + "/requests", requestOptions)
+            .then((response) => response.text())
+            .then(result => {
+            })
+            .catch(error => console.log('error', error));
 
     }
 
@@ -89,16 +109,16 @@ function MailResponseForm(props){
                 Request Response Form
             </Typography>
             <Typography className={classes.sectionTextModal}>
-                {props.name}
+                Employee Name:
             </Typography>
             <Typography className={classes.sectionTextModal}>
-                {props.requestType}
+                Request Type:
             </Typography>
             <Typography className={classes.sectionTextModal}>
-                {props.instructions}
+                Additional Instructions:
             </Typography>
             <form>
-                <div><TextField
+                {isAdmin && <div><TextField
                     id="location"
                     style={{ marginTop: 20 }}
                     placeholder="Administrator Response"
@@ -109,17 +129,30 @@ function MailResponseForm(props){
                         shrink: true,
                     }}
                     onChange={handleResponseInput}
-                /></div>
-                <TextField className={classes.inputBoxes} id="outlined-basic" variant="outlined" select onChange={handleStatusInput} value={status}>
+                /></div>}
+                <Typography className={classes.sectionTextModal}>
+                    Status:
+                </Typography>
+                {isAdmin && <TextField className={classes.inputBoxes} id="outlined-basic" variant="outlined" select onChange={handleStatusInput} value={status}>
                     {statusList.map((option) => (
                         <MenuItem key={option} value={option}>
                             {option}
                         </MenuItem>
                     ))}
-                </TextField>
+                </TextField>}
+                <div>
+                    {isAdmin && <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
+                        Update
+                    </Button>}
+                </div>
+                <div>
+                    {!isAdmin && <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
+                        Request More Assistance
+                    </Button>}
+                </div>
                 <div>
                     <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
-                        Send
+                        Close Request
                     </Button>
                 </div>
             </form>

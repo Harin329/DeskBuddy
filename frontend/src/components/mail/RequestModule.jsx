@@ -51,21 +51,6 @@ function RequestModule(size, text) {
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
 
-    useEffect( () => {
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        safeFetch(Endpoint + "/requests/" + userOID, requestOptions)
-            .then((response) => response.text())
-            .then(result => {
-                const requests = JSON.parse(result);
-                setRequestList(requests)
-            })
-            .catch(error => console.log('error', error));
-    });
-
     const handleMailResponse = () => {
         setOpen(true);
     }
@@ -78,14 +63,14 @@ function RequestModule(size, text) {
         return <MailResponseForm closeModal={closeMailResponse} whatToDoWhenClosed={(bool) => {setOpen(bool)}}/>
     }
 
-    let requests = [];
+    let requests = ["134", "135"];
     console.log(requestList);
     requestList.map((update, i) => {
         requests.push(
-            <ListItem className={classes.reservationCard} key={requests[i].mail_id}>
+            <ListItem className={classes.reservationCard}>
                 <div style={{ width: '25%', height: '100px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                     <Typography className={classes.officeText}>
-                        {requests[i].mail_id}
+                        {requests[i]}
                     </Typography>
                 </div>
                 <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '90px', width: '3px' }} />
@@ -93,12 +78,12 @@ function RequestModule(size, text) {
                     <div style={{ width: '40%', height: '100px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }} onClick={handleMailResponse}>
                         <Typography className={classes.deskSectionText}>
                             STATUS: <Typography className={classes.deskText}>
-                            {requests[i].status}
+                            {requests[i]}
                         </Typography>
                         </Typography>
                         <Typography className={classes.deskSectionText}>
                             ADMIN: <Typography className={classes.deskText}>
-                            {requests[i].admin_eid}
+                            {requests[i]}
                         </Typography>
                         </Typography>
                     </div>
