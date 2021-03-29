@@ -33,27 +33,27 @@ Mail.getMail = (employeeID: string, filter: string | undefined, sort: string | u
       parameters = [employeeID, filter as string];
       break;
     case filter === undefined && processed_sort !== undefined && direction === "ASC":
-      query = `CALL getMailSortedAsc(?, ?)`; // TODO
+      query = `CALL getMailSortedAsc(?, ?)`;
       parameters = [employeeID, processed_sort as string];
       break;
     case filter === undefined && processed_sort !== undefined && direction === "DESC":
-      query = `CALL getMailSortedDesc(?, ?)`; // TODO
+      query = `CALL getMailSortedDesc(?, ?)`;
       parameters = [employeeID, processed_sort as string];
       break;
     case filter === "new" && processed_sort !== undefined && direction === "ASC":
-      query = `CALL getNewMailSortedAsc(?, ?)`; // TODO
+      query = `CALL getNewMailSortedAsc(?, ?)`;
       parameters = [employeeID, processed_sort as string];
       break;
     case filter === "new" && processed_sort !== undefined && direction === "DESC":
-      query = `CALL getNewMailSortedDesc(?, ?)`; // TODO
+      query = `CALL getNewMailSortedDesc(?, ?)`;
       parameters = [employeeID, processed_sort as string];
       break;
     case (filter !== undefined && filter !== "new") && processed_sort !== undefined && direction === "ASC":
-      query = `CALL getFilteredMailSortedAsc(?, ?, ?)`; // TODO
+      query = `CALL getFilteredMailSortedAsc(?, ?, ?)`;
       parameters = [employeeID, filter as string, processed_sort as string];
       break;
     case (filter !== undefined && filter !== "new") && processed_sort !== undefined && direction === "DESC":
-      query = `CALL getFilteredMailSortedDesc(?, ?, ?)`; // TODO
+      query = `CALL getFilteredMailSortedDesc(?, ?, ?)`;
       parameters = [employeeID, filter as string, processed_sort as string];
       break;
     default:

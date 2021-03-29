@@ -195,7 +195,7 @@ describe("Mail manager endpoints tests", () => {
             throw new Error(err);
         }
         done();
-    })
+    });
 });
 
 const mailDeleter = async (res: any) => {
