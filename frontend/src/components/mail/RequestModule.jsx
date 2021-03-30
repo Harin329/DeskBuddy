@@ -52,7 +52,7 @@ function RequestModule(size, text) {
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
 
-    useEffect( () => {
+    const getRequests = () => {
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -65,7 +65,7 @@ function RequestModule(size, text) {
                 setRequestList(requests);
             })
             .catch(error => console.log('error', error));
-    });
+    };
 
     const handleMailResponse = () => {
         setOpen(true);

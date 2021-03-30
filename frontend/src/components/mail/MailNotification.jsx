@@ -177,7 +177,7 @@ function MailNotification(props) {
             <Typography className={classes.deskSectionText}>LOCATION: <Typography className={classes.deskText}>
                 {data.officeLocation}
           </Typography></Typography>
-          <Typography className={classes.deskSectionText}>ADDITIONAL COMMENTS: 
+          <Typography className={classes.deskSectionText}> COMMENTS:
             <Typography className={classes.deskText}>
                 {data.comments}
             </Typography>
@@ -196,7 +196,7 @@ function MailNotification(props) {
 
     return (
       <ListItem className={getNotifClass()} onClick={() => {setIsExpanded(!isExpanded)}}>
-      <div style={{ width: '25%', height: '100px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ width: '20%', height: '100px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
           <Typography className={classes.officeText}>
               {data.type}
           </Typography>
