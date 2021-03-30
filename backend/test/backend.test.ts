@@ -7,11 +7,11 @@ import { IMail } from "../src/interfaces/mail.interface";
 let server: DeskbuddyServer;
 let request: any;
 
-const adminToken = "PLACEHOLDER"; // token for Global Admin administrator
-const userToken = "PLACEHOLDER"; // token for Dana White user
+const adminToken = ""; // token for Global Admin administrator
+const userToken = ""; // token for Dana White user
 const adminJSON = {"Authorization": `Bearer ${adminToken}`};
 const userJSON = {"Authorization": `Bearer ${userToken}`};
-const testUserOID = `faa7c922-18f4-469a-9d0e-8999d0a783a4`;
+const testUserOID = `606ac3ca-afce-4337-b0b7-831f4c2dad90`;
 
 beforeAll(done => {
     server = new DeskbuddyServer(3000);
@@ -71,13 +71,188 @@ describe("Reservation endpoints tests", () => {
 });
 
 describe("Social feed endpoints tests", () => {
-    it("dummy", () => {
-        // todo
+    it("POST /createPost with empty body", async done => {
+        const body = {};
+        const res = await request.post('/post/createPost').send(body).set(userJSON);
+        expect(res.status).toBe(400);
+        done();
     });
+
+    it("POST /createPost with null channel_id", async done => {
+        const body = loadJSON("test/jsonBody/postBody/postPostNullChannel.json");
+        const res = await request.post('/post/createPost').send(body).set(userJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /createPost with null employee_id", async done => {
+        const body = loadJSON("test/jsonBody/postBody/postPostNullEmployee.json");
+        const res = await request.post('/post/createPost').send(body).set(userJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /createPost to reports channel", async done => {
+        const body = loadJSON("test/jsonBody/postBody/postPostAdminChannel.json");
+        const res = await request.post('/post/createPost').send(body).set(adminJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /createPost with non-authenticated employee_id", async done => {
+        const body = loadJSON("test/jsonBody/postBody/postPostWrongOID.json");
+        const res = await request.post('/post/createPost').send(body).set(userJSON);
+        expect(res.status).toBe(401);
+        done();
+    });
+
+    it("POST /createPost normal", async done => {
+        const body = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        const res = await request.post('/post/createPost').send(body).set(userJSON);
+        expect(res.status).toBe(200);
+        await postDeleter(res);
+        done();
+    });
+
+    it("POST /flagPost with empty body", async done => {
+        const body = {};
+        const res = await request.post('/post/flagPost').send(body).set(userJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /flagPost with null post_id", async done => {
+        const body = {
+            post_id: null
+        };
+        const res = await request.post('/post/flagPost').send(body).set(userJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /flagPost normal", async done => {
+        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
+        expect(res1.status).toBe(200);
+        const body2 = {
+            post_id: res1.body.post_id
+        };
+        const res2 = await request.post('/post/flagPost').send(body2).set(userJSON);
+        expect(res2.status).toBe(200);
+        await postDeleter(res1);
+        done();
+    });
+
+    it("POST /unreportPost with empty body", async done => {
+        const body = {};
+        const res = await request.post('/post/unreportPost').send(body).set(adminJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /unreportPost with null post_id", async done => {
+        const body = {
+            post_id: null
+        };
+        const res = await request.post('/post/unreportPost').send(body).set(adminJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("POST /unreportPost as non-admin", async done => {
+        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
+        expect(res1.status).toBe(200);
+        const body2 = {
+            post_id: res1.body.post_id
+        };
+        const res2 = await request.post('/post/flagPost').send(body2).set(userJSON);
+        expect(res2.status).toBe(200);
+        const res3 = await request.post('/post/unreportPost').send(body2).set(userJSON);
+        expect(res3.status).toBe(401);
+        await postDeleter(res1);
+        done();
+    });
+
+    it("POST /unreportPost normal", async done => {
+        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
+        expect(res1.status).toBe(200);
+        const body2 = {
+            post_id: res1.body.post_id
+        };
+        const res2 = await request.post('/post/flagPost').send(body2).set(userJSON);
+        expect(res2.status).toBe(200);
+        const res3 = await request.post('/post/unreportPost').send(body2).set(adminJSON);
+        expect(res3.status).toBe(200);
+        await postDeleter(res1);
+        done();
+    });
+
+    it("DELETE /deletePost with empty body", async done => {
+        const body = {};
+        const res = await request.delete('/post/deletePost').send(body).set(adminJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("DELETE /deletePost with null post_id", async done => {
+        const body = {
+            post_id: null
+        };
+        const res = await request.delete('/post/deletePost').send(body).set(adminJSON);
+        expect(res.status).toBe(400);
+        done();
+    });
+
+    it("DELETE /deletePost as user for same user's post", async done => {
+        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
+        expect(res1.status).toBe(200);
+        const body2 = {
+            post_id: res1.body.post_id
+        };
+        const res2 = await request.delete('/post/deletePost').send(body2).set(userJSON);
+        expect(res2.status).toBe(200);
+        done();
+    });
+
+    it("DELETE /deletePost as user for different user's post", async done => {
+        const body1 = loadJSON("test/jsonBody/postBody/postPostNormalAdmin.json");
+        const res1 = await request.post('/post/createPost').send(body1).set(adminJSON);
+        expect(res1.status).toBe(200);
+        const body2 = {
+            post_id: res1.body.post_id
+        };
+        const res2 = await request.delete('/post/deletePost').send(body2).set(userJSON);
+        expect(res2.status).toBe(404);
+        await postDeleter(res1);
+        done();
+    });
+
+    it("DELETE /deletePost as admin for different user's post", async done => {
+        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
+        expect(res1.status).toBe(200);
+        const body2 = {
+            post_id: res1.body.post_id
+        };
+        const res2 = await request.delete('/post/deletePost').send(body2).set(adminJSON);
+        expect(res2.status).toBe(200);
+        done();
+    });
+
+
 });
 
+const postDeleter = async (res: any) => {
+    const id = res.body.post_id;
+    const body = {"post_id" : id};
+    await request.delete(`/post/deletePost`).send(body).set(adminJSON);
+}
+
 describe("Mail manager endpoints tests", () => {
-    // these tests assume the existence of a test user Dana White, who has no mails to begin with
+    // these tests assume the existence of a test user 'Test User', who has no mails to begin with
     it("POST /mail", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
@@ -118,7 +293,7 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
-            expect(results[0]).toStrictEqual(body);
+            expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
             await mailDeleter(res);
@@ -156,8 +331,43 @@ describe("Mail manager endpoints tests", () => {
         } catch(err) {
             await mailDeleter(res1);
             await mailDeleter(res2);
-            throw new Error(JSON.stringify(getRes));
             throw new Error("Test failed: " + err);
+        }
+        done();
+    });
+
+    it("GET new /mail where there is one", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        // User currently has mail stored
+        const getRes = await request.get(`/mail/${testUserOID}?filter=new`).set(userJSON);
+        try {
+            const output = JSON.parse(getRes.text);
+            const results: IMail[] = output.mails;
+            expect(results.length).toBe(1);
+            expect(results[0]).toMatchObject(body);
+            await mailDeleter(res);
+        } catch(err) {
+            await mailDeleter(res);
+            throw new Error(err);
+        }
+        done();
+    });
+
+    it("GET /mail filtered on awaiting admin action only", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        const getRes = await request.get(`/mail/${testUserOID}?filter=await_admin`).set(userJSON);
+        try {
+            const output = JSON.parse(getRes.text);
+            const results: IMail[] = output.mails;
+            expect(results.length).toBe(0);
+            await mailDeleter(res);
+        } catch(err) {
+            await mailDeleter(res);
+            throw new Error(err);
         }
         done();
     });
