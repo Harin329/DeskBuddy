@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import InfiniteScroll from "react-infinite-scroller";
-import {makeStyles, withStyles} from "@material-ui/core/styles";
+import {makeStyles} from "@material-ui/core/styles";
 import Endpoint from "../../config/Constants";
 import {updatePopup} from "./UpdatePopup";
 import {Button, Modal} from '@material-ui/core';

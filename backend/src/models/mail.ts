@@ -1,4 +1,5 @@
 import DB from '../config/db-handler';
+import {getFormattedDate} from "../helpers/Date";
 
 const con = DB.getCon();
 
@@ -71,7 +72,7 @@ Mail.getMail = (employeeID: string, filter: string | undefined, sort: string | u
 
 Mail.createMail = (officeID: number, officeLoc: string, recipient: string, type: string, approx: string, sender: string,
   dimensions: string, comments: string, adminID: string, result: any) => {
-  con.query('CALL createMail(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    con.query('CALL createMail(?, ?, ?, ?, ?, ?, ?, ?, ?)',
     [
       recipient,
       adminID,
@@ -90,9 +91,9 @@ Mail.createMail = (officeID: number, officeLoc: string, recipient: string, type:
         result(null, res);
       }
     });
-}
+  }
 
-Mail.createMailRequest = (req: any, result: any) => {
+Mail.createRequest = (req: any, result: any) => {
   con.query("INSERT INTO mail_request VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     [req.mail_id, req.employee_id, req.employee_name, req.employee_email, req.employee_phone,
     req.request_type, req.forward_location, req.additional_instructions, req.req_completion_date,
@@ -117,3 +118,33 @@ Mail.deleteMail = (mailID: number, result: any) => {
       }
     })
 }
+
+Mail.getAllRequests = (employeeID: any, result: any) => {
+    con.query("SELECT * FROM mail_request WHERE employee_id = ?", [
+        employeeID
+    ], (err: any, res: any) => {
+        if (err) {
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    })
+};
+
+Mail.updateRequest = (req: any, result: any) => {
+    const date = new Date();
+    const currDate = getFormattedDate();
+};
+
+Mail.deleteRequest = (req: any, result: any) => {
+  con.query("DELETE FROM mail_request WHERE employee_id = ? AND mail_id = ?", [
+      req.employee_id,
+      req.mail_id
+  ], (err: any, res: any) => {
+    if (err) {
+      result(err, null);
+    } else {
+      result(null, res);
+    }
+  })
+};

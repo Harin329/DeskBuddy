@@ -87,7 +87,7 @@ export default class MailController {
   }
   createMailRequest(req: any) {
     return new Promise((resolve, reject) => {
-      Mail.createMailRequest(req, (err: any, result: any) => {
+      Mail.createRequest(req, (err: any, result: any) => {
         if (err) {
           reject(err);
         }

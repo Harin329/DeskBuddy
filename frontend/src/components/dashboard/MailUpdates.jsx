@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 20,
         width: '100%',
         alignItems: 'center',
-        marginBottom: isMobile? 15 : 0
+        marginBottom: isMobile? 15 : 0,
     },
     announcementName: {
         fontSize: isMobile ? 19 : 26,
@@ -76,60 +76,35 @@ const useStyles = makeStyles((theme) => ({
 function MailUpdates() {
     const classes = useStyles();
 
-    const [announcementList, setAnnouncementList] = useState([]);
-    const [hasMoreAnnouncements, setHasMoreAnnouncements] = useState(true);
-    const [open, setOpen] = useState(false);
-    const [currAnnouncement, setCurrAnnouncement] = useState(null);
+    const { accounts } = useMsal();
+    const userOID = accounts[0].idTokenClaims.oid;
 
-    const handleUpdateOpen = (el) => {
-        console.log("update is: " + el);
-        setOpen(true);
-        setCurrAnnouncement(el);
-    }
+    const [mailList, setMailList] = useState([]);
+    const [hasMoreMail, setHasMoreMail] = useState(true);
 
-    const handleClose = () => {
-        setOpen(false);
-        setCurrAnnouncement(null);
-    }
-
-    const getAnnouncements = (page) => {
+    const getMail = () => {
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/announcement/getCompanyAnnouncements", requestOptions)
+        safeFetch(Endpoint + "/mail/" + userOID, requestOptions)
             .then(response => response.text())
             .then(result => {
-                const announcements = JSON.parse(result);
-                console.log(announcements);
-                setAnnouncementList(announcements);
-                setHasMoreAnnouncements(false);
+                const mail = JSON.parse(result).mails;
+                console.log(mail);
+                setMailList(mail);
+                setHasMoreMail(false);
             })
             .catch(error => console.log('error', error))
     }
 
-    const popup = () => {
-        if (open) {
-            return (
-                <Modal
-                    open={open}
-                    onClose={handleClose}
-                    className={classes.popup}
-                >
-                    {updatePopup(currAnnouncement)}
-                </Modal>
-            )
-        } else
-            return null;
-    }
-
-    let announcements = [];
-    announcementList.map((update, i) => {
-        announcements.push(
-            <div className={classes.updateBox} key={i} onClick={() => handleUpdateOpen(update)}>
-                <h2 className={classes.announcementName}>{announcementList[i].title}</h2>
-                <h3 className={classes.announcementText}>{announcementList[i].sub_title}</h3>
+    let mail = [];
+    mailList.map((update, i) => {
+        mail.push(
+            <div className={classes.updateBox} key={i}>
+                <h2 className={classes.announcementName}>{mailList[i].mailID}</h2>
+                <h3 className={classes.announcementText}>{mailList[i].sender}</h3>
             </div>
         );
     });
@@ -137,15 +112,14 @@ function MailUpdates() {
     return(
         <div className={classes.backgroundBox} style= {{height: 300, overflow: 'auto'}}>
             <div className={classes.titleBox}>
-                <h1 className={classes.title}>MY MAIL (TODO)</h1>
+                <h1 className={classes.title}>MY MAIL</h1>
             </div>
             <InfiniteScroll
-                loadMore={getAnnouncements}
-                hasMore={hasMoreAnnouncements}
+                loadMore={getMail}
+                hasMore={hasMoreMail}
                 useWindow={false}
             >
-                {popup()}
-                {announcements}
+                {mail}
             </InfiniteScroll>
         </div>
     )
