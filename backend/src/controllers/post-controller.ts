@@ -31,11 +31,10 @@ export default class PostController {
     const post = {
       employee_id: req.body.employee_id,
       channel_id: req.body.channel_id,
-      date_posted: req.body.date_posted,
       post_title: null,
       post_content: req.body.post_content,
       post_image: null,
-      is_flagged: false,
+      num_reports: 0,
     };
 
     return new Promise((resolve, reject) => {
@@ -70,12 +69,21 @@ export default class PostController {
     });
   }
 
-  deletePost(req: any) {
-    return new Promise((resolve, reject) => {
-      Post.deletePost(req.body.post_id, (err: any, result: any) => {
-        if (err) reject(err);
-        resolve(result);
+  deletePost(req: any, isAdmin: boolean) {
+    if (isAdmin) {
+      return new Promise((resolve, reject) => {
+        Post.deletePost(req.body.post_id, (err: any, result: any) => {
+          if (err) reject(err);
+          resolve(result);
+        });
       });
-    });
+    } else {
+      return new Promise((resolve, reject) => {
+        Post.deletePostAssertUser(req.body.post_id, req.authInfo.oid, (err: any, result: any) => {
+          if (err) reject(err);
+          resolve(result);
+        });
+      });
+    }
   }
 }
