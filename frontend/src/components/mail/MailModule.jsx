@@ -73,6 +73,7 @@ const useStyles = makeStyles({
 
 function MailModule(size, text) {
     const [mailList, setMailList] = useState([]);
+    const [hasMore, setHasMore] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
 
     const classes = useStyles();
@@ -80,7 +81,7 @@ function MailModule(size, text) {
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
 
-    useEffect( () => {
+    const getMail = () => {
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -92,26 +93,16 @@ function MailModule(size, text) {
                 setMailList(JSON.parse(result).mails);
             })
             .catch(error => console.log('error', error));
-    });
 
-    const getNotifClass = () => {
-        return isExpanded ? classes.reservationCardExpanded : classes.reservationCardTruncated;
-    }
-
-    let expandedNotif;
-
-    if (isExpanded) {
-        expandedNotif = <div>
-            <Typography>HELLO</Typography>
-            <Button className={classes.actionButton}>Button 1</Button>
-        </div>
-    }
-
+        setHasMore(false);
+    };
 
     return (
         <Grid item xs={size} style={{ height: '500px', borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll' }}>
             <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: '20%', height: 30, textAlign: 'center', marginTop: -10, fontSize: 20, position: 'absolute' }}>{text}</h1>
             <InfiniteScroll
+                loadMore={getMail}
+                hasMore={hasMore}
                 style={{ padding: 30, width: '90%' }}
                 useWindow={false}
             >
@@ -120,7 +111,6 @@ function MailModule(size, text) {
                         <MailNotification>{JSON.stringify(update)}</MailNotification>
                     )
                 })}
-            }
             </InfiniteScroll>
         </Grid>
 

@@ -5,6 +5,8 @@ import Endpoint from "../../config/Constants";
 import safeFetch from "../../util/Util"
 import {useMsal} from "@azure/msal-react";
 import {isMobile} from "react-device-detect";
+import {fetchOffices} from "../../actions/reservationActions";
+import {useDispatch, useSelector} from "react-redux";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -73,25 +75,17 @@ function AddUpdateForm(props) {
     const [content, setContent] = useState("");
     const [selectedOfficeID, setSelectedOfficeID] = useState(0);
     const [selectedOfficeLocation, setSelectedOfficeLocation] = useState("");
-    const [officeList, setOfficeList] = useState([]);
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
     const classes = useStyles();
 
-    useEffect( () => {
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
+    const dispatch = useDispatch();
+    const officeList = useSelector(state => state.reservations.offices);
 
-        safeFetch(Endpoint + "/office/getAllOffices", requestOptions)
-            .then((response) => response.text())
-            .then(result => {
-                setOfficeList(JSON.parse(result));
-            })
-            .catch(error => console.log('error', error));
-    });
+    useEffect(() => {
+        dispatch(fetchOffices());
+    }, []);
 
     const handleTitleInput = (input) => {
         setTitle(input.target.value)
@@ -105,7 +99,7 @@ function AddUpdateForm(props) {
         setContent(input.target.value);
     }
 
-    const handleUpdateLocationClose = () => {
+    const handleUpdateFormClose = () => {
         props.whatToDoWhenClosed();
     }
 
@@ -165,11 +159,11 @@ function AddUpdateForm(props) {
                 .catch(error => console.log('error', error));
 
         }
-        handleUpdateLocationClose();
+        handleUpdateFormClose();
     }
 
     return (
-        <div className={classes.addAnnouncement} onClose={handleUpdateLocationClose}>
+        <div className={classes.addAnnouncement} onClose={handleUpdateFormClose}>
             <Typography className={classes.sectionTextModal}>
                 Create New Announcement
             </Typography>
