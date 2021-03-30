@@ -17,3 +17,5 @@ export const SET_USER_DISPLAY_NAME = "SET_USER_DISPLAY_NAME";
 export const SET_PROFILE_PHOTO = "SET_PROFILE_PHOTO";
 export const SET_OID = "SET_OID";
 export const SET_IS_ADMIN = "SET_IS_ADMIN";
+
+export const SET_LOADING = "SET_LOADING";

@@ -21,13 +21,18 @@ const styles = theme => ({
         justifyContent: 'space-evenly'
     },
     updateBox: {
-        background: '#EEF0F2',
-        borderRadius: 10,
+        // background: '#EEF0F2',
+        // borderRadius: 10,
         width: '90%',
         height: 82,
         margin: 'auto',
         marginTop: 2,
-        marginBottom: 2
+        marginBottom: '10px',
+
+        background: '#EEF0F2',
+        border: '1px solid #000000',
+        boxSizing: 'border-box',
+        borderRadius: '5px',
     },
     backgroundBox: {
         background: '#FFFCF7',
@@ -38,14 +43,31 @@ const styles = theme => ({
         alignItems: 'center'
     },
     announcementName: {
-        fontSize: isMobile ? 19 : 26,
+        // fontSize: isMobile ? 19 : 26,
         paddingLeft: 15,
-        paddingTop: 5
+        paddingTop: 5,
+
+        fontFamily: 'Lato',
+        fontStyle: 'normal',
+        fontWeight: 'bold',
+        fontSize: isMobile ? '15px' : '20px',
+        lineHeight: '18px',
+        display: 'flex',
+        alignItems: 'center',
+        color: '#000000',
     },
     announcementText: {
-        fontSize: isMobile ? 16 : 20,
+        // fontSize: isMobile ? 16 : 20,
         paddingLeft: 15,
-        paddingBottom: 5
+        paddingBottom: 5,
+
+        fontStyle: 'normal',
+        fontWeight: 'bold',
+        fontSize: isMobile ? '12px' : '15px',
+        lineHeight: '12px',
+        display: 'flex',
+        alignItems: 'center',
+        color: 'rgba(0, 0, 0, 0.8)',
     },
     officeSelector: {
         marginRight: isMobile? 15: 0

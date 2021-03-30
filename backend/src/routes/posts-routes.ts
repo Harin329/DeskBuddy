@@ -50,6 +50,23 @@ router.post('/flagPost', (req: any, res: Response) => {
     })
 })
 
+router.post('/unreportPost', (req: any, res: Response) => {
+  if (!req.body) {
+    res.status(400).send({
+      message: 'empty body',
+    });
+  }
+
+  postServer
+    .unreportPost(req)
+    .then((post: any) => {
+      res.json(post);
+    })
+    .catch((err: any) => {
+      res.json(err);
+    });
+});
+
 // DELETE post
 router.delete('/deletePost', (req: any, res: Response) => {
     if (!req.body.post_id) {
