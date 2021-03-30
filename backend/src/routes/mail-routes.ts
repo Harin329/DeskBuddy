@@ -14,7 +14,11 @@ const filterTypes = {
     CannotComplete: "cannot_complete"
 }
 
+// default is descending
+
 const sortTypes = {
+    modifiedAscending: "+modified_at",
+    modifiedDescending: "-modified_at",
 }
 
 router.get('/:employeeID', (req: Request, res: Response) => {
@@ -40,7 +44,7 @@ router.get('/:employeeID', (req: Request, res: Response) => {
             err: "Malformed request body"
         });
     } else {
-        mailServer.getMail(employeeID, filter as string | undefined).then((mailInfo: IMailResponse[]) => {
+        mailServer.getMail(employeeID, filter as string | undefined, sort as string | undefined).then((mailInfo: IMailResponse[]) => {
             res.status(200).json({
                 mails: mailInfo
             });

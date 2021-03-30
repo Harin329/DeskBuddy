@@ -118,7 +118,7 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
-            expect(results[0]).toStrictEqual(body);
+            expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
             await mailDeleter(res);
@@ -171,7 +171,24 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
-            expect(results[0]).toStrictEqual(body);
+            expect(results[0]).toMatchObject(body);
+            await mailDeleter(res);
+        } catch(err) {
+            await mailDeleter(res);
+            throw new Error(err);
+        }
+        done();
+    });
+
+    it("GET /mail filtered on awaiting admin action only", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        const getRes = await request.get(`/mail/${testUserOID}?filter=await_admin`).set(userJSON);
+        try {
+            const output = JSON.parse(getRes.text);
+            const results: IMail[] = output.mails;
+            expect(results.length).toBe(0);
             await mailDeleter(res);
         } catch(err) {
             await mailDeleter(res);
