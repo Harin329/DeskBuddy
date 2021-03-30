@@ -249,6 +249,7 @@ function DeskFilter() {
                             locationID={filter.office}
                             closeHandler={handleFloorplanClose}
                             officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === filter.office)}
+                            mobile={isMobile}
                         />
                     </Modal>
                 </Grid>

@@ -223,6 +223,7 @@ function Reservation() {
                 {window.innerWidth > 1500 && Subheader('RESERVE', 4, 2, 4)}
                 {window.innerWidth <= 1500 && Subheader('RESERVE', 0, 12, 0)}
 
+
                 {DeskFilter()}
                 {console.log(loading)}
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
