@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Typography, Grid, ListItem, Divider, Button } from '@material-ui/core';
 import React, {useEffect, useState} from 'react';
 import {Typography, Grid, ListItem, Divider, Modal} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InfiniteScroll from "react-infinite-scroller";
-import MailNotification from './MailNotification';
 import MailRequestForm from "./MailRequestForm";
 import safeFetch from "../../util/Util";
 import Endpoint from "../../config/Constants";
 import {useMsal} from "@azure/msal-react";
-import MailResponseForm from "./MailResponseForm";
 
 
 const useStyles = makeStyles({
@@ -40,52 +36,22 @@ const useStyles = makeStyles({
     reservationCard: {
         backgroundColor: '#E5E5E5',
         height: '110px',
-        marginBottom: '10px'
-    },
-    reservationCardTruncated: {
-        backgroundColor: '#E5E5E5',
-        height: '110px',
         marginBottom: '10px',
         '&:hover': {
-          backgroundColor: '#FFFCF7'
+          backgroundColor: '#C4C4C4'
         }
-    },
-    reservationCardExpanded: {
-        backgroundColor: '#E5E5E5',
-        height: '180px',
-        marginBottom: '10px',
-        '&:hover': {
-          backgroundColor: '#FFFCF7'
-        }
-    },
-    actionButton: {
-        background: '#00ADEF',
-        borderRadius: 20,
-        color: 'white',
-        height: '50px',
-        padding: '0 30px',
-        marginTop: '10px',
-        marginBottom: '10px',
-        fontFamily: 'Lato',
-        fontWeight: 'bolder',
-        fontSize: 18
-    },
-});
+    }
+  });
 
 
 function MailModule(size, text) {
     const [open, setOpen] = useState(false);
     const [mailList, setMailList] = useState([]);
-    const [currMail, setCurrMail] = useState(null);
-    const [isExpanded, setIsExpanded] = useState(false);
 
     const classes = useStyles();
 
-
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
-
-    console.log(accounts[0]);
 
     useEffect( () => {
         const requestOptions = {
@@ -93,7 +59,7 @@ function MailModule(size, text) {
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/mail/" + userOID, requestOptions)
+        safeFetch(Endpoint + "/mail/" + userOID + "?filter=AWAITING_ADMIN_ACTION and modifiedBy", requestOptions)
             .then((response) => response.text())
             .then(result => {
                 const mail = JSON.parse(result).mails;
@@ -102,47 +68,33 @@ function MailModule(size, text) {
             .catch(error => console.log('error', error));
     });
 
-    const handleMailRequest = (item) => {
+    const handleMailRequest = () => {
         setOpen(true);
-        setCurrMail(item);
-    }
-    const mockData = ["ABC", "DEFG", "HIJ", "KLM", "NOP", "QRS", "TUV"];
-    const getNotifClass = () => {
-        return isExpanded ? classes.reservationCardExpanded : classes.reservationCardTruncated;
-    }
-
-    let expandedNotif;
-    if (isExpanded) {
-        expandedNotif = <div>
-            <Typography>HELLO</Typography>
-            <Button className={classes.actionButton}>Button 1</Button>
-        </div>
     }
 
     const closeMailRequest = () => {
         setOpen(false);
-        setCurrMail(false);
     }
 
     const mailRequestPopup = () => {
-        return <MailRequestForm closeModal={closeMailRequest} whatToDoWhenClosed={(bool) => {setOpen(bool)}}>{currMail}</MailRequestForm>
+        return <MailRequestForm closeModal={closeMailRequest} whatToDoWhenClosed={(bool) => {setOpen(bool)}}/>
     }
 
     let mail = [];
     mailList.map((update, i) => {
         mail.push(
-            <ListItem className={classes.reservationCard} key={mailList[i].mail_id}>
+            <ListItem className={classes.reservationCard}>
                 <div style={{ width: '25%', height: '100px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                     <Typography className={classes.officeText}>
                         {mailList[i].type}
                     </Typography>
                 </div>
                 <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '90px', width: '3px' }} />
-                <div style={{ width: '80%', height: '90px', alignItems: 'center', display: 'flex', flexDirection: 'row', marginLeft: 30 }}>
-                    <div style={{ width: '60%', height: '100px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }} onClick={() => handleMailRequest(update)}>
+                <div style={{ width: '80%', height: '100px', alignItems: 'center', display: 'flex', flexDirection: 'row', marginLeft: 30 }}>
+                    <div style={{ width: '40%', height: '100px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }} onClick={handleMailRequest}>
                         <Typography className={classes.deskSectionText}>
                             MAIL ID: <Typography className={classes.deskText}>
-                            {mailList[i].mailID}
+                            {mailList[i].mail_id}
                         </Typography>
                         </Typography>
                         <Typography className={classes.deskSectionText}>
@@ -157,18 +109,20 @@ function MailModule(size, text) {
     });
 
     return (
-        <Grid item xs={size} style={{ height: '500px', borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll' }}>
+        <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null }}>
             <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: '20%', height: 30, textAlign: 'center', marginTop: -10, fontSize: 20, position: 'absolute' }}>{text}</h1>
             <InfiniteScroll
                 style={{ padding: 30, width: '90%' }}
                 useWindow={false}
             >
-                {mockData.map((option) => {
-                    return (
-                        <MailNotification data={option}></MailNotification>
-                    )
-                })}
+                {mail}
             </InfiniteScroll>
+            <Modal
+                open={open}
+                onClose={closeMailRequest}
+            >
+                {mailRequestPopup()}
+            </Modal>
         </Grid>
 
     );
