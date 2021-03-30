@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
-import { Typography, Grid, ListItem, Divider, Button } from '@material-ui/core';
+import {Typography, Grid, ListItem, Divider, Button, Modal, IconButton} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InfiniteScroll from "react-infinite-scroller";
+import MailRequestForm from "./MailRequestForm";
+import safeFetch from "../../util/Util";
+import Endpoint from "../../config/Constants";
+import CancelIcon from "@material-ui/icons/Cancel";
+import {isMobile} from "react-device-detect";
 
 
 const useStyles = makeStyles({
@@ -71,17 +76,97 @@ const useStyles = makeStyles({
       fontWeight: 'bolder',
       fontSize: 12,
       margin: 'auto'
-  }
+  },
+    cancelButton: {
+        background: '#ba0000',
+        borderRadius: 30,
+        color: 'white',
+        height: '30px',
+        padding: '0 15px',
+        marginTop: '5px',
+        marginBottom: '5px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 14,
+        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    },
+    popup: {
+        position: 'fixed',
+        top: '30%',
+        left: isMobile ? '3%' : '35%',
+        width: isMobile ? '80%' : '20%',
+        height: 'auto',
+        backgroundColor: 'white',
+        padding: '30px',
+        alignItems: 'center'
+    }
 });
 
 
 function MailNotification(props) {
-    const data = props.data;
+    const data = JSON.parse(props.children);
+    const [requestOpen, setRequestOpen] = useState(false);
+    const [deleteOpen, setDeleteOpen] = useState(false);
     const classes = useStyles();
     const [isExpanded, setIsExpanded] = useState(false);
 
     const getNotifClass = () => {
         return isExpanded ? classes.reservationCardExpanded : classes.reservationCardTruncated;
+    }
+
+    const handleMailRequest = () => {
+        setRequestOpen(true);
+    }
+
+    const closeMailRequest = () => {
+        setRequestOpen(false);
+    }
+
+    const handleMailDelete = () => {
+        setDeleteOpen(true);
+    }
+
+    const closeMailDelete = () => {
+        setDeleteOpen(false);
+    }
+
+    const mailRequestPopup = () => {
+        return <MailRequestForm closeModal={closeMailRequest} whatToDoWhenClosed={(bool) => {setRequestOpen(bool)}}>{props}</MailRequestForm>
+    }
+
+    const mailDeletePopup = () => {
+        return (
+            <div className={classes.popup} style={{
+                width: '40%',
+                height: '140px',
+                justifyContent: 'center',
+                display: 'flex',
+                flexDirection: 'column'
+            }}>
+               <Typography className={classes.officeText}>Are you sure you want to delete this mail?</Typography>
+               <Typography className={classes.officeText}>Mail ID: {data.mailID}</Typography>
+                <div style={{ width: '100%', marginTop: '10px', justifyContent: 'center', display: 'flex' }}>
+                    <Button className={classes.cancelButton} onClick={() => {deleteMail()}}>DELETE</Button>
+                </div>
+            </div>
+        )
+    };
+
+    const deleteMail = () => {
+        let headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        const requestOptions = {
+            method: 'DELETE',
+            headers: headers,
+            redirect: 'follow'
+        };
+
+        safeFetch(Endpoint + "/mail/" + data.mailID, requestOptions)
+            .then((response) => response.text())
+            .then(result => {
+            })
+            .catch(error => console.log('error', error));
+        closeMailDelete();
     }
 
     let expandedNotifText;
@@ -90,49 +175,30 @@ function MailNotification(props) {
         expandedNotifText = 
         <div>
             <Typography className={classes.deskSectionText}>LOCATION: <Typography className={classes.deskText}>
-            filler location
+                {data.officeLocation}
           </Typography></Typography>
           <Typography className={classes.deskSectionText}>ADDITIONAL COMMENTS: 
             <Typography className={classes.deskText}>
-            filler description
+                {data.comments}
             </Typography>
           </Typography>
           <Typography className={classes.deskSectionText}>MAIL ID: <Typography className={classes.deskText}>
-            filler id
+              {data.mailID}
             </Typography>
           </Typography>
         </div>
         expandedNotifButtons = 
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', marginRight: 30}}>
-            <Button className={classes.actionButton}>Close</Button>
-            <Button className={classes.requestActionButton}>Request Assistance</Button>            
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginRight: 30}}>
+            <Button className={classes.requestActionButton} onClick={handleMailRequest}>Request Assistance</Button>
+            <Button className={classes.actionButton} onClick={handleMailDelete}>Delete Mail</Button>
         </div>
-    }
-
-    let statusText;
-    if (true) {
-      statusText = 
-      <div>
-        <Typography className={classes.deskSectionText}>
-          STATUS:  <Typography className={classes.deskText}>
-            filler status
-          </Typography>
-        </Typography>
-      </div>
-    } else {
-      <Typography className={classes.deskSectionText}>
-          APPROXIMATE ARRIVAL DATE: 
-          <Typography className={classes.deskText}>
-            filler date
-          </Typography>
-        </Typography>
     }
 
     return (
       <ListItem className={getNotifClass()} onClick={() => {setIsExpanded(!isExpanded)}}>
       <div style={{ width: '25%', height: '100px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
           <Typography className={classes.officeText}>
-              PARCEL
+              {data.type}
           </Typography>
       </div>
       <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '90px', width: '3px' }} />
@@ -140,14 +206,25 @@ function MailNotification(props) {
           <div >
               <Typography className={classes.deskSectionText}>
                   FROM: <Typography className={classes.deskText}>
-                      {data}
+                      {data.sender}
                   </Typography>
               </Typography>
-              {statusText}
               {expandedNotifText}
           </div>
           {expandedNotifButtons}
       </div>
+          <Modal
+              open={deleteOpen}
+              onClose={closeMailDelete}
+          >
+              {mailDeletePopup()}
+          </Modal>
+          <Modal
+              open={requestOpen}
+              onClose={closeMailRequest}
+          >
+              {mailRequestPopup()}
+          </Modal>
   </ListItem>
     );
 }

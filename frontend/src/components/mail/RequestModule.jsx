@@ -7,6 +7,7 @@ import safeFetch from "../../util/Util";
 import Endpoint from "../../config/Constants";
 import {useMsal} from "@azure/msal-react";
 import MailResponseForm from "./MailResponseForm";
+import MailNotification from "./MailNotification";
 
 
 const useStyles = makeStyles({
@@ -51,20 +52,20 @@ function RequestModule(size, text) {
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
 
-    // useEffect( () => {
-    //     const requestOptions = {
-    //         method: 'GET',
-    //         redirect: 'follow'
-    //     };
-    //
-    //     safeFetch(Endpoint + "/request/" + userOID, requestOptions)
-    //         .then((response) => response.text())
-    //         .then(result => {
-    //             const requests = JSON.parse(result);
-    //             setRequestList(requests);
-    //         })
-    //         .catch(error => console.log('error', error));
-    // });
+    useEffect( () => {
+        const requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        safeFetch(Endpoint + "/request/" + userOID, requestOptions)
+            .then((response) => response.text())
+            .then(result => {
+                const requests = JSON.parse(result);
+                setRequestList(requests);
+            })
+            .catch(error => console.log('error', error));
+    });
 
     const handleMailResponse = () => {
         setOpen(true);
@@ -114,7 +115,11 @@ function RequestModule(size, text) {
                 style={{ padding: 30, width: '90%' }}
                 useWindow={false}
             >
-                {requests}
+                {requestList.map((update, i) => {
+                    return (
+                        <MailNotification>{JSON.stringify(update)}</MailNotification>
+                    )
+                })}
             </InfiniteScroll>
             <Modal
                 open={open}
