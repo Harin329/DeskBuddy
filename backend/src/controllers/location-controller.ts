@@ -273,6 +273,7 @@ export default class LocationController {
                     await this.rollback(conn);
                     return Promise.reject(officeRes);
                 }
+                await this.end(conn);
                 return Promise.resolve(true);
             }
         } catch (err) {
