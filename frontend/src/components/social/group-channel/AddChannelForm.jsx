@@ -66,25 +66,30 @@ function AddChannelForm(props) {
 
     const [title, setTitle] = useState("");
     const [icon, setChannelIcon] = useState("");
-    const [channels, setChannel] = useState([]);
+    const [channels, setChannels] = useState([]);
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
     const classes = useStyles();
     var dup_title = false;
+    const [open, setOpen] = useState(false);
 
-    useEffect( () => {
-        const requestOptions = {
+    const getChannels = () => {
+        var requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
 
         safeFetch(Endpoint + "/channel", requestOptions)
-            .then((response) => response.text())
+            .then(response => response.text())
             .then(result => {
-                setChannel(JSON.parse(result));
-            })
-            .catch(error => console.log('error', error));
-    });
+                const res = JSON.parse(result);
+                setChannels(res);
+            }).catch(error => console.log('error', error));
+    }
+
+    useEffect(() => {
+        getChannels();
+    },[]);
 
     const handleTitleInput = (input) => {
         setTitle(input.target.value);
@@ -92,6 +97,7 @@ function AddChannelForm(props) {
 
     const handleAddChannelClose = () => {
         props.whatToDoWhenClosed();
+        setOpen(false);
     }
 
     const handleChannelIconInput = (input) => {
@@ -136,6 +142,7 @@ function AddChannelForm(props) {
                 .then((response) => response.text())
                 .then(result => {
                     props.closeModal();
+                    getChannels();
                 })
                 .catch(error => console.log('error', error));
             

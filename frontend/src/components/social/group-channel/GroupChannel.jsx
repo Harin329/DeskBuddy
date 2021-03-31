@@ -161,7 +161,9 @@ function GroupChannel() {
     };
 
     const addChannelBody = () => {
-        return <AddChannelForm closeModal={handleAddChannelClose} whatToDoWhenClosed={(bool) => {setAddChannel(bool)}}/>
+        return (
+                <AddChannelForm closeModal={handleAddChannelClose} whatToDoWhenClosed={(bool) => {setAddChannel(bool)}}/>
+        )
     }
 
     const handleAddChannelOpen = () => {
