@@ -7,6 +7,8 @@ import UpdateLocationFloorContainer from '../../components/reservation/UpdateLoc
 import { fetchOffices, fetchFloorsByOffice } from '../../actions/reservationActions';
 import Endpoint from '../../config/Constants';
 import safeFetch from "../../util/Util";
+import ICBC from "../../assets/ICBC.png";
+import {SET_PROFILE_PHOTO} from "../../actions/actionTypes";
 
 const useStyles = makeStyles({
   background: {
@@ -199,49 +201,67 @@ function UpdateLocationPopup (props) {
     dispatch(fetchOffices());
   }, []);
 
-  const handleSubmit = (event) => {
-    if (!office) {
-        alert("name is still null");
-    } else {
-        const originalCity = office.split('-')[0];
-        const id = office.split('-')[1];
-        const originalOffice = officeList.find(existingOffice => existingOffice.office_location == originalCity && existingOffice.office_id == id);
-        const formData = new FormData();
+    const handleSubmit = (event) => {
+        if (!office) {
+            alert("name is still null");
+        } else {
+            const originalCity = office.split('-')[0];
+            const id = office.split('-')[1];
+            const originalOffice = officeList.find(existingOffice => existingOffice.office_location == originalCity && existingOffice.office_id == id);
+            const originalOfficePhoto = originalOffice.office_photo;
+            originalOffice.office_photo = null;
+            const formData = new FormData();
 
-        let parsedDesks;
-        if (currLocationEdits.floor.deskIds) {
-            parsedDesks = parseDesksFromSring(currLocationEdits.floor.deskIds);
-        }
-        const floors = [{
-            floor_num: currLocationEdits.floor.level,
-            desks: parsedDesks
-        }]
-        const jsonBody = {
-            edits: {
-                city: currLocationEdits.cityOrTown,
-                name: currLocationEdits.name,
-                address: currLocationEdits.address,
-                floors: floors
-            },
-            originalOffice
-        }
-        formData.append("body", JSON.stringify(jsonBody));
-        formData.append("image", currLocationEdits.locationPhoto);
-        formData.append("floor_image", currLocationEdits.floor.photo);
-        const requestOptions = {
-            method: 'PUT',
-            body: formData
-        };
-        safeFetch(Endpoint + `/location`, requestOptions)
-            .then((response) => {
-                response.text();
-            })
-            .then(() => {
-                props.whatToDoWhenClosed();
-            })
-            .catch(error => {
-                alert(error);
-            })
+            const dispatchPutlocation = (formData) => {
+                const requestOptions = {
+                    method: 'PUT',
+                    body: formData
+                };
+                safeFetch(Endpoint + `/location`, requestOptions)
+                    .then((response) => {
+                        response.text();
+                    })
+                    .then(() => {
+                        props.whatToDoWhenClosed();
+                    })
+                    .catch(error => {
+                        alert(error);
+                    })
+            }
+
+            let parsedDesks;
+            if (currLocationEdits.floor.deskIds) {
+                parsedDesks = parseDesksFromSring(currLocationEdits.floor.deskIds);
+            }
+            const floors = [{
+                floor_num: currLocationEdits.floor.level,
+                desks: parsedDesks
+            }]
+            const jsonBody = {
+                edits: {
+                    city: currLocationEdits.cityOrTown,
+                    name: currLocationEdits.name,
+                    address: currLocationEdits.address,
+                    floors: floors
+                },
+                originalOffice
+            }
+            formData.append("body", JSON.stringify(jsonBody));
+
+            formData.append("floor_image", currLocationEdits.floor.photo);
+
+            if (currLocationEdits.locationPhoto != null) {
+                formData.append("image", currLocationEdits.locationPhoto);
+                dispatchPutlocation(formData);
+
+            } else {
+                fetch('data:image/png;base64,' + Buffer.from(originalOfficePhoto, 'base64').toString('base64'))
+                    .then(res => res.blob()
+                        .then(data => {
+                            formData.append("image", data);
+                            dispatchPutlocation(formData);
+                        }))
+            }
         }
     };
 
