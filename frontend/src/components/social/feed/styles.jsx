@@ -123,7 +123,8 @@ const TextContainer = styled.div`
   justify-content: center;
   align-items: center;
   align-self: center;
-  overflow: scroll;
+  overflow: auto;
+  scrollbar-color: red;
 
   @media (min-width: 1000px) {
     font-size: 22px;
