@@ -23,7 +23,7 @@ const useStyles = makeStyles({
     },
     sectionSpacing: {
         height: '25%',
-        marginBottom: '29px',
+        marginBottom: isMobile ? '0px' : '80px',
     },
     deskSectionText: {
         color: 'black',
@@ -141,7 +141,7 @@ function Today() {
                 </div>}
             </Grid>
             {!isMobile && <Grid item xs={6} className={classes.titleLines} >
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginLeft: 30, marginTop: 15}}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginLeft: '5px', marginTop: 15}}>
                     <Chart
                         width={'100%'}
                         height={'100%'}
