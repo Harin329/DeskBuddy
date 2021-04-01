@@ -8,8 +8,8 @@ const mailServer = new MailController();
 
 const filterTypes = {
     New: "new",
-    AwaitAdmin: "await_admin",
-    AwaitEmployee: "await_employee",
+    AwaitAdmin: "awaiting_admin_action",
+    AwaitEmployee: "awaiting_employee_confirmation",
     Closed: "closed",
     CannotComplete: "cannot_complete"
 }

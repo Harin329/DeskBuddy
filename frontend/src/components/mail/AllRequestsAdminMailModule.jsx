@@ -57,7 +57,7 @@ const useStyles = makeStyles({
   });
 
 
-function AllRequestsMailModule(size, text) {
+function AllRequestsAdminMailModule(size, text) {
   const classes = useStyles();
 
   const [statusChoice, setStatusChoice] = useState('Admin has Responded');
@@ -74,11 +74,11 @@ function AllRequestsMailModule(size, text) {
   const mockData = ["ABC", "DEFG", "HIJ", "KLM", "NOP", "QRS", "TUV"];
   const statusChoices = ['Admin has Responded', 'Waiting for Admin', 'Cannot Complete', 'Closed']
 
-  useEffect(async () => {
+  useEffect(() => {
     // TODO: use get all mail request endpoint
-    await fetchFilteredMail('Admin has Responded', false);
-    // await fetchFilteredMail('Waiting for Admin', false);
-    // await fetchFilteredMail('Cannot Complete', false);
+    fetchFilteredMail('Admin has Responded', false);
+    // fetchFilteredMail('Waiting for Admin', false);
+    // fetchFilteredMail('Cannot Complete', false);
     // await fetchFilteredMail('Closed', false);
   }, []);
 
@@ -105,13 +105,8 @@ function AllRequestsMailModule(size, text) {
           .then((response) => response.text())
           .then(result => {
               const mail = JSON.parse(result).mails;
-              mail.map((mailObj) => {
-                mailObj.status = 'Admin has Responded';
-                // mailObj.officeName = officeList ? officeList.find(existingOffice => existingOffice.office_location == mailObj.officeLocation && existingOffice.office_id == mailObj.officeID).name : officeName;
-                // console.log('--------- office list: ' + officeList);
-                // console.log('--------- office list filter: ' + officeList.find(existingOffice => existingOffice.office_location == mailObj.officeLocation && existingOffice.office_id == mailObj.officeID).name);
-              });
-              setMailList([...mail]);
+              mail.map((mailObj) => mailObj.status = 'Admin Has Responded');
+              setMailList([...mailList, ...mail]);
             })
           .catch(error => console.log('error', error));
         break;
@@ -121,7 +116,7 @@ function AllRequestsMailModule(size, text) {
           .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Waiting for Admin');
-            setMailList([...mail]);
+            setMailList([...mailList, ...mail]);
           })
           .catch(error => console.log('error', error));
         break;
@@ -131,7 +126,7 @@ function AllRequestsMailModule(size, text) {
           .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Cannot Complete');           
-            setMailList([...mail]);
+            setMailList([...mailList, ...mail]);
           })
           .catch(error => console.log('error', error));
         break;
@@ -141,7 +136,7 @@ function AllRequestsMailModule(size, text) {
           .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Closed');
-            setMailList([...mail]);
+            setMailList([...mailList, ...mail]);
           })
           .catch(error => console.log('error', error));
         break;
@@ -159,29 +154,19 @@ function AllRequestsMailModule(size, text) {
   let mail = [];
   mailList.map((update, i) => {
       mail.push(
-          <RequestMailNotification isAdminModule={false} data={JSON.stringify(update)}></RequestMailNotification>
+          <RequestMailNotification isAdminModule={true} data={JSON.stringify(update)}></RequestMailNotification>
       );
   });
 
   return (
-    <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null }}>
+    <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll' }}>
       <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: '20%', height: 30, textAlign: 'center', marginTop: -10, fontSize: 20, position: 'absolute' }}>{text}</h1>
-        <Grid container direction='row' justify='flex-start' alignItems='baseline'>
-          <TextField id="outlined-basic" label="Status" variant="outlined" select onChange={handleStatusChoiceChange} value={statusChoice} className={classes.inputBoxes}>
-              {statusChoices.map((option) => {
-                  return <MenuItem key={option} value={option}>{option}</MenuItem>
-                })
-              }
-          </TextField>
-          <Grid item xs={12} style={{ height: 400, border: 3, borderRadius: 20, display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll' }}>
             <InfiniteScroll
               style={{ padding: 30, width: '90%' }}
               useWindow={false}
             >
               {mail}
             </InfiniteScroll>
-          </Grid>
-        </Grid>
           
             
           <Modal
@@ -194,4 +179,4 @@ function AllRequestsMailModule(size, text) {
   );
 }
 
-export default AllRequestsMailModule;
+export default AllRequestsAdminMailModule;
