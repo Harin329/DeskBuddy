@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import InfiniteScroll from "react-infinite-scroller";
-import {makeStyles, withStyles} from "@material-ui/core/styles";
+import {makeStyles} from "@material-ui/core/styles";
 import Endpoint from "../../config/Constants";
 import {updatePopup} from "./UpdatePopup";
 import {Button, Modal} from '@material-ui/core';
@@ -79,7 +79,6 @@ const useStyles = makeStyles((theme) => ({
     color: 'white',
     height: '50px',
     padding: '0 30px',
-    marginTop: '10px',
     marginBottom: '10px',
     marginRight: isMobile ? 10 : 0,
     marginLeft: isMobile ? 0 : 10,
@@ -122,10 +121,14 @@ function CompanyUpdates() {
 
     const handleAddUpdateClose = () => {
         setAddAnnouncement(false);
+        getAnnouncements()
     }
 
     const addUpdateBody = () => {
-        return <AddUpdateForm closeModal={handleAddUpdateClose} whatToDoWhenClosed={(bool) => {setAddAnnouncement(bool)}}/>
+        return <AddUpdateForm closeModal={handleAddUpdateClose} whatToDoWhenClosed={(bool) => {
+            setAddAnnouncement(bool);
+            getAnnouncements();
+        }} global={true}/>
     }
 
     const handleAddUpdateOpen = () => {

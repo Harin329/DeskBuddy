@@ -1,18 +1,19 @@
 import React from 'react';
-import {withStyles} from "@material-ui/core/styles";
-import {MenuItem, TextField} from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
+import { Button, MenuItem, TextField } from "@material-ui/core";
 import InfiniteScroll from "react-infinite-scroller";
 import Endpoint from "../../config/Constants";
-import {updatePopup} from "./UpdatePopup";
+import { updatePopup } from "./UpdatePopup";
 import { Modal } from '@material-ui/core';
 import safeFetch from "../../util/Util";
-import {isMobile} from "react-device-detect";
+import { isMobile } from "react-device-detect";
+import AddUpdateForm from './AddUpdateForm';
 
 const styles = theme => ({
     title: {
         fontFamily: 'Lato',
         textAlign: 'center',
-        marginLeft: isMobile? 10: 50
+        marginLeft: isMobile ? 10 : 50,
     },
     titleBox: {
         alignItems: 'center',
@@ -38,7 +39,7 @@ const styles = theme => ({
         background: '#FFFCF7',
         borderRadius: 20,
         width: isMobile ? '95%' : '85%',
-        marginLeft: isMobile? 0: 40,
+        marginLeft: isMobile ? 0 : 40,
         height: 500,
         alignItems: 'center'
     },
@@ -56,6 +57,19 @@ const styles = theme => ({
         alignItems: 'center',
         color: '#000000',
     },
+    actionButton: {
+        background: '#00ADEF',
+        borderRadius: 20,
+        color: 'white',
+        height: '50px',
+        padding: '0 30px',
+        marginBottom: '10px',
+        marginRight: isMobile ? 10 : 0,
+        marginLeft: isMobile ? 0 : 10,
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 18,
+      },
     announcementText: {
         // fontSize: isMobile ? 16 : 20,
         paddingLeft: 15,
@@ -70,7 +84,7 @@ const styles = theme => ({
         color: 'rgba(0, 0, 0, 0.8)',
     },
     officeSelector: {
-        marginRight: isMobile? 15: 0
+        marginRight: isMobile ? 15 : 0,
     }
 
 });
@@ -82,19 +96,20 @@ class BranchUpdates extends React.Component {
         hasMoreAnnouncements: true,
         totalAnnouncements: 0,
         selectedOfficeID: 0,
-        selectedOfficeLocation: "",
+        selectedOfficeLocation: "All",
         officeList: [],
         open: false,
-        currAnnouncement: null
+        currAnnouncement: null,
+        addAnnouncement: false
     };
 
     handleUpdateOpen = (el) => {
         console.log("update is: " + el);
-        this.setState({ open: true, currAnnouncement: el});
+        this.setState({ open: true, currAnnouncement: el });
     }
 
     handleClose = () => {
-        this.setState({ open: false, currAnnouncement: null});
+        this.setState({ open: false, currAnnouncement: null });
     }
 
     handleOfficeChange(event) {
@@ -104,7 +119,7 @@ class BranchUpdates extends React.Component {
 
             console.log(params[0])
             console.log(params[1])
-            this.setState({selectedOfficeLocation: params[0], selectedOfficeID: params[1], announcementList: []});
+            this.setState({ selectedOfficeLocation: params[0], selectedOfficeID: params[1], announcementList: [] });
 
             let requestOptions = {
                 method: 'GET',
@@ -118,15 +133,36 @@ class BranchUpdates extends React.Component {
                     .then(result => {
                         const announcements = JSON.parse(result);
                         console.log(announcements);
-                        this.setState({announcementList: this.state.announcementList.concat(announcements),
-                            hasMoreAnnouncements: !(this.state.announcementList.length === this.state.totalAnnouncements)});
+                        this.setState({
+                            announcementList: this.state.announcementList.concat(announcements),
+                            hasMoreAnnouncements: !(this.state.announcementList.length === this.state.totalAnnouncements)
+                        });
                     })
                     .catch(error => console.log('error', error));
 
             }, 1000);
 
+        } else {
+            this.setState({ announcementList: [] });
+            this.getAnnouncements();
         }
     };
+
+    handleAddUpdateClose = () => {
+        this.setState({addAnnouncement: false, announcementList: []});
+        this.getAnnouncements();
+    }
+
+    handleAddUpdateOpen = () => {
+        this.setState({addAnnouncement: true});
+    }
+
+    addUpdateBody = () => {
+        return <AddUpdateForm closeModal={this.handleAddUpdateClose} whatToDoWhenClosed={(bool) => {
+            this.setState({addAnnouncement: bool, announcementList: []});
+            this.getAnnouncements();
+        }} global={false} />
+    }
 
     componentDidMount() {
         const officeOptions = {
@@ -137,26 +173,27 @@ class BranchUpdates extends React.Component {
         safeFetch(Endpoint + "/office/getAllOffices", officeOptions)
             .then((response) => response.text())
             .then(result => {
-                this.setState({officeList: JSON.parse(result)});
+                this.setState({ officeList: JSON.parse(result) });
             })
             .catch(error => console.log('error', error));
     }
 
-    getAnnouncements(page){
-        console.log("called");
+    getAnnouncements(page) {
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
-            safeFetch(Endpoint + "/announcement/getAllBranchAnnouncements", requestOptions)
-                .then(response => response.text())
-                .then(result => {
-                    const announcements = JSON.parse(result);
-                    console.log(announcements);
-                    this.setState({announcementList: this.state.announcementList.concat(announcements),
-                        hasMoreAnnouncements: !(this.state.announcementList.length === this.state.totalAnnouncements)});
-                })
-                .catch(error => console.log('error', error))
+        safeFetch(Endpoint + "/announcement/getAllBranchAnnouncements", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                const announcements = JSON.parse(result);
+                console.log(announcements);
+                this.setState({
+                    announcementList: this.state.announcementList.concat(announcements),
+                    hasMoreAnnouncements: !(this.state.announcementList.length === this.state.totalAnnouncements)
+                });
+            })
+            .catch(error => console.log('error', error))
     }
 
     render() {
@@ -178,7 +215,7 @@ class BranchUpdates extends React.Component {
                     <Modal
                         open={this.state.open}
                         onClose={this.handleClose}
-                        style={{display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                         {updatePopup(this.state.currAnnouncement)}
                     </Modal>
@@ -188,16 +225,26 @@ class BranchUpdates extends React.Component {
         }
 
         return (
-            <div className={classes.backgroundBox} style= {{height: '500px', overflow: 'auto'}} ref={(ref) => this.scrollParentRef = ref}>
+            <div className={classes.backgroundBox} style={{ height: '500px', overflow: 'auto' }} ref={(ref) => this.scrollParentRef = ref}>
                 <div className={classes.titleBox}>
                     <h1 className={classes.title}>BRANCH UPDATES</h1>
-                    <TextField className={classes.officeSelector} id="outlined-basic" label="" variant="outlined" select onChange={(e) => this.handleOfficeChange(e)} value={this.state.selectedOffice}>
+                    <TextField className={classes.officeSelector} id="outlined-basic" label="" variant="outlined" select onChange={(e) => this.handleOfficeChange(e)} defaultValue={'All'}>
+                        <MenuItem key={'All'} value={'All'}>
+                            All
+                        </MenuItem>
                         {this.state.officeList.map((option) => (
                             <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
                                 {option.name}
                             </MenuItem>
                         ))}
                     </TextField>
+                    {this.props.isAdmin && <Button className={classes.actionButton} onClick={this.handleAddUpdateOpen}>Add</Button>}
+                    <Modal
+                        open={this.state.addAnnouncement}
+                        onClose={this.handleAddUpdateClose}
+                    >
+                        {this.addUpdateBody()}
+                    </Modal>
 
                 </div>
                 <InfiniteScroll

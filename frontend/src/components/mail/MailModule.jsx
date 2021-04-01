@@ -87,7 +87,7 @@ function MailModule(size, text) {
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/mail/" + userOID + '?filter=awaiting_admin_action&sort=-modified_at', requestOptions)
+        safeFetch(Endpoint + "/mail/" + userOID, requestOptions)
             .then((response) => response.text())
             .then(result => {
                 setMailList(JSON.parse(result).mails);

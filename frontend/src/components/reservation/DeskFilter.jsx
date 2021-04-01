@@ -59,7 +59,7 @@ function DeskFilter() {
     const [addLocation, setAddLocation] = useState(false);
     const [singleDate, setSingleDate] = useState(false);
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     const filter = useSelector(state => state.reservations.searchFilter);
     const deskResults = useSelector(state => state.reservations.deskResults);
     const officeList = useSelector(state => state.reservations.offices);
@@ -249,6 +249,7 @@ function DeskFilter() {
                             locationID={filter.office}
                             closeHandler={handleFloorplanClose}
                             officeName={officeList.find((item) => (item.office_location + "-" + item.office_id) === filter.office)}
+                            mobile={isMobile}
                         />
                     </Modal>
                 </Grid>

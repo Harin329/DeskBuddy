@@ -5,6 +5,8 @@ import Endpoint from "../../config/Constants";
 import safeFetch from "../../util/Util"
 import {useMsal} from "@azure/msal-react";
 import {isMobile} from "react-device-detect";
+import {fetchOffices} from "../../actions/reservationActions";
+import {useDispatch, useSelector} from "react-redux";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -53,7 +55,8 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'auto'
     },
     officeSelector: {
-        marginLeft : 8
+        marginLeft : 8,
+        width: '80%'
     },
     branchTitle: {
         marginLeft: 8,
@@ -72,25 +75,17 @@ function AddUpdateForm(props) {
     const [content, setContent] = useState("");
     const [selectedOfficeID, setSelectedOfficeID] = useState(0);
     const [selectedOfficeLocation, setSelectedOfficeLocation] = useState("");
-    const [officeList, setOfficeList] = useState([]);
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
     const classes = useStyles();
 
-    useEffect( () => {
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
+    const dispatch = useDispatch();
+    const officeList = useSelector(state => state.reservations.offices);
 
-        safeFetch(Endpoint + "/office/getAllOffices", requestOptions)
-            .then((response) => response.text())
-            .then(result => {
-                setOfficeList(JSON.parse(result));
-            })
-            .catch(error => console.log('error', error));
-    });
+    useEffect(() => {
+        dispatch(fetchOffices());
+    }, []);
 
     const handleTitleInput = (input) => {
         setTitle(input.target.value)
@@ -104,7 +99,7 @@ function AddUpdateForm(props) {
         setContent(input.target.value);
     }
 
-    const handleUpdateLocationClose = () => {
+    const handleUpdateFormClose = () => {
         props.whatToDoWhenClosed();
     }
 
@@ -141,11 +136,6 @@ function AddUpdateForm(props) {
                     props.closeModal();
                 })
                 .catch(error => console.log('error', error));
-            safeFetch(Endpoint + "/mail/postMail", requestOptions)
-                .then((response) => response.text())
-                .then(result => {
-                })
-                .catch(error => alert(error));
         } else {
             jsonBody = {
                 user: userOID,
@@ -169,11 +159,11 @@ function AddUpdateForm(props) {
                 .catch(error => console.log('error', error));
 
         }
-        handleUpdateLocationClose();
+        handleUpdateFormClose();
     }
 
     return (
-        <div className={classes.addAnnouncement} onClose={handleUpdateLocationClose}>
+        <div className={classes.addAnnouncement} onClose={handleUpdateFormClose}>
             <Typography className={classes.sectionTextModal}>
                 Create New Announcement
             </Typography>
@@ -217,14 +207,14 @@ function AddUpdateForm(props) {
                     }}
                     onChange={handleContentInput}
                 /></div>
-                <h1 className={classes.branchTitle}>Branch (Optional)</h1>
-                <TextField className={classes.officeSelector} id="outlined-basic" variant="outlined" select onChange={(e) => handleOfficeChange(e)} value={selectedOfficeLocation}>
+                {!props.global && <h1 className={classes.branchTitle}>Branch (Optional)</h1>}
+                {!props.global && <TextField className={classes.officeSelector} id="outlined-basic" variant="outlined" select onChange={(e) => handleOfficeChange(e)}>
                     {officeList.map((option) => (
                         <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
                             {option.name}
                         </MenuItem>
                     ))}
-                </TextField>
+                </TextField>}
                 <div>
                     <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
                         Post
