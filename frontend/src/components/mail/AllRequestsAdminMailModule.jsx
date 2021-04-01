@@ -76,8 +76,8 @@ function AllRequestsAdminMailModule(size, text) {
 
   useEffect(() => {
     // TODO: use get all mail request endpoint
-    fetchFilteredMail('Admin has Responded', false);
-    // fetchFilteredMail('Waiting for Admin', false);
+    // fetchFilteredMail('Admin has Responded', false);
+    fetchFilteredMail('Waiting for Admin', false);
     // fetchFilteredMail('Cannot Complete', false);
     // await fetchFilteredMail('Closed', false);
   }, []);
