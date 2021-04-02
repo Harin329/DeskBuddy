@@ -7,6 +7,7 @@ import safeFetch, {accountIsAdmin} from "../../util/Util";
 import { isMobile } from "react-device-detect";
 import {useMsal} from "@azure/msal-react";
 import { updatePopup } from '../social/UpdatePopup';
+import MailNotification from '../mail/MailNotification';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -22,13 +23,18 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
     },
     updateBox: {
-        background: '#EEF0F2',
-        borderRadius: 10,
+        // background: '#EEF0F2',
+        // borderRadius: 10,
         width: '90%',
         height: 82,
         margin: 'auto',
         marginTop: 2,
-        marginBottom: 2,
+        marginBottom: '10px',
+
+        background: '#EEF0F2',
+        border: '1px solid #000000',
+        boxSizing: 'border-box',
+        borderRadius: '5px',
     },
     backgroundBox: {
         background: 'transparent',
@@ -38,14 +44,31 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: isMobile? 15 : 0,
     },
     announcementName: {
-        fontSize: isMobile ? 19 : 26,
+        // fontSize: isMobile ? 19 : 26,
         paddingLeft: 15,
-        paddingTop: 5
-    },
-    announcementText: {
-        fontSize: isMobile ? 16 : 20,
-        paddingLeft: 15
-    },
+        paddingTop: 5,
+    
+        fontFamily: 'Lato',
+        fontStyle: 'normal',
+        fontWeight: 'bold',
+        fontSize: isMobile ? '15px' : '20px',
+        lineHeight: '18px',
+        display: 'flex',
+        alignItems: 'center',
+        color: '#000000',
+      },
+      announcementText: {
+        // fontSize: isMobile ? 16 : 20,
+        paddingLeft: 15,
+    
+        fontStyle: 'normal',
+        fontWeight: 'bold',
+        fontSize: isMobile ? '12px' : '15px',
+        lineHeight: '12px',
+        display: 'flex',
+        alignItems: 'center',
+        color: 'rgba(0, 0, 0, 0.8)',
+      },
     inputBoxes: {
         marginLeft: 20
     },
@@ -117,9 +140,14 @@ function MailUpdates() {
             <InfiniteScroll
                 loadMore={getMail}
                 hasMore={hasMoreMail}
+                style={{ paddingInline: 30, width: '90%' }}
                 useWindow={false}
             >
-                {mail}
+                {mailList.map((update, i) => {
+                    return (
+                        <MailNotification>{JSON.stringify(update)}</MailNotification>
+                    )
+                })}
             </InfiniteScroll>
         </div>
     )

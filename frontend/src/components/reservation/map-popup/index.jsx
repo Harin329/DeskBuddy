@@ -1,5 +1,6 @@
 import React from 'react';
 import Endpoint from '../../../config/Constants'
+import PinchZoomPan from "react-responsive-pinch-zoom-pan";
 
 // styles
 import { MapContainer, LevelButton, LevelContainer, MapImage, MapTitle, ImageContainer, HeaderContainer } from './styles';
@@ -87,10 +88,16 @@ class MapPopup extends React.Component {
   curr_map = () => {
 
     return (
-      <MapImage
-        src={'data:image/png;base64,' + new Buffer(this.FLOOR_INFORMATION[this.state.curr_index].floor_plan, 'binary').toString('base64')}
-        alt={`Floormap for ${this.props.locationID} floor ${this.state.curr_level}`}
-      />
+      <div style={{ width: this.props.mobile ? '50%' : '100%', height: this.props.mobile ? '50%' : '100%' }}>
+      <PinchZoomPan
+      initialScale={1}
+      maxScale={4}>
+          <MapImage
+            src={'data:image/png;base64,' + new Buffer(this.FLOOR_INFORMATION[this.state.curr_index].floor_plan, 'binary').toString('base64')}
+            alt={`Floormap for ${this.props.locationID} floor ${this.state.curr_level}`}
+          />
+      </PinchZoomPan>
+      </div>
     );
   };
 
@@ -101,20 +108,37 @@ class MapPopup extends React.Component {
     if (!this.state.loaded && !this.state.error)
       body = <Spinner />
     else if (this.state.loaded && !this.state.error) {
-      body = (
-        <React.Fragment>
-          <LevelContainer>{this.all_levels()}</LevelContainer>
-          <ImageContainer>
-            <HeaderContainer>
-              <MapTitle>{this.props.officeName.name}</MapTitle>
-              <IconButton size="small" onClick={this.props.closeHandler}>
-                <CancelIcon size="small" />
-              </IconButton>
-            </HeaderContainer>
-            {this.curr_map()}
-          </ImageContainer>
-        </React.Fragment>
-      );
+      if (this.props.mobile) {
+        body = (
+          <React.Fragment>
+            <ImageContainer>
+              <HeaderContainer>
+                <MapTitle>{this.props.officeName.name}</MapTitle>
+                <IconButton size="small" onClick={this.props.closeHandler}>
+                  <CancelIcon size="small" />
+                </IconButton>
+              </HeaderContainer>
+              <LevelContainer>{this.all_levels()}</LevelContainer>
+              {this.curr_map()}
+            </ImageContainer>
+          </React.Fragment>
+        );
+      } else {
+        body = (
+          <React.Fragment>
+            <LevelContainer>{this.all_levels()}</LevelContainer>
+            <ImageContainer>
+              <HeaderContainer>
+                <MapTitle>{this.props.officeName.name}</MapTitle>
+                <IconButton size="small" onClick={this.props.closeHandler}>
+                  <CancelIcon size="small" />
+                </IconButton>
+              </HeaderContainer>
+              {this.curr_map()}
+            </ImageContainer>
+          </React.Fragment>
+        );
+      }
     } else if (this.state.error) {
       body = (
         <h2>Couldn't load the floorplan...</h2>

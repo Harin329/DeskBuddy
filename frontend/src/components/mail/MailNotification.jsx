@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {Typography, Grid, ListItem, Divider, Button, Modal, IconButton} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import InfiniteScroll from "react-infinite-scroller";
+import { useSelector, useDispatch } from 'react-redux'
 import MailRequestForm from "./MailRequestForm";
 import safeFetch from "../../util/Util";
 import Endpoint from "../../config/Constants";
+import { fetchOffices } from '../../actions/reservationActions';
+import CancelIcon from "@material-ui/icons/Cancel";
 import {isMobile} from "react-device-detect";
 
 
@@ -100,12 +104,27 @@ const useStyles = makeStyles({
     }
 });
 
+
 function MailNotification(props) {
     const data = JSON.parse(props.children);
+    const isAdminModule = props.isAdminModule;
     const [requestOpen, setRequestOpen] = useState(false);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const classes = useStyles();
     const [isExpanded, setIsExpanded] = useState(false);
+    const [officeName, setOfficeName] = useState('');
+
+    const dispatch = useDispatch();
+    const officeList = useSelector(state => state.reservations.offices);
+
+    useEffect(() => {
+        dispatch(fetchOffices());
+    }, []);
+
+    // useEffect(() => {
+    //     let tempOfficeName = officeList && officeList.length ? officeList.find(existingOffice => existingOffice.office_location == JSON.parse(data).officeLocation && existingOffice.office_id == JSON.parse(data).officeID).name : 'Retrieving...';
+    //     setOfficeName(tempOfficeName);
+    // }, []);
 
     const getNotifClass = () => {
         return isExpanded ? classes.reservationCardExpanded : classes.reservationCardTruncated;
@@ -169,10 +188,12 @@ function MailNotification(props) {
     let expandedNotifText;
     let expandedNotifButtons;
     if (isExpanded) {
+        console.log('`````````` data: ' + data);
+        let officeName = officeList.find(existingOffice => existingOffice.office_location == data.officeLocation && existingOffice.office_id == data.officeID).name;
         expandedNotifText = 
         <div>
             <Typography className={classes.deskSectionText}>LOCATION: <Typography className={classes.deskText}>
-                {data.officeLocation}
+                {officeName}
           </Typography></Typography>
           <Typography className={classes.deskSectionText}> COMMENTS:
             <Typography className={classes.deskText}>
@@ -184,9 +205,12 @@ function MailNotification(props) {
             </Typography>
           </Typography>
         </div>
-        expandedNotifButtons = 
+        expandedNotifButtons = !isAdminModule ?
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginRight: 30}}>
             <Button className={classes.requestActionButton} onClick={handleMailRequest}>Request Assistance</Button>
+            <Button className={classes.actionButton} onClick={handleMailDelete}>Delete Mail</Button>
+        </div> :
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginRight: 30}}>
             <Button className={classes.actionButton} onClick={handleMailDelete}>Delete Mail</Button>
         </div>
     }

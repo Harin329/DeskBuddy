@@ -82,14 +82,10 @@ class Feed extends React.Component {
       post_loaded: (this.state.post_loaded + 1) % 2,
     });
     setTimeout(() => {
-      let date = new Date();
 
       const jsonBody = {
         employee_id: oid,
         channel_id: this.channel_id,
-        date_posted: `${date.getFullYear()}-${
-          date.getMonth() + 1
-        }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
         post_content: this.state.post,
       };
 

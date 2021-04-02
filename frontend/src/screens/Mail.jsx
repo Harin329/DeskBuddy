@@ -4,6 +4,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import Title from '../components/global/Title';
 import Subheader from '../components/global/Subheader';
 import MailModule from '../components/mail/MailModule';
+import AllRequestsMailModule from '../components/mail/AllRequestsMailModule';
+import NewlyCreatedRequestsMailModule from '../components/mail/NewlyCreatedRequestsMailModule';
+import AllRequestsAdminMailModule from '../components/mail/AllRequestsAdminMailModule';
+import AllClosedRequestsAdminMailModule from '../components/mail/AllClosedRequestsAdminMailModule';
 import React, {useState} from "react";
 import NewMailForm from "../components/mail/NewMailForm";
 import {useMsal} from "@azure/msal-react";
@@ -63,7 +67,7 @@ function Mail() {
           <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
             {MailModule(4, "NEW MAIL")}
             <Grid item xs={2}></Grid>
-            {RequestModule(4, "ALL REQUESTS")}
+            {AllRequestsMailModule(4, "ALL REQUESTS")}
           </Grid>
 
           {window.innerWidth > 1500 && Subheader('MANAGE REQUESTS', 4, 2, 4)}
@@ -71,11 +75,11 @@ function Mail() {
 
 
           <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-            {MailModule(3, "ACTIVE REQUESTS")}
+            {NewlyCreatedRequestsMailModule(3, "NEWLY SUBMITTED MAIL")}
             <Grid item xs={'auto'}></Grid>
-            {MailModule(3, "ALL REQUESTS")}
+            {AllRequestsAdminMailModule(3, "ALL ACTIVE REQUESTS")}
             <Grid item xs={'auto'}></Grid>
-            {MailModule(3, "CLOSED REQUESTS")}
+            {AllClosedRequestsAdminMailModule(3, "ALL CLOSED REQUESTS")}
           </Grid>
             {isAdmin && <Button className={classes.actionButtonCenter} onClick={handleNewMail}>
             Submit New Mail
