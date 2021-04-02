@@ -11,8 +11,8 @@ let adminToken:any = ""; // token for Global Admin administrator
 let userToken:any = ""; // token for Dana White user
 let adminJSON = {"Authorization": `Bearer ${adminToken}`};
 let userJSON = {"Authorization": `Bearer ${userToken}`};
-// const testUserOID = `606ac3ca-afce-4337-b0b7-831f4c2dad90`; // test OID
-const testUserOID = `ce17e073-774c-42a0-8b2b-a4eadb93e193`; // jestuser OID
+const testUserOID = `606ac3ca-afce-4337-b0b7-831f4c2dad90`; // test OID
+// const testUserOID = `ce17e073-774c-42a0-8b2b-a4eadb93e193`; // jestuser OID
 const adminOID = "f91d5bbe-76a9-4078-970e-6617e75368fb"; // jestadmin OID
 
 const requestToken = async (username: any, password: any) => {
