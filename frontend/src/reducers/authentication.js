@@ -4,7 +4,7 @@ import {
     SET_LOGGED_IN,
     SET_USER_ADDED_TO_DB,
     SET_USER_DISPLAY_NAME,
-    SET_PROFILE_PHOTO, SET_OID, SET_IS_ADMIN
+    SET_PROFILE_PHOTO, SET_OID, SET_IS_ADMIN, SET_EMPLOYEES
 } from "../actions/actionTypes";
 import { combineReducers } from "redux";
 import ICBC from "../assets/ICBC.png"
@@ -79,4 +79,15 @@ const profilePic = (state = null, action) => {
     }
 };
 
-export default combineReducers({ addedToDB, displayName, profilePic, isAdmin, oid});
+const users = (state = [], action) => {
+    switch (action.type) {
+        case SET_EMPLOYEES: {
+            return action.payload;
+        }
+        default: {
+            return state;
+        }
+    }
+};
+
+export default combineReducers({ addedToDB, displayName, profilePic, isAdmin, oid, users});

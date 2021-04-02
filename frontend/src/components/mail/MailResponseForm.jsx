@@ -90,7 +90,12 @@ function MailResponseForm(props){
     const handleAdminResponse = () => {
         let jsonBody = {
             mail_id: 135,
-            employee_id: userOID,
+            employee_id: "",
+            request_type: "",
+            forward_location: "",
+            additional_instructions: "",
+            admin_eid: userOID,
+            response: ""
         }
         const requestOptions = {
             method: 'PUT',
@@ -98,7 +103,7 @@ function MailResponseForm(props){
             body: JSON.stringify(jsonBody)
         };
 
-        safeFetch(Endpoint + "/requests", requestOptions)
+        safeFetch(Endpoint + "/request/admin", requestOptions)
             .then((response) => response.text())
             .then(result => {
             })
@@ -109,7 +114,12 @@ function MailResponseForm(props){
     const handleUserResponse = () => {
         let jsonBody = {
             mail_id: 135,
-            employee_id: 123,
+            employee_id: userOID,
+            employee_phone: null,
+            request_type: "",
+            forward_location: "",
+            additional_instruction: "",
+            req_completion_date: ""
         }
         const requestOptions = {
             method: 'PUT',
@@ -117,7 +127,7 @@ function MailResponseForm(props){
             body: JSON.stringify(jsonBody)
         };
 
-        safeFetch(Endpoint + "/requests", requestOptions)
+        safeFetch(Endpoint + "/request/employee", requestOptions)
             .then((response) => response.text())
             .then(result => {
             })

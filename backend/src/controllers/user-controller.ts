@@ -35,9 +35,9 @@ export default class UserController {
         })
     }
 
-    getUserNameByOffice(office_location: string, office_id: number) {
+    getAllUsers() {
         return new Promise((resolve, reject) => {
-            User.getUserNameByOffice(office_location, office_id,(err: any, result: any) => {
+            User.getAllUsers((err: any, result: any) => {
                 if (err) {
                     reject(err);
                 }

@@ -1,4 +1,4 @@
-import { SET_PROFILE_PHOTO} from "./actionTypes";
+import {SET_EMPLOYEES, SET_PROFILE_PHOTO} from "./actionTypes";
 import safeFetch, {graphFetch} from "../util/Util";
 import Endpoint from "../config/Constants";
 import ICBC from "../assets/ICBC.png";
@@ -48,4 +48,18 @@ const updateProfilePhoto = (data) => {
                 throw Error("Error updating profile photo");}
         })
         .catch(error => console.log(error));
+}
+
+export const fetchEmployees = () => dispatch => {
+    var requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+    };
+
+    return safeFetch(Endpoint + "/user/", requestOptions)
+        .then((response) => response.text())
+        .then(result => {
+            dispatch({ type: SET_EMPLOYEES, payload: JSON.parse(result) });
+        })
+        .catch(error => console.log('error', error));
 }

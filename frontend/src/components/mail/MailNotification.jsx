@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import {Typography, Grid, ListItem, Divider, Button, Modal, IconButton} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import InfiniteScroll from "react-infinite-scroller";
 import MailRequestForm from "./MailRequestForm";
 import safeFetch from "../../util/Util";
 import Endpoint from "../../config/Constants";
-import CancelIcon from "@material-ui/icons/Cancel";
 import {isMobile} from "react-device-detect";
 
 
@@ -101,7 +99,6 @@ const useStyles = makeStyles({
         alignItems: 'center'
     }
 });
-
 
 function MailNotification(props) {
     const data = JSON.parse(props.children);
