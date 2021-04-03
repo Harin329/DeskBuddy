@@ -69,6 +69,9 @@ const useStyles = makeStyles((theme) => ({
 
 function MailResponseForm(props){
 
+    const data = JSON.parse(props.children.data);
+    console.log(data);
+
     const [response, setResponse] = useState("");
     const [statusList, setStatusList] = useState(["Waiting for assistance", "Closed", "Cannot perform action", "Completed"]);
     const [status, setStatus]= useState("");
@@ -89,8 +92,13 @@ function MailResponseForm(props){
 
     const handleAdminResponse = () => {
         let jsonBody = {
-            mail_id: 135,
-            employee_id: userOID,
+            mail_id: data.mailID,
+            employee_id: "",
+            request_type: "",
+            forward_location: "",
+            additional_instructions: data.comments,
+            admin_eid: userOID,
+            response: response
         }
         const requestOptions = {
             method: 'PUT',
@@ -98,7 +106,7 @@ function MailResponseForm(props){
             body: JSON.stringify(jsonBody)
         };
 
-        safeFetch(Endpoint + "/requests", requestOptions)
+        safeFetch(Endpoint + "/request/admin", requestOptions)
             .then((response) => response.text())
             .then(result => {
             })
@@ -108,8 +116,13 @@ function MailResponseForm(props){
 
     const handleUserResponse = () => {
         let jsonBody = {
-            mail_id: 135,
-            employee_id: 123,
+            mail_id: data.mailID,
+            employee_id: userOID,
+            employee_phone: null,
+            request_type: "",
+            forward_location: "",
+            additional_instruction: data.comments,
+            req_completion_date: ""
         }
         const requestOptions = {
             method: 'PUT',
@@ -117,7 +130,7 @@ function MailResponseForm(props){
             body: JSON.stringify(jsonBody)
         };
 
-        safeFetch(Endpoint + "/requests", requestOptions)
+        safeFetch(Endpoint + "/request/employee", requestOptions)
             .then((response) => response.text())
             .then(result => {
             })
@@ -149,14 +162,17 @@ function MailResponseForm(props){
             <Typography className={classes.sectionTextModal}>
                 Request Response Form
             </Typography>
-            <Typography className={classes.subheading}>
-                Employee Name:
-            </Typography>
+            {isAdmin && <Typography className={classes.subheading}>
+                Employee Name: {data.recipient_first + " " + data.recipient_last}
+            </Typography>}
             <Typography className={classes.subheading}>
                 Request Type:
             </Typography>
             <Typography className={classes.subheading}>
-                Additional Instructions:
+                Forwarding Location:
+            </Typography>
+            <Typography className={classes.subheading}>
+                Additional Instructions: {data.comments}
             </Typography>
             {!isAdmin && <Typography className={classes.subheading}>
                 Admin Response:
@@ -175,7 +191,7 @@ function MailResponseForm(props){
                     onChange={handleResponseInput}
                 /></div>}
                 <Typography className={classes.subheading}>
-                    Status:
+                    Status: {data.status}
                 </Typography>
                 {isAdmin && <TextField className={classes.inputBoxes} id="outlined-basic" variant="outlined" select onChange={handleStatusInput} value={status}>
                     {statusList.map((option) => (

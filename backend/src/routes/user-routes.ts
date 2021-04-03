@@ -30,8 +30,8 @@ router.post('/', (req: Request, res: Response) => {
         });
 })
 
-router.get('/GetUserNameByOffice/:officeloc/:officeid', (req, res: Response) => {
-   userServer.getUserNameByOffice(req.params.officeloc, Number(req.params.officeid))
+router.get('/', (req, res: Response) => {
+   userServer.getAllUsers()
         .then((users: any) => {
             res.json(users);
         })

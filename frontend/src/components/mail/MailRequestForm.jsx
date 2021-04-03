@@ -71,7 +71,6 @@ const useStyles = makeStyles((theme) => ({
 function MailRequestForm(props) {
     const [type, setType] = useState("");
     const data = props.data;
-    console.log(JSON.parse(data).mailID);
     const [forwardingLocation, setForwardingLocation] = useState("");
     const [instructions, setInstructions] = useState("");
     const [requestedDate, setRequestedDate] = useState(new Date());

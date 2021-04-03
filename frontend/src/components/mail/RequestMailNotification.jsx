@@ -110,7 +110,7 @@ function RequestMailNotification(props) {
       };
   
       const mailRequestPopup = () => {
-        return <MailRequestForm data={data} closeModal={closeMailResponse} whatToDoWhenClosed={(bool) => {setRequestOpen(bool)}}></MailRequestForm>
+        return <MailResponseForm closeModal={closeMailResponse} whatToDoWhenClosed={(bool) => {setRequestOpen(bool)}}>{props}</MailResponseForm>
       };
     
     
