@@ -6,6 +6,7 @@ import Spinner from '../../reservation/map-popup/spinner/spinner';
 import { Modal } from '@material-ui/core';
 import safeFetch, { accountIsAdmin } from "../../../util/Util";
 import { MsalContext } from "@azure/msal-react";
+import ErrorPopup from '../../global/error-popup/index'
 
 // styles
 import {
@@ -38,13 +39,13 @@ class Feed extends React.Component {
     error: false,
     flag_loaded: 1,
     post_loaded: 1,
-    post_error: false,
     report_popup: false,
     reported_post: -1,
     curr_category: 0,
     unreported_popup: false,
     delete_popup: false,
     delete_post: null,
+    error_popup: false,
   };
 
   constructor(props) {
@@ -78,7 +79,6 @@ class Feed extends React.Component {
   // request to POST a post
   handlePost = (oid) => {
     this.setState({
-      post_error: false,
       post_loaded: (this.state.post_loaded + 1) % 2,
     });
     setTimeout(() => {
@@ -109,8 +109,8 @@ class Feed extends React.Component {
         .catch((error) => {
           this.setState({
             post_loaded: (this.state.post_loaded + 1) % 2,
-            post_error: true,
             post: '',
+            error_popup: true,
           });
         });
     }, 1000);
@@ -141,7 +141,7 @@ class Feed extends React.Component {
       })
       .catch((error) => {
         console.log('error', error);
-        this.setState({ report_popup: false, reported_post: -1})
+        this.setState({ report_popup: false, reported_post: -1, error_popup: true,})
       });
   };
 
@@ -170,7 +170,7 @@ class Feed extends React.Component {
       })
       .catch((error) => {
         console.log('error', error);
-        this.setState({ unreported_popup: false, reported_post: -1})
+        this.setState({ unreported_popup: false, reported_post: -1, error_popup: true,})
       });
   };
 
@@ -197,7 +197,6 @@ class Feed extends React.Component {
       .then((result) => {
         this.feed.splice(this.feed.indexOf(el), 1);
         this.setState({
-          flag_loaded: (this.state.flag_loaded + 1) % 2,
           delete_popup: false,
           delete_post: null,
         });
@@ -207,7 +206,7 @@ class Feed extends React.Component {
         this.setState({
           delete_popup: false,
           delete_post: null,
-          flag_loaded: (this.state.flag_loaded + 1) % 2,
+          error_popup: true
         });
       });
   };
@@ -294,21 +293,7 @@ class Feed extends React.Component {
           <PostingPopup>Posting...</PostingPopup>
         </Modal>
       );
-    } else if (this.state.post_loaded && this.state.post_error) {
-      isPosting = (
-        <Modal
-          open={this.state.post_error}
-          onClose={() => this.setState({post_error: false})}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <PostingPopup>There was an error posting. Try again later.</PostingPopup>
-        </Modal>
-      );
-    }
+    } 
 
     let reportPopup = (
       <Modal
@@ -379,6 +364,17 @@ class Feed extends React.Component {
       </Modal>
     );
 
+    let errorPopup = (
+      <Modal
+        open={this.state.error_popup}
+        onClose={() =>
+          this.setState({ error_popup: false})
+        }
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <ErrorPopup />
+      </Modal>
+    );
 
     return (
       <Container>
@@ -386,6 +382,7 @@ class Feed extends React.Component {
         {reportPopup}
         {unreportPopup}
         {deletePopup}
+        {errorPopup}
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <SocialFeed>
             { this.channel_id !== 0 ?
