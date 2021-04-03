@@ -90,31 +90,23 @@ function MailResponseForm(props){
     }
 
     const handleAdminResponse = () => {
-        let jsonBody = {
+        let adminBody = {
             mail_id: data.mailID,
-            employee_id: userOID,
-            request_type: "Open",
-            forward_location: "N/A",
-            additional_instructions: data.comments,
-            admin_eid: userOID,
             response: response
         }
-        const requestOptions = {
+        const adminOptions = {
             method: 'PUT',
             redirect: 'follow',
-            body: JSON.stringify(jsonBody)
+            body: JSON.stringify(adminBody)
         };
-
-        safeFetch(Endpoint + "/request/admin", requestOptions)
+        safeFetch(Endpoint + "/request/admin", adminOptions)
             .then((response) => response.text())
             .then(result => {
             })
-            .catch(error => console.log('error', error));
-
     }
 
     const handleUserResponse = () => {
-        let jsonBody = {
+        let employeeBody = {
             mail_id: data.mailID,
             employee_id: userOID,
             employee_phone: null,
@@ -123,13 +115,13 @@ function MailResponseForm(props){
             additional_instruction: response,
             req_completion_date: ""
         }
-        const requestOptions = {
+        const employeeOptions = {
             method: 'PUT',
             redirect: 'follow',
-            body: JSON.stringify(jsonBody)
+            body: JSON.stringify(employeeBody)
         };
 
-        safeFetch(Endpoint + "/request/employee", requestOptions)
+        safeFetch(Endpoint + "/request/employee", employeeOptions)
             .then((response) => response.text())
             .then(result => {
             })
@@ -139,8 +131,8 @@ function MailResponseForm(props){
 
     const deleteRequest = () => {
         let jsonBody = {
-            mail_id: 135,
-            employee_id: 123,
+            mail_id: data.mailID,
+            employee_id: userOID,
         }
         const requestOptions = {
             method: 'PUT',
@@ -192,13 +184,6 @@ function MailResponseForm(props){
                     }}
                     onChange={handleResponseInput}
                 /></div>
-                {isAdmin && <TextField className={classes.inputBoxes} id="outlined-basic" variant="outlined" select onChange={handleStatusInput} value={status}>
-                    {statusList.map((option) => (
-                        <MenuItem key={option} value={option}>
-                            {option}
-                        </MenuItem>
-                    ))}
-                </TextField>}
                 <div>
                     {isAdmin && <Button className={classes.actionButtonCenter} onClick={handleAdminResponse}>
                         Update

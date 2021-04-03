@@ -84,6 +84,7 @@ router.put('/employee', (req: Request, res: Response) => {
 // endpoint for updating a request for admin
 router.put('/admin', (req: Request, res: Response) => {
     if (!req.body || req.body.mail_id == null) {
+        console.log(req.body.mail_id)
         res.status(400).json({
             message: "malformed request body"
         })
