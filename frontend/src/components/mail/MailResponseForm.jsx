@@ -90,14 +90,18 @@ function MailResponseForm(props){
     }
 
     const handleAdminResponse = () => {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
         let adminBody = {
             mail_id: data.mailID,
             response: response
-        }
+        };
         const adminOptions = {
             method: 'PUT',
-            redirect: 'follow',
-            body: JSON.stringify(adminBody)
+            headers: myHeaders,
+            body: JSON.stringify(adminBody),
+            redirect: 'follow'
         };
         safeFetch(Endpoint + "/request/admin", adminOptions)
             .then((response) => response.text())
