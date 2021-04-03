@@ -458,7 +458,7 @@ describe("Mail manager endpoints tests", () => {
         done();
     });
 
-    it.only("GET /mail while filtering for location NV01", async done => {
+    it("GET /mail while filtering for location NV01", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);

@@ -125,7 +125,6 @@ router.get('/', (req: Request, res: Response) => {
             sort as string | undefined,
             loc as string | undefined,
             id as string | undefined).then((mailInfo: IMailResponse[]) => {
-                console.log(mailInfo);
             res.status(200).json({
                 mails: mailInfo
             });

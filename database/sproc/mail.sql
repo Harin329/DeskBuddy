@@ -417,8 +417,6 @@ ORDER BY `sort` DESC;
 
 END
 
----------------------------------------------------------------------------------------
-
 CREATE PROCEDURE `getMailAdmin` ()
 
 BEGIN
@@ -506,217 +504,251 @@ WHERE M.`mail_id` = R.`mail_id` AND R.`status` = `filter` AND M.`fk_employee_id`
 
 END
 
+
+CREATE PROCEDURE `getFilteredMailLocAdmin` (IN `filter` VARCHAR(50), IN `loc` VARCHAR(50))
+
+BEGIN
+
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email` FROM `mail` AS `M`, `employee` AS `E`, `mail_request` AS `R`
+WHERE M.`mail_id` = R.`mail_id` 
+AND R.`status` = `filter` 
+AND M.`fk_office_location` = `loc`
+AND M.`fk_employee_id` = E.`employee_id`;
+
+END
 ---------------------------------------------
 
-CREATE PROCEDURE `getFilteredMailLoc` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), IN `loc` VARCHAR(50))
+CREATE PROCEDURE `getFilteredMailIDAdmin` (IN `filter` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT M.`*` FROM `mail` AS `M`, `mail_request` AS `R`
-WHERE M.`fk_employee_id` = `employeeID` 
-AND M.`mail_id` = R.`mail_id` 
-AND R.`status` = `filter` 
-AND M.`fk_office_location` = `loc`;
-
-END
-
-CREATE PROCEDURE `getFilteredMailID` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), IN `ID` INT(8))
-
-BEGIN
-
-SELECT M.`*` FROM `mail` AS `M`, `mail_request` AS `R`
-WHERE M.`fk_employee_id` = `employeeID` 
-AND M.`mail_id` = R.`mail_id` 
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email` FROM `mail` AS `M`, `employee` AS `E`, `mail_request` AS `R`
+WHERE M.`mail_id` = R.`mail_id` 
 AND R.`status` = `filter`
-AND M.`fk_office_id` = `ID`;
+AND M.`fk_office_id` = `ID`
+AND M.`fk_employee_id` = E.`employee_id`;
 
 END
 
-CREATE PROCEDURE `getFilteredMailLocID` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), IN `loc` VARCHAR(50), IN `ID` INT(8))
+CREATE PROCEDURE `getFilteredMailLocIDAdmin` (IN `filter` VARCHAR(50), IN `loc` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT M.`*` FROM `mail` AS `M`, `mail_request` AS `R`
-WHERE M.`fk_employee_id` = `employeeID` 
-AND M.`mail_id` = R.`mail_id` 
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email` FROM `mail` AS `M`, `employee` AS `E`, `mail_request` AS `R`
+WHERE M.`mail_id` = R.`mail_id` 
 AND R.`status` = `filter` 
 AND M.`fk_office_location` = `loc`
-AND M.`fk_office_id` = `ID`;
+AND M.`fk_office_id` = `ID`
+AND M.`fk_employee_id` = E.`employee_id`;
 
 END
 
-CREATE PROCEDURE `getMailSortedAsc` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50))
+CREATE PROCEDURE `getMailSortedAscAdmin` (IN `sort` VARCHAR(50))
 
 BEGIN
 
-SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID` ORDER BY `sort` ASC;
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email` 
+FROM `mail` AS `M`, `employee` AS `E`
+WHERE M.`fk_employee_id` = E.`employee_id` 
+ORDER BY `sort` ASC;
 
 END
 
-CREATE PROCEDURE `getMailSortedAscLoc` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `loc` VARCHAR(50))
+CREATE PROCEDURE `getMailSortedAscLocAdmin` (IN `sort` VARCHAR(50), IN `loc` VARCHAR(50))
 
 BEGIN
 
-SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID` AND `fk_office_location` = `loc` ORDER BY `sort` ASC;
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`  
+FROM `mail` AS `M`, `employee` AS `E` 
+WHERE M.`fk_employee_id` = E.`employee_id` AND M.`fk_office_location` = `loc` 
+ORDER BY `sort` ASC;
 
 END
 
-CREATE PROCEDURE `getMailSortedAscID` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `ID` INT(8))
+CREATE PROCEDURE `getMailSortedAscIDAdmin` (IN `sort` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID` AND `fk_office_id` = `ID` ORDER BY `sort` ASC;
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E` 
+WHERE M.`fk_employee_id` = E.`employee_id` AND M.`fk_office_id` = `ID` 
+ORDER BY `sort` ASC;
 
 END
 
-CREATE PROCEDURE `getMailSortedAscLocID` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `loc` VARCHAR(50), IN `ID` INT(8))
+CREATE PROCEDURE `getMailSortedAscLocIDAdmin` (IN `sort` VARCHAR(50), IN `loc` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID` AND `fk_office_location` = `loc` AND `fk_office_id` = `ID` ORDER BY `sort` ASC;
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E` 
+WHERE M.`fk_employee_id` = E.`employee_id` AND M.`fk_office_location` = `loc` AND M.`fk_office_id` = `ID` 
+ORDER BY `sort` ASC;
 
 END
 
-CREATE PROCEDURE `getMailSortedDesc` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50))
+CREATE PROCEDURE `getMailSortedDescAdmin` (IN `sort` VARCHAR(50))
 
 BEGIN
 
-SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID` ORDER BY `sort` DESC;
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E` 
+WHERE M.`fk_employee_id` = E.`employee_id` 
+ORDER BY `sort` DESC;
 
 END
 
-CREATE PROCEDURE `getMailSortedDescLoc` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `loc` VARCHAR(50))
+CREATE PROCEDURE `getMailSortedDescLocAdmin` (IN `sort` VARCHAR(50), IN `loc` VARCHAR(50))
 
 BEGIN
 
-SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID` AND `fk_office_location` = `loc` ORDER BY `sort` DESC;
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E` 
+WHERE M.`fk_employee_id` = E.`employee_id` AND M.`fk_office_location` = `loc` 
+ORDER BY `sort` DESC;
 
 END
 
-CREATE PROCEDURE `getMailSortedDescID` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `ID` INT(8))
+CREATE PROCEDURE `getMailSortedDescIDAdmin` (IN `sort` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID` AND `fk_office_id` = `ID` ORDER BY `sort` DESC;
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`  
+WHERE M.`fk_employee_id` = E.`employee_id` AND M.`fk_office_id` = `ID` 
+ORDER BY `sort` DESC;
 
 END
 
-CREATE PROCEDURE `getMailSortedDescLocID` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `loc` VARCHAR(50), IN `ID` INT(8))
+CREATE PROCEDURE `getMailSortedDescLocIDAdmin` (IN `sort` VARCHAR(50), IN `loc` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT * FROM `mail` WHERE `fk_employee_id` = `employeeID` AND `fk_office_location` = `loc` AND `fk_office_id` = `ID` ORDER BY `sort` DESC;
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`  
+WHERE M.`fk_employee_id` = E.`employee_id` AND M.`fk_office_location` = `loc` AND M.`fk_office_id` = `ID` 
+ORDER BY `sort` DESC;
 
 END
 
-CREATE PROCEDURE `getNewMailSortedAsc` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50))
+CREATE PROCEDURE `getNewMailSortedAscAdmin` (IN `sort` VARCHAR(50))
 
 BEGIN
 
-SELECT `*` FROM `mail` AS `M`
-WHERE M.`fk_employee_id` = `employeeID` AND
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`  
+WHERE M.`fk_employee_id` = E.`employee_id` AND
       NOT EXISTS (SELECT * FROM `mail_request` AS `R` WHERE M.`mail_id` = R.`mail_id`)
 ORDER BY `sort` ASC;
 
 END
 
-CREATE PROCEDURE `getNewMailSortedAscLoc` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `loc` VARCHAR(50))
+CREATE PROCEDURE `getNewMailSortedAscLocAdmin` (IN `sort` VARCHAR(50), IN `loc` VARCHAR(50))
 
 BEGIN
 
-SELECT `*` FROM `mail` AS `M`
-WHERE M.`fk_employee_id` = `employeeID` AND `fk_office_location` = `loc` AND
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`  
+WHERE M.`fk_employee_id` = E.`employee_id` AND M.`fk_office_location` = `loc` AND
       NOT EXISTS (SELECT * FROM `mail_request` AS `R` WHERE M.`mail_id` = R.`mail_id`)
 ORDER BY `sort` ASC;
 
 END
 
-CREATE PROCEDURE `getNewMailSortedAscID` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `ID` INT(8))
+CREATE PROCEDURE `getNewMailSortedAscIDAdmin` (IN `sort` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT `*` FROM `mail` AS `M`
-WHERE M.`fk_employee_id` = `employeeID` AND `fk_office_id` = `ID` AND
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`  
+WHERE M.`fk_employee_id` = E.`employee_id` AND M.`fk_office_id` = `ID` AND
       NOT EXISTS (SELECT * FROM `mail_request` AS `R` WHERE M.`mail_id` = R.`mail_id`)
 ORDER BY `sort` ASC;
 
 END
 
-CREATE PROCEDURE `getNewMailSortedAscLocID` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `loc` VARCHAR(50), IN `ID` INT(8))
+CREATE PROCEDURE `getNewMailSortedAscLocIDAdmin` (IN `sort` VARCHAR(50), IN `loc` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT `*` FROM `mail` AS `M`
-WHERE M.`fk_employee_id` = `employeeID` AND `fk_office_location` = `loc` AND `fk_office_id` = `ID` AND
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`  
+WHERE M.`fk_employee_id` = E.`employee_id` AND M.`fk_office_location` = `loc` AND M.`fk_office_id` = `ID` AND
       NOT EXISTS (SELECT * FROM `mail_request` AS `R` WHERE M.`mail_id` = R.`mail_id`)
 ORDER BY `sort` ASC;
 
 END
 
-CREATE PROCEDURE `getNewMailSortedDesc` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50))
+CREATE PROCEDURE `getNewMailSortedDescAdmin` (IN `sort` VARCHAR(50))
 
 BEGIN
 
-SELECT `*` FROM `mail` AS `M`
-WHERE M.`fk_employee_id` = `employeeID` AND
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`  
+WHERE M.`fk_employee_id` = E.`employee_id` AND
       NOT EXISTS (SELECT * FROM `mail_request` AS `R` WHERE M.`mail_id` = R.`mail_id`)
 ORDER BY `sort` DESC;
 
 END
 
-CREATE PROCEDURE `getNewMailSortedDescLoc` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `loc` VARCHAR(50))
+CREATE PROCEDURE `getNewMailSortedDescLocAdmin` (IN `sort` VARCHAR(50), IN `loc` VARCHAR(50))
 
 BEGIN
 
-SELECT `*` FROM `mail` AS `M`
-WHERE M.`fk_employee_id` = `employeeID` AND `fk_office_location` = `loc` AND
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`  
+WHERE M.`fk_employee_id` = E.`employee_id` AND M.`fk_office_location` = `loc` AND
       NOT EXISTS (SELECT * FROM `mail_request` AS `R` WHERE M.`mail_id` = R.`mail_id`)
 ORDER BY `sort` DESC;
 
 END
 
-CREATE PROCEDURE `getNewMailSortedDescID` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `ID` INT(8))
+CREATE PROCEDURE `getNewMailSortedDescIDAdmin` (IN `sort` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT `*` FROM `mail` AS `M`
-WHERE M.`fk_employee_id` = `employeeID` AND `fk_office_id` = `ID` AND
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`  
+WHERE M.`fk_employee_id` = E.`employee_id` AND M.`fk_office_id` = `ID` AND
       NOT EXISTS (SELECT * FROM `mail_request` AS `R` WHERE M.`mail_id` = R.`mail_id`)
 ORDER BY `sort` DESC;
 
 END
 
-CREATE PROCEDURE `getNewMailSortedDescLocID` (IN `employeeID` VARCHAR(50), IN `sort` VARCHAR(50), IN `loc` VARCHAR(50), IN `ID` INT(8))
+CREATE PROCEDURE `getNewMailSortedDescLocIDAdmin` (IN `sort` VARCHAR(50), IN `loc` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT `*` FROM `mail` AS `M`
-WHERE M.`fk_employee_id` = `employeeID` AND `fk_office_location` = `loc` AND `fk_office_id` = `ID` AND
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`  
+WHERE M.`fk_employee_id` = E.`employee_id` AND M.`fk_office_location` = `loc` AND M.`fk_office_id` = `ID` AND
       NOT EXISTS (SELECT * FROM `mail_request` AS `R` WHERE M.`mail_id` = R.`mail_id`)
 ORDER BY `sort` DESC;
 
 END
 
 
-CREATE PROCEDURE `getFilteredMailSortedAsc` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), IN `sort` VARCHAR(50))
+CREATE PROCEDURE `getFilteredMailSortedAscAdmin` (IN `filter` VARCHAR(50), IN `sort` VARCHAR(50))
 
 BEGIN
 
-SELECT M.`*` FROM `mail` AS `M`, `mail_request` AS `R`
-WHERE M.`fk_employee_id` = `employeeID` 
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`, `mail_request` AS `R`
+WHERE M.`fk_employee_id` = E.`employee_id` 
 AND M.`mail_id` = R.`mail_id` 
 AND R.`status` = `filter`
 ORDER BY `sort` ASC;
 
 END
 
-CREATE PROCEDURE `getFilteredMailSortedAscLoc` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), 
+CREATE PROCEDURE `getFilteredMailSortedAscLocAdmin` (IN `filter` VARCHAR(50), 
                   IN `sort` VARCHAR(50), IN `loc` VARCHAR(50))
 
 BEGIN
 
-SELECT M.`*` FROM `mail` AS `M`, `mail_request` AS `R`
-WHERE M.`fk_employee_id` = `employeeID` 
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`, `mail_request` AS `R`
+WHERE M.`fk_employee_id` = E.`employee_id` 
 AND M.`mail_id` = R.`mail_id` 
 AND R.`status` = `filter`
 AND M.`fk_office_location` = `loc`
@@ -724,13 +756,14 @@ ORDER BY `sort` ASC;
 
 END
 
-CREATE PROCEDURE `getFilteredMailSortedAscID` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), 
+CREATE PROCEDURE `getFilteredMailSortedAscIDAdmin` (IN `filter` VARCHAR(50), 
                   IN `sort` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT M.`*` FROM `mail` AS `M`, `mail_request` AS `R`
-WHERE M.`fk_employee_id` = `employeeID` 
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`, `mail_request` AS `R`
+WHERE M.`fk_employee_id` = E.`employee_id`
 AND M.`mail_id` = R.`mail_id` 
 AND R.`status` = `filter`
 AND M.`fk_office_id` = `ID`
@@ -738,13 +771,14 @@ ORDER BY `sort` ASC;
 
 END
 
-CREATE PROCEDURE `getFilteredMailSortedAscLocID` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), 
+CREATE PROCEDURE `getFilteredMailSortedAscLocIDAdmin` (IN `filter` VARCHAR(50), 
                   IN `sort` VARCHAR(50), IN `loc` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT M.`*` FROM `mail` AS `M`, `mail_request` AS `R`
-WHERE M.`fk_employee_id` = `employeeID` 
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`, `mail_request` AS `R`
+WHERE M.`fk_employee_id` = E.`employee_id`
 AND M.`mail_id` = R.`mail_id` 
 AND R.`status` = `filter`
 AND M.`fk_office_location` = `loc`
@@ -753,25 +787,27 @@ ORDER BY `sort` ASC;
 
 END
 
-CREATE PROCEDURE `getFilteredMailSortedDesc` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), IN `sort` VARCHAR(50))
+CREATE PROCEDURE `getFilteredMailSortedDescAdmin` (IN `filter` VARCHAR(50), IN `sort` VARCHAR(50))
 
 BEGIN
 
-SELECT M.`*` FROM `mail` AS `M`, `mail_request` AS `R`
-WHERE M.`fk_employee_id` = `employeeID` 
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`, `mail_request` AS `R`
+WHERE M.`fk_employee_id` = E.`employee_id`
 AND M.`mail_id` = R.`mail_id` 
 AND R.`status` = `filter`
 ORDER BY `sort` DESC;
 
 END
 
-CREATE PROCEDURE `getFilteredMailSortedDescLoc` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), 
+CREATE PROCEDURE `getFilteredMailSortedDescLocAdmin` (IN `filter` VARCHAR(50), 
                   IN `sort` VARCHAR(50), IN `loc` VARCHAR(50))
 
 BEGIN
 
-SELECT M.`*` FROM `mail` AS `M`, `mail_request` AS `R`
-WHERE M.`fk_employee_id` = `employeeID` 
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`, `mail_request` AS `R`
+WHERE M.`fk_employee_id` = E.`employee_id`
 AND M.`mail_id` = R.`mail_id` 
 AND R.`status` = `filter`
 AND M.`fk_office_location` = `loc`
@@ -779,13 +815,14 @@ ORDER BY `sort` DESC;
 
 END
 
-CREATE PROCEDURE `getFilteredMailSortedDescID` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), 
+CREATE PROCEDURE `getFilteredMailSortedDescIDAdmin` (IN `filter` VARCHAR(50), 
                   IN `sort` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT M.`*` FROM `mail` AS `M`, `mail_request` AS `R`
-WHERE M.`fk_employee_id` = `employeeID` 
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`, `mail_request` AS `R`
+WHERE M.`fk_employee_id` = E.`employee_id`
 AND M.`mail_id` = R.`mail_id` 
 AND R.`status` = `filter`
 AND M.`fk_office_id` = `ID`
@@ -793,13 +830,14 @@ ORDER BY `sort` DESC;
 
 END
 
-CREATE PROCEDURE `getFilteredMailSortedDescLocID` (IN `employeeID` VARCHAR(50), IN `filter` VARCHAR(50), 
+CREATE PROCEDURE `getFilteredMailSortedDescLocIDAdmin` (IN `filter` VARCHAR(50), 
                   IN `sort` VARCHAR(50), IN `loc` VARCHAR(50), IN `ID` INT(8))
 
 BEGIN
 
-SELECT M.`*` FROM `mail` AS `M`, `mail_request` AS `R`
-WHERE M.`fk_employee_id` = `employeeID` 
+SELECT M.`*`, E.`first_name`, E.`last_name`, E.`email`
+FROM `mail` AS `M`, `employee` AS `E`, `mail_request` AS `R`
+WHERE M.`fk_employee_id` = E.`employee_id` 
 AND M.`mail_id` = R.`mail_id` 
 AND R.`status` = `filter`
 AND M.`fk_office_location` = `loc`
