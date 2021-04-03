@@ -74,13 +74,13 @@ function Mail() {
           {window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
 
 
-          <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
+            {isAdmin && <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
             {NewlyCreatedRequestsMailModule(3, "NEWLY SUBMITTED MAIL")}
             <Grid item xs={'auto'}></Grid>
             {AllRequestsAdminMailModule(3, "ALL ACTIVE REQUESTS")}
             <Grid item xs={'auto'}></Grid>
             {AllClosedRequestsAdminMailModule(3, "ALL CLOSED REQUESTS")}
-          </Grid>
+          </Grid>}
             {isAdmin && <Button className={classes.actionButtonCenter} onClick={handleNewMail}>
             Submit New Mail
           </Button>}

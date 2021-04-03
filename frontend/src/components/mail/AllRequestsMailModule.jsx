@@ -8,8 +8,6 @@ import Endpoint from "../../config/Constants";
 import RequestMailNotification from './RequestMailNotification';
 import {useMsal} from "@azure/msal-react";
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchOffices } from '../../actions/reservationActions';
-import { ConsoleView } from 'react-device-detect';
 
 
 const useStyles = makeStyles({
