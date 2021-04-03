@@ -158,7 +158,7 @@ function CompanyUpdates() {
                 <Modal
                     open={open}
                     onClose={handleClose}
-                    className={classes.popup}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                     {updatePopup(currAnnouncement)}
                 </Modal>

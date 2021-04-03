@@ -65,17 +65,28 @@ export default class ReservationController {
         })
     }
 
-
-    deleteReservation(req: any) {
+    deleteReservation(req: any, isAdmin: boolean) {
         const reservationID = req.body.reservation_id;
-        return new Promise((resolve, reject) => {
-            Reservation.deleteReservation(reservationID, (err: any, res: any) => {
-                if (err) {
-                    reject(err);
-                }
-                resolve(res);
+        const oid = req.authInfo.oid;
+        if (isAdmin) {
+            return new Promise((resolve, reject) => {
+                Reservation.deleteReservation(reservationID, (err: any, res: any) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(res);
+                })
             })
-        })
+        } else {
+            return new Promise((resolve, reject) => {
+                Reservation.deleteReservationAssertUser(reservationID, oid, (err: any, res: any) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(res);
+                })
+            })
+        }
     }
 
     getReservationByDate(req: any) {

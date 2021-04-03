@@ -8,11 +8,7 @@ const postServer = new PostController();
 
 // GET all posts from given category/group channel
 router.get('/getFeedByCategory/:category', (req: Request, res: Response) => {
-    if (!req.params.category) {
-        res.status(400).json({
-            err: 'Malformed params'
-        });
-    } else if (Number(req.params.category) === 0 && !requestIsAdmin(req.authInfo)) {
+    if (Number(req.params.category) === 0 && !requestIsAdmin(req.authInfo)) {
         res.status(401).json({
             err: 'Unauthorized'
         });
@@ -29,17 +25,13 @@ router.get('/getFeedByCategory/:category', (req: Request, res: Response) => {
 
 // POST creates new post under given category
 router.post('/createPost', (req: any, res: Response) => {
-    if (Object.keys(req.body).length === 0) {
+    if (!req.body || Object.keys(req.body).length === 0) {
         res.status(400).json({
             err: 'Empty body'
         });
-    } else if (!req.body.employee_id || !req.body.channel_id || !req.body.post_content) {
-        res.status(400).json({
-            err: 'Malformed body'
-        });
     } else if (req.body.channel_id === 0) {
         res.status(400).json({
-            err: 'Unauthorized'
+            err: "Can't post to admin channel"
         });
     } else if (!oidMatchesRequest(req.authInfo, req.body.employee_id)) {
         res.status(401).json({
@@ -64,10 +56,6 @@ router.post('/flagPost', (req: any, res: Response) => {
         res.status(400).json({
             err: 'Empty body'
         });
-    } else if (!req.body.post_id) {
-        res.status(400).json({
-            err: 'Malformed body'
-        });
     } else {
         postServer.flagPost(req)
             .then((post: any) => {
@@ -83,10 +71,6 @@ router.post('/unreportPost', (req: any, res: Response) => {
     if (Object.keys(req.body).length === 0) {
         res.status(400).json({
             err: 'Empty body'
-        });
-    } else if (!req.body.post_id) {
-        res.status(400).json({
-            err: 'Malformed body'
         });
     } else if (!requestIsAdmin(req.authInfo)) {
         res.status(401).json({
@@ -109,10 +93,6 @@ router.delete('/deletePost', (req: any, res: Response) => {
         res.status(400).json({
             err: 'Empty body'
         });
-    } else if (!req.body.post_id) {
-        res.status(400).json({
-            err: 'Malformed body'
-        });
     } else {
         postServer.deletePost(req, requestIsAdmin(req.authInfo))
             .then((post: any) => {
@@ -125,50 +105,3 @@ router.delete('/deletePost', (req: any, res: Response) => {
 })
 
 export default router;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // Get all desks at given office
-// router.get('/getDesksByOffice/:officeloc/:officeid', (req: Request, res: Response) => {
-//     deskServer.findDeskByOffice(req.params.officeloc, Number(req.params.officeid))
-//     .then((desk: any) => {
-//         res.json(desk);
-//     })
-//     .catch((err: any) => {
-//         res.json(err);
-//     })
-// })
-
-// router.post('/getOpenDesks', (req: Request, res: Response) => {
-//     if (!req.body) {
-//         res.status(400).send({
-//             message: 'Content can not be empty!'
-//         });
-//     }
-
-//     deskServer.getOpenDesks(req)
-//     .then((desk: any) => {
-//         res.json(desk);
-//     })
-//     .catch((err: any) => {
-//         res.json(err);
-//     })
-// })

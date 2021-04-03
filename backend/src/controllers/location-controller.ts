@@ -6,6 +6,7 @@ import { Office } from '../models/office';
 import fs from 'fs';
 import db from '../config/db-handler';
 import mysql from 'mysql';
+import Jimp from 'jimp';
 
 const conn = db.getCon();
 
@@ -66,6 +67,11 @@ export default class LocationController {
     }
 
     private async addOffice(id: number, office: IOffice) {
+        const image = await Jimp.read(Buffer.from(office.image, 'base64'));
+        image.resize(75, 75);
+        const compressedImageBuffer = await image.getBufferAsync(image.getMIME());
+        office.image = compressedImageBuffer.toString('base64');
+
         return new Promise((resolve, reject) => {
             Office.addOffice(id, office, (err: any, res: any) => {
                 if (err) {
@@ -73,9 +79,33 @@ export default class LocationController {
                 } else {
                     resolve(true);
                 }
-            });
-        })
+            })
+        });
     }
+
+    /*
+        private async addOffice(id: number, office: IOffice) {
+            return new Promise((resolve, reject) => {
+                Jimp.read(Buffer.from(office.image, 'base64'))
+                    .then(image => {
+                        image.resize(75,75);
+                        image.getBufferAsync(image.getMIME())
+                            .then(buffer => {
+                                office.image = buffer.toString('base64');
+                                Office.addOffice(id, office, (err: any, res: any) => {
+                                    if (err) {
+                                        reject(err);
+                                    } else {
+                                        resolve(true);
+                                    }
+                                });
+                            })
+                    })
+                    .catch(err => {
+                        reject(err);
+                    });
+            })
+        }*/
 
     private async addFloors(id: number, office: IOffice) {
         const promises = [];
@@ -243,6 +273,7 @@ export default class LocationController {
                     await this.rollback(conn);
                     return Promise.reject(officeRes);
                 }
+                await this.end(conn);
                 return Promise.resolve(true);
             }
         } catch (err) {
@@ -252,6 +283,11 @@ export default class LocationController {
     }
 
     private async updateOffice(id: number, office: IOffice, originalId: number, originalCity: string) {
+        const image = await Jimp.read(Buffer.from(office.image, 'base64'));
+        image.resize(75, 75);
+        const compressedImageBuffer = await image.getBufferAsync(image.getMIME());
+        office.image = compressedImageBuffer.toString('base64');
+
         return new Promise((resolve, reject) => {
             Office.updateOffice(id, office, originalId, originalCity, (err: any, res: any) => {
                 if (err) {

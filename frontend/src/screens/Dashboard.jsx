@@ -12,15 +12,15 @@ function Dashboard() {
   return (
     <div className="App">
       {Title('DASHBOARD', 1, 10, 1)}
-      <Grid container direction={isMobile ? 'column' : 'row'} justify='center' alignItems='center'>
+      <Grid container direction={isMobile ? 'column' : 'row'} justify='center' alignItems='center' style={{paddingBottom: '50px'}}>
         <Grid item xs={1} />
-        <Grid item xs={isMobile ? 10 : 4} style={{ backgroundColor: '#353B3C', height: '70vh', padding: 20 }} >
+        <Grid item xs={isMobile ? 10 : 4} style={{ backgroundColor: '#353B3C', height: '720px', padding: 20 }} >
           {Today()}
           {Subheader('UPCOMING RESERVATIONS', 2, 8, 2)}
           {UpcomingReservations()}
         </Grid>
         <Grid item xs={1} />
-        <Grid container item direction='row' xs={isMobile ? 10 : 5} style={{ height: '70vh' }}>
+        <Grid container item direction='row' xs={isMobile ? 10 : 5} style={{ height: '720px' }}>
           <Grid item xs={12} style={{ backgroundColor: '#353B3C', padding: 20, paddingTop: isMobile ? 50 : 20 }}>
             <DashboardUpdates>
             </DashboardUpdates>
