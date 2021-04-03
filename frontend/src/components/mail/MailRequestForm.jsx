@@ -70,10 +70,11 @@ const useStyles = makeStyles((theme) => ({
 
 function MailRequestForm(props) {
     const [type, setType] = useState("");
-    const data = props.data;
+    const data = JSON.parse(props.children.children);
     const [forwardingLocation, setForwardingLocation] = useState("");
     const [instructions, setInstructions] = useState("");
     const [requestedDate, setRequestedDate] = useState(new Date());
+    console.log(data);
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
@@ -93,7 +94,6 @@ function MailRequestForm(props) {
 
     const handleInstructionsInput = (input) => {
         setInstructions(input.target.value);
-        console.log(requestedDate);
     }
 
     const handleRequestFormClose = () => {
@@ -103,7 +103,7 @@ function MailRequestForm(props) {
     const handleSubmit = (event) => {
 
         let jsonBody = {
-            mail_id: JSON.parse(data).mailID,
+            mail_id: data.mailID,
             employee_id: userOID,
             employee_name: accounts[0].name,
             employee_phone: null,

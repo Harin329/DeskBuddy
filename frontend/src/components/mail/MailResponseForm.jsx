@@ -70,7 +70,6 @@ const useStyles = makeStyles((theme) => ({
 function MailResponseForm(props){
 
     const data = JSON.parse(props.children.data);
-    console.log(data);
 
     const [response, setResponse] = useState("");
     const [statusList, setStatusList] = useState(["Waiting for assistance", "Closed", "Cannot perform action", "Completed"]);
@@ -93,9 +92,9 @@ function MailResponseForm(props){
     const handleAdminResponse = () => {
         let jsonBody = {
             mail_id: data.mailID,
-            employee_id: "",
-            request_type: "",
-            forward_location: "",
+            employee_id: userOID,
+            request_type: "Open",
+            forward_location: "N/A",
             additional_instructions: data.comments,
             admin_eid: userOID,
             response: response
@@ -121,7 +120,7 @@ function MailResponseForm(props){
             employee_phone: null,
             request_type: "",
             forward_location: "",
-            additional_instruction: data.comments,
+            additional_instruction: response,
             req_completion_date: ""
         }
         const requestOptions = {
@@ -178,10 +177,13 @@ function MailResponseForm(props){
                 Admin Response:
             </Typography>}
             <form>
-                {isAdmin && <div><TextField
+                <Typography className={classes.subheading}>
+                    Status: {data.status}
+                </Typography>
+                <div><TextField
                     id="location"
                     style={{ marginTop: 20 }}
-                    placeholder="Administrator Response"
+                    placeholder="Response"
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -189,10 +191,7 @@ function MailResponseForm(props){
                         shrink: true,
                     }}
                     onChange={handleResponseInput}
-                /></div>}
-                <Typography className={classes.subheading}>
-                    Status: {data.status}
-                </Typography>
+                /></div>
                 {isAdmin && <TextField className={classes.inputBoxes} id="outlined-basic" variant="outlined" select onChange={handleStatusInput} value={status}>
                     {statusList.map((option) => (
                         <MenuItem key={option} value={option}>

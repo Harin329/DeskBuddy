@@ -96,6 +96,7 @@ router.put('/admin', (req: Request, res: Response) => {
     else {
         requestServer.updateRequestAdmin(req)
             .then((result: any) => {
+                console.log(result);
                 res.json(result);
             })
             .catch((err: any) => {

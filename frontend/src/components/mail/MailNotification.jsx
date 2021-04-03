@@ -121,11 +121,6 @@ function MailNotification(props) {
         dispatch(fetchOffices());
     }, []);
 
-    // useEffect(() => {
-    //     let tempOfficeName = officeList && officeList.length ? officeList.find(existingOffice => existingOffice.office_location == JSON.parse(data).officeLocation && existingOffice.office_id == JSON.parse(data).officeID).name : 'Retrieving...';
-    //     setOfficeName(tempOfficeName);
-    // }, []);
-
     const getNotifClass = () => {
         return isExpanded ? classes.reservationCardExpanded : classes.reservationCardTruncated;
     }

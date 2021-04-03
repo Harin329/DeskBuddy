@@ -70,8 +70,8 @@ function Mail() {
             {AllRequestsMailModule(4, "ALL REQUESTS")}
           </Grid>
 
-          {window.innerWidth > 1500 && Subheader('MANAGE REQUESTS', 4, 2, 4)}
-          {window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
+          {isAdmin && window.innerWidth > 1500 && Subheader('MANAGE REQUESTS', 4, 2, 4)}
+          {isAdmin && window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
 
 
             {isAdmin && <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
