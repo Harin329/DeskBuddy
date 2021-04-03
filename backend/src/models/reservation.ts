@@ -33,7 +33,7 @@ Reservation.createReservation = (newReservation: any, result: any) => {
                 result(err, null);
             } else {
                 console.log("Reservation Created: ", { ...newReservation });
-                result(null, newReservation);
+                result(null, res[0][0]['LAST_INSERT_ID()']);
             }
         }
     )
@@ -110,6 +110,19 @@ Reservation.deleteReservation = (reservationID: any, result: any) => {
             console.log('Error: ', err);
             result(err, null);
         } else {
+            result(null, res);
+        }
+    })
+};
+
+Reservation.deleteReservationAssertUser = (reservationID: any, oid: any, result: any) => {
+    con.query("CALL deleteReservationAssertUser(?,?)", [reservationID, oid], (err: any, res: any) => {
+        if (err) {
+            console.log('Error: ', err);
+            result(err, null);
+        } else if (res.affectedRows === 0){
+            result(new Error("No matching reservations"), null);
+        }else {
             result(null, res);
         }
     })

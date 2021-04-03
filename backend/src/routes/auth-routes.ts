@@ -30,13 +30,6 @@ router.use(passport.initialize());
 
 passport.use(bearerStrategy);
 
-// enable CORS (for testing only -remove in production/deployment)
-router.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Authorization, Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
-
 router.use(passport.authenticate("oauth-bearer", { session: false }), (req, res, next) => {
     next();
 });
