@@ -16,27 +16,6 @@ export default class ChannelController {
     constructor() {}
 
     public async addChannel(req: any): Promise<string> {
-    //     await this.begin(conn);
-
-    //     try {
-    //         if (!req.body.body) {
-    //             throw new Error("Body is missing");
-    //         }
-
-    //     const channel: IChannel = JSON.parse(req.body.body);
-    //     for (const file of req.files) {
-    //         if (file.fieldname == "image") {
-    //             let image = Buffer.from(file.buffer).toString('base64');
-    //             channel.image = image;
-    //         }
-    //     }
-
-    //     await this.end(conn);
-    //     return Promise.resolve(req);
-    // } catch (err) {
-    //     await this.rollback(conn);
-    //     return Promise.reject(err);
-    // }
 
         return new Promise((resolve, reject) => {
             Channel.addChannel(req, (err: any, result: any) => {
@@ -44,57 +23,6 @@ export default class ChannelController {
                     reject(err);
                 }
                 resolve(result);
-            })
-        })
-    }
-
-    private async begin(con: mysql.Connection) {
-        const result = await this.beginTxn(con);
-        return result;
-    }
-
-    private beginTxn(con: mysql.Connection) {
-        return new Promise((resolve, reject) => {
-            con.beginTransaction(err => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(true);
-                }
-            })
-        })
-    }
-
-    private async end(con: mysql.Connection) {
-        const result = await this.endTxn(con);
-        return result;
-    }
-
-    private endTxn(con: mysql.Connection) {
-        return new Promise((resolve, reject) => {
-            con.commit(err => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(true);
-                }
-            })
-        })
-    }
-
-    private async rollback(con: mysql.Connection) {
-        const result = await this.rollbackTxn(con);
-        return result;
-    }
-
-    private rollbackTxn(con: mysql.Connection) {
-        return new Promise((resolve, reject) => {
-            con.rollback(err => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(true);
-                }
             })
         })
     }
