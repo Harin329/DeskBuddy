@@ -16,35 +16,33 @@ export default class ChannelController {
     constructor() {}
 
     public async addChannel(req: any): Promise<string> {
-    //     await this.begin(conn);
-
-    //     try {
-    //         if (!req.body.body) {
-    //             throw new Error("Body is missing");
-    //         }
-
-    //     const channel: IChannel = JSON.parse(req.body.body);
-    //     for (const file of req.files) {
-    //         if (file.fieldname == "image") {
-    //             let image = Buffer.from(file.buffer).toString('base64');
-    //             channel.image = image;
-    //         }
-    //     }
-
-    //     await this.end(conn);
-    //     return Promise.resolve(req);
-    // } catch (err) {
-    //     await this.rollback(conn);
-    //     return Promise.reject(err);
-    // }
-
         return new Promise((resolve, reject) => {
-            Channel.addChannel(req, (err: any, result: any) => {
-                if (err) {
-                    reject(err);
+            try {
+                if (!req.body.body) {
+                    throw new Error("body is missing");
                 }
-                resolve(result);
-            })
+                const body = JSON.parse(req.body.body);
+                let image;
+                if (req.files.length > 0) {
+                    image = Buffer.from(req.files[0].buffer).toString('base64');
+                } else {
+                    image = fs.readFileSync("src/images/defaultChannelImage.jpg").toString('base64');
+                }
+                const channel: IChannel = {
+                    title: body.channel_name,
+                    image,
+                }
+                Channel.addChannel(channel, (err: any, result: any) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                    }
+                })
+            } catch (err: any) {
+                console.log(err);
+                reject(err);
+            }
         })
     }
 

@@ -1,4 +1,5 @@
 import DB from '../config/db-handler';
+import { IChannel } from '../interfaces/channel.interface';
 const con = DB.getCon();
 
 
@@ -47,18 +48,17 @@ Channel.deleteChannel = (req: any, result: any) => {
     })
 }
 
-Channel.addChannel = (req: any, result: any) => {
-    con.query("INSERT INTO channel (channel_id, channel_name, channel_icon)" +
-        " VALUES (?, ?, ?)" , [
-        req.body.channel_id, req.body.channel_name, req.body.channel_icon
-    ], (err: any, res: any) => {
-        if (err) {
-            console.log("Error: ", err);
-            result(err, null);
-        } else {
-            console.log(res);
-            result(null, res);
-        }
-        console.log(res);
+Channel.addChannel = (channel: IChannel, result: any) => {
+    con.query("INSERT INTO channel (channel_name, channel_icon) VALUES (?, ?);" ,
+        [
+            channel.title,
+            Buffer.from(channel.image, 'base64')
+        ], (err: any, res: any) => {
+            if (err) {
+                console.log("Error: ", err);
+                result(err, null);
+            } else {
+                result(null, res);
+            }
     })
 }

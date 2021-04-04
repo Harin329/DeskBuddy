@@ -121,22 +121,23 @@ function AddChannelForm(props) {
         let jsonBody;
         let requestOptions;
 
-            jsonBody = {
-                user: userOID,
-                channel_name: title,
-                channel_icon: icon
-            }
+        const formData = new FormData();
+
+        jsonBody = {
+            user: userOID,
+            channel_name: title
+        }
+
+        formData.append("body", JSON.stringify(jsonBody));
+        formData.append("icon", icon);
         
         // TODO: Show screens for duplicate title
         handleDuplicateTitle();
 
         if (dup_title == false) {
-
-            console.log(jsonBody);
             requestOptions = {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(jsonBody)
+                body: formData
             };
             safeFetch(Endpoint + "/channel", requestOptions)
                 .then((response) => response.text())

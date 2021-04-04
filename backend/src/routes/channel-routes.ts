@@ -1,10 +1,13 @@
 import { Router, Request, Response } from 'express';
+import multer from 'multer';
 
 const router = Router();
 
 import ChannelController from '../controllers/channel-controller';
 import {requestIsAdmin} from "../util";
 const channelServer = new ChannelController();
+
+const upload = multer();
 
 router.get('/', (req: Request, res: Response) => {
     const isAdmin = requestIsAdmin(req.authInfo);
@@ -32,7 +35,7 @@ router.delete('/', (req: Request, res: Response) => {
         })
 })
 
-router.post('/', (req: Request, res: Response) => {
+router.post('/', upload.any(), (req: Request, res: Response) => {
     if (!req.body) {
         res.status(400).send({
             message: 'Content can not be empty!'
@@ -40,9 +43,7 @@ router.post('/', (req: Request, res: Response) => {
     }
     channelServer.addChannel(req)
         .then((channel: any) => {
-            //res.status(200);
-            res.json(channel)
-            //res.send();
+            res.status(200).json(channel);
         })
         .catch((err: any) => {
             res.json(err);
