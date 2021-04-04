@@ -7,7 +7,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { makeStyles } from '@material-ui/core/styles';
 import { apiConfig, graphConfig } from "../../authConfig";
 import IconButton from '@material-ui/core/IconButton';
-import safeFetch, { graphFetch, accountIsAdmin } from "../../util/Util";
+import { graphFetch, accountIsAdmin } from "../../util/Util";
 import {useDispatch, useSelector} from "react-redux";
 import {getProfilePhoto} from "../../actions/authenticationActions";
 

@@ -14,6 +14,8 @@ import UpcomingReservations from '../components/reservation/UpcomingReservations
 import DeskFilter from '../components/reservation/DeskFilter';
 import { SET_EMPLOYEE_COUNT } from '../actions/actionTypes';
 import Spinner from '../components/reservation/map-popup/spinner/spinner';
+import { setError } from '../actions/globalActions';
+import ErrorPopup from '../components/global/error-popup';
 
 const useStyles = makeStyles((theme) => ({
     background: {
@@ -107,6 +109,7 @@ function Reservation() {
 
     const dispatch = useDispatch()
     const loading = useSelector(state => state.global.loading);
+    const error = useSelector(state => state.global.error);
     const filter = useSelector(state => state.reservations.searchFilter);
     const deskResults = useSelector(state => state.reservations.deskResults);
     const more = useSelector(state => state.reservations.hasMore);
@@ -192,6 +195,15 @@ function Reservation() {
 
     return (
         <div className={classes.background}>
+            <Modal
+                open={error}
+                onClose={() =>
+                    dispatch(setError(false))
+                }
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+                <ErrorPopup />
+            </Modal>
             <Grid container direction='column' justify='center' alignItems='center'>
                 {Title('RESERVATION', 1, 8, 1)}
 

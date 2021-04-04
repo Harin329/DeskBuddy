@@ -8,6 +8,8 @@ import { isMobile } from "react-device-detect";
 import {useMsal} from "@azure/msal-react";
 import { updatePopup } from '../social/UpdatePopup';
 import MailNotification from '../mail/MailNotification';
+import { useDispatch } from 'react-redux';
+import { setError } from '../../actions/globalActions';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -101,6 +103,8 @@ function MailUpdates() {
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
+    const dispatch = useDispatch();
+
 
     const [mailList, setMailList] = useState([]);
     const [hasMoreMail, setHasMoreMail] = useState(true);
@@ -119,7 +123,10 @@ function MailUpdates() {
                 setMailList(mail);
                 setHasMoreMail(false);
             })
-            .catch(error => console.log('error', error))
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
     }
 
     let mail = [];

@@ -5,6 +5,8 @@ import Endpoint from "../../config/Constants";
 import safeFetch from "../../util/Util"
 import {useMsal} from "@azure/msal-react";
 import {isMobile} from "react-device-detect";
+import { setError } from '../../actions/globalActions';
+import { useDispatch } from 'react-redux';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -74,6 +76,7 @@ function MailRequestForm(props) {
     const [forwardingLocation, setForwardingLocation] = useState("");
     const [instructions, setInstructions] = useState("");
     const [requestedDate, setRequestedDate] = useState(new Date());
+    const dispatch = useDispatch();
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
@@ -123,7 +126,10 @@ function MailRequestForm(props) {
             .then(result => {
                 props.closeModal();
             })
-            .catch(error => console.log('error', error));
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
         handleRequestFormClose();
     }
 

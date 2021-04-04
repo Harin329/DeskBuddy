@@ -7,6 +7,7 @@ import {useMsal} from "@azure/msal-react";
 import {isMobile} from "react-device-detect";
 import {fetchOffices} from "../../actions/reservationActions";
 import {useDispatch, useSelector} from "react-redux";
+import { setError } from '../../actions/globalActions';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -135,7 +136,10 @@ function AddUpdateForm(props) {
                 .then(result => {
                     props.closeModal();
                 })
-                .catch(error => console.log('error', error));
+                .catch(error => {
+                    console.log('error', error);
+                    dispatch(setError(true));
+                });
         } else {
             jsonBody = {
                 user: userOID,
@@ -156,7 +160,10 @@ function AddUpdateForm(props) {
                 .then(result => {
                     props.closeModal();
                 })
-                .catch(error => console.log('error', error));
+                .catch(error => {
+                    console.log('error', error);
+                    dispatch(setError(true));
+                });
 
         }
         handleUpdateFormClose();

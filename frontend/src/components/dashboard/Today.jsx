@@ -8,6 +8,7 @@ import { useMsal } from "@azure/msal-react";
 import { Chart } from "react-google-charts";
 import safeFetch from "../../util/Util";
 import Endpoint from '../../config/Constants';
+import { setError } from '../../actions/globalActions';
 
 
 const useStyles = makeStyles({
@@ -96,7 +97,10 @@ function Today() {
                 const res = JSON.parse(result)
                 setOfficeDays(res[0].length)
             })
-            .catch(error => console.log('error', error))
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
     }, []);
 
     const convertDate = (date) => {
