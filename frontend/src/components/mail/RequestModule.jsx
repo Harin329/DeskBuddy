@@ -8,6 +8,8 @@ import Endpoint from "../../config/Constants";
 import {useMsal} from "@azure/msal-react";
 import MailResponseForm from "./MailResponseForm";
 import MailNotification from "./MailNotification";
+import { setError } from '../../actions/globalActions';
+import { useDispatch } from 'react-redux';
 
 
 const useStyles = makeStyles({
@@ -48,6 +50,7 @@ function RequestModule(size, text) {
     const [requestList, setRequestList] = useState([]);
 
     const classes = useStyles();
+    const dispatch = useDispatch();
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
@@ -64,7 +67,10 @@ function RequestModule(size, text) {
                 const requests = JSON.parse(result);
                 setRequestList(requests);
             })
-            .catch(error => console.log('error', error));
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
     };
 
     const handleMailResponse = () => {

@@ -20,3 +20,5 @@ export const SET_OID = "SET_OID";
 export const SET_IS_ADMIN = "SET_IS_ADMIN";
 
 export const SET_LOADING = "SET_LOADING";
+export const SET_ERROR = "SET_ERROR";
+

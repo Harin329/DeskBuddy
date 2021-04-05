@@ -8,6 +8,8 @@ import safeFetch from "../../util/Util";
 import { isMobile } from 'react-device-detect';
 import SpecificReservations from './SpecificReservations';
 import CancelIcon from '@material-ui/icons/Cancel';
+import { setError } from '../../actions/globalActions';
+import { useDispatch } from 'react-redux';
 
 const bookedDays = [];
 const today = new Date();
@@ -75,6 +77,7 @@ function BookingsCalendar(UID) {
     const [userID, setUserID] = useState(UID);
     const [openDate, setOpenDate] = useState(false);
     const classes = useStyles();
+    const dispatch = useDispatch();
 
 
     useEffect(() => {
@@ -90,7 +93,10 @@ function BookingsCalendar(UID) {
                 const res = JSON.parse(result)
                 formatReservations(res);
             })
-            .catch(error => console.log('error', error))
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
 
     }, []);
 
