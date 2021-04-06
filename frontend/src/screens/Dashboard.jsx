@@ -1,16 +1,31 @@
 import '../App.css';
-import { Grid } from '@material-ui/core';
+import { Grid, Modal } from '@material-ui/core';
 import Title from '../components/global/Title';
 import Subheader from '../components/global/Subheader';
 import UpcomingReservations from '../components/reservation/UpcomingReservations';
 import { isMobile } from 'react-device-detect';
+import { useSelector, useDispatch } from 'react-redux'
 import Today from '../components/dashboard/Today';
 import DashboardUpdates from '../components/dashboard/DashboardUpdates';
 import MailUpdates from '../components/dashboard/MailUpdates';
+import ErrorPopup from '../components/global/error-popup';
+import { setError } from '../actions/globalActions';
 
 function Dashboard() {
+  const dispatch = useDispatch()
+  const error = useSelector(state => state.global.error);
+
   return (
     <div className="App">
+      <Modal
+        open={error}
+        onClose={() => 
+          dispatch(setError(false))
+        }
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <ErrorPopup />
+      </Modal>
       {Title('DASHBOARD', 1, 10, 1)}
       <Grid container direction={isMobile ? 'column' : 'row'} justify='center' alignItems='center' style={{paddingBottom: '50px'}}>
         <Grid item xs={1} />

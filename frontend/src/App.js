@@ -16,6 +16,7 @@ import Endpoint from "./config/Constants";
 import {useDispatch, useSelector} from "react-redux";
 import {SET_IS_ADMIN, SET_OID, SET_USER_ADDED_TO_DB, SET_USER_DISPLAY_NAME} from "./actions/actionTypes";
 import { isMobile } from "react-device-detect";
+import { setError } from "./actions/globalActions";
 
 function App() {
     const {instance, accounts, inProgress} = useMsal();
@@ -94,6 +95,7 @@ function App() {
             .catch(error => {
                 console.log('error', error);
                 alert("error loading profile, please try again");
+                dispatch(setError(true));
             });
     }
 

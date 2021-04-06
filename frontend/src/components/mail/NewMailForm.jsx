@@ -8,6 +8,7 @@ import {isMobile} from "react-device-detect";
 import {fetchOffices} from "../../actions/reservationActions";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchEmployees} from "../../actions/authenticationActions";
+import { setError } from '../../actions/globalActions';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -163,7 +164,10 @@ function NewMailForm(props) {
             .then((response) => response.text())
             .then(result => {
             })
-            .catch(error => alert(error));
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
 
         handleFormClose();
     }

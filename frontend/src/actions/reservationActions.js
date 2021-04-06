@@ -2,7 +2,7 @@ import { SET_RESERVATIONS, SET_EMPLOYEE_COUNT, SET_DESKS_RESULTS, CHECK_MORE, SE
 import Endpoint, { resultOnPage } from '../config/Constants';
 import { appendLeadingZeroes } from "../functions/Date";
 import safeFetch from "../util/Util";
-import { setLoading } from "./globalActions";
+import { setError, setLoading } from "./globalActions";
 
 export const makeReservation = (userID, deskObj, filter) => dispatch => {
     var day = new Date(filter.from)
@@ -32,7 +32,10 @@ export const makeReservation = (userID, deskObj, filter) => dispatch => {
             .then(() => {
                 dispatch(fetchReservations(userID))
             })
-            .catch(error => console.log('error', error));
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
     }
 }
 
@@ -53,7 +56,10 @@ export const hasFloorplan = (params) => dispatch => {
                 dispatch({ type: SET_FLOORPLAN_AVAILABLE, payload: true });
             }
         })
-        .catch(error => console.log('error', error));
+        .catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
 }
 
 export const fetchOffices = () => dispatch => {
@@ -67,7 +73,10 @@ export const fetchOffices = () => dispatch => {
         .then(result => {
             dispatch({ type: SET_OFFICES, payload: JSON.parse(result) });
         })
-        .catch(error => console.log('error', error));
+        .catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
 }
 
 export const fetchDesks = (filter, append, pageStart, deskResults) => dispatch => {
@@ -123,6 +132,7 @@ export const fetchDesks = (filter, append, pageStart, deskResults) => dispatch =
         .catch(error => {
             console.log('error', error);
             dispatch(setLoading(false));
+            dispatch(setError(true));
         });
 }
 
@@ -138,7 +148,10 @@ export const fetchDesksByOffice = (params) => dispatch => {
             dispatch({ type: SET_DESKS, payload: JSON.parse(result) })
             // console.log(JSON.parse(result));
         })
-        .catch(error => console.log('error', error));
+        .catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
 }
 
 export const fetchFloorsByOffice = (params) => dispatch => {
@@ -151,7 +164,10 @@ export const fetchFloorsByOffice = (params) => dispatch => {
         .then((result) => {
             dispatch({ type: SET_FLOORS_IN_UPDATE, payload: JSON.parse(result) })
         })
-        .catch(error => console.log('error', error));
+        .catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
     
 }
 
@@ -168,7 +184,10 @@ export const fetchReservations = (userID) => dispatch => {
             // console.log(res)
             dispatch({ type: SET_RESERVATIONS, payload: res })
         })
-        .catch(error => console.log('error', error));
+        .catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
 }
 
 export const cancelReservations = (userID, rawBody, filter) => dispatch => {
@@ -190,7 +209,10 @@ export const cancelReservations = (userID, rawBody, filter) => dispatch => {
             dispatch(fetchReservations(userID));
             dispatch(fetchDesks(filter, false, 0, []));
         })
-        .catch(error => console.log('error', error));
+        .catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
 }
 
 export const getEmployeeCount = (deskObj, filter) => dispatch => {
@@ -209,7 +231,10 @@ export const getEmployeeCount = (deskObj, filter) => dispatch => {
             if (res[0].avg == null) {
                 dispatch({ type: SET_EMPLOYEE_COUNT, payload: 0 })
             }
-        }).catch(error => console.log('error', error));
+        }).catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
 }
 
 export const getEmployeeCountUpcomingRes = (reservationObj) => dispatch => {
@@ -227,5 +252,8 @@ export const getEmployeeCountUpcomingRes = (reservationObj) => dispatch => {
             if (res[0].avg == null) {
                 dispatch({ type: SET_EMPLOYEE_COUNT, payload: 0 })
             }
-        }).catch(error => console.log('error', error));
+        }).catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
 };
