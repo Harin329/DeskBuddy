@@ -60,6 +60,7 @@ class MapPopup extends React.Component {
    */
 
   levelHandler = (level, index) => {
+    console.log(level);
     this.setState({
       curr_level: level,
       curr_index: index
@@ -118,7 +119,15 @@ class MapPopup extends React.Component {
                   <CancelIcon size="small" />
                 </IconButton>
               </HeaderContainer>
-              <LevelContainer>{this.all_levels()}</LevelContainer>
+              <LevelContainer>
+                  <select value={[this.state.curr_level, this.state.curr_index]} onChange={(e) => this.levelHandler(e.target.value[0], e.target.value[2])}>
+                  {this.FLOOR_INFORMATION.map((el, i) => {
+                    return (
+                      <option key={i} value={[el.floor_num, i]}>{`Level ${el.floor_num}`}</option>
+                      )
+                    })}
+                  </select>
+              </LevelContainer>
               {this.curr_map()}
             </ImageContainer>
           </React.Fragment>
