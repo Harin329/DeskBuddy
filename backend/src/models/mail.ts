@@ -7,7 +7,7 @@ export const Mail = function (this: any, post: any) {
   // TODO based on DBs attributes of posts
 }
 // truth table is the way it is because non-parameterized queries are vulnerable to SQL injection
-Mail.getMail = (employeeID: string,
+Mail.getMailByEmployee = (employeeID: string,
   filter: string | undefined,
   sort: string | undefined,
   loc: string | undefined,
@@ -174,6 +174,186 @@ Mail.getMail = (employeeID: string,
     case "getFilteredMailSortedDescLocID":
       query = `CALL getFilteredMailSortedDescLocID(?, ?, ?, ?, ?)`;
       parameters = [employeeID, filter as string, processed_sort as string, loc as string, parseInt(id as string, 10)];
+      break;
+    default:
+      result("Error: filter, sort, loc or id were bad", null)
+      return;
+  }
+  con.query(query, parameters, (err: any, res: any) => {
+    if (err) {
+      result(err, null);
+    } else {
+      result(null, res[0]);
+    }
+  });
+}
+
+Mail.getMailWithEmployeeInfo = (filter: string | undefined,
+  sort: string | undefined,
+  loc: string | undefined,
+  id: string | undefined,
+  result: any) => {
+  let processed_sort = sort;
+  let query: string;
+  let parameters: (string|number)[];
+  let direction: string | undefined;
+  if (typeof sort === "string") {
+    if (sort.charAt(0) === "+") {
+      processed_sort = sort.substr(1);
+      direction = "ASC";
+    } else if (sort.charAt(0) === "-") {
+      processed_sort = sort.substr(1);
+      direction = "DESC";
+    } else {
+      processed_sort = sort;
+      direction = "DESC";
+    }
+  }
+  // params: filter, sort, direction, loc, id
+  switch (getCode(filter, processed_sort, direction, loc, id)) {
+    case "getMail":
+      query = `CALL getMailAdmin()`;
+      parameters = [];
+      break;
+    case "getMailLoc":
+      query = `CALL getMailLocAdmin(?)`;
+      parameters = [loc as string];
+      break;
+    case "getMailID":
+      query = `CALL getMailIDAdmin(?)`;
+      parameters = [parseInt(id as string, 10)];
+      break;
+    case "getMailLocID":
+      query = `CALL getMailLocIDAdmin(?, ?)`;
+      parameters = [loc as string, parseInt(id as string, 10)];
+      break;
+    case "getNewMail":
+      query = `CALL getNewMailAdmin()`;
+      parameters = [];
+      break;
+    case "getNewMailLoc":
+      query = `CALL getNewMailLocAdmin(?)`;
+      parameters = [loc as string];
+      break;
+    case "getNewMailID":
+      query = `CALL getNewMailIDAdmin(?)`;
+      parameters = [parseInt(id as string, 10)];
+      break;
+    case "getNewMailLocID":
+      query = `CALL getNewMailLocIDAdmin(?, ?)`;
+      parameters = [loc as string, parseInt(id as string, 10)];
+      break;
+    case "getFilteredMail":
+      query = `CALL getFilteredMailAdmin(?)`;
+      parameters = [filter as string];
+      break;
+    case "getFilteredMailLoc":
+      query = `CALL getFilteredMailLocAdmin(?, ?)`;
+      parameters = [filter as string, loc as string];
+      break;
+    case "getFilteredMailID":
+      query = `CALL getFilteredMailIDAdmin(?, ?)`;
+      parameters = [filter as string, parseInt(id as string, 10)];
+      break;
+    case "getFilteredMailLocID":
+      query = `CALL getFilteredMailLocIDAdmin(?, ?, ?)`;
+      parameters = [filter as string, loc as string, parseInt(id as string, 10)];
+      break;
+    case "getMailSortedAsc":
+      query = `CALL getMailSortedAscAdmin(?)`;
+      parameters = [processed_sort as string];
+      break;
+    case "getMailSortedAscLoc":
+      query = `CALL getMailSortedAscLocAdmin(?, ?)`;
+      parameters = [processed_sort as string, loc as string];
+      break;
+    case "getMailSortedAscID":
+      query = `CALL getMailSortedAscIDAdmin(?, ?)`;
+      parameters = [processed_sort as string, parseInt(id as string, 10)];
+      break;
+    case "getMailSortedAscLocID":
+      query = `CALL getMailSortedAscLocIDAdmin(?, ?, ?)`;
+      parameters = [processed_sort as string, loc as string, parseInt(id as string, 10)];
+      break;
+    case "getMailSortedDesc":
+      query = `CALL getMailSortedDescAdmin(?)`;
+      parameters = [processed_sort as string];
+      break;
+    case "getMailSortedDescLoc":
+      query = `CALL getMailSortedDescLocAdmin(?, ?)`;
+      parameters = [processed_sort as string, loc as string];
+      break;
+    case "getMailSortedDescID":
+      query = `CALL getMailSortedDescIDAdmin(?, ?)`;
+      parameters = [processed_sort as string, parseInt(id as string, 10)];
+      break;
+    case "getMailSortedDescLocID":
+      query = `CALL getMailSortedDescLocIDAdmin(?, ?, ?)`;
+      parameters = [processed_sort as string, loc as string, parseInt(id as string, 10)];
+      break;
+    case "getNewMailSortedAsc":
+      query = `CALL getNewMailSortedAscAdmin(?)`;
+      parameters = [processed_sort as string];
+      break;
+    case "getNewMailSortedAscLoc":
+      query = `CALL getNewMailSortedAscLocAdmin(?, ?)`;
+      parameters = [processed_sort as string, loc as string];
+      break;
+    case "getNewMailSortedAscID":
+      query = `CALL getNewMailSortedAscIDAdmin(?, ?)`;
+      parameters = [processed_sort as string, parseInt(id as string, 10)];
+      break;
+    case "getNewMailSortedAscLocID":
+      query = `CALL getNewMailSortedAscLocIDAdmin(?, ?, ?)`;
+      parameters = [processed_sort as string, loc as string, parseInt(id as string, 10)];
+      break;
+    case "getNewMailSortedDesc":
+      query = `CALL getNewMailSortedDescAdmin(?)`;
+      parameters = [processed_sort as string];
+      break;
+    case "getNewMailSortedDescLoc":
+      query = `CALL getNewMailSortedDescLocAdmin(?, ?)`;
+      parameters = [processed_sort as string, loc as string];
+      break;
+    case "getNewMailSortedDescID":
+      query = `CALL getNewMailSortedDescIDAdmin(?, ?)`;
+      parameters = [processed_sort as string, parseInt(id as string, 10)];
+      break;
+    case "getNewMailSortedDescLocID":
+      query = `CALL getNewMailSortedDescLocIDAdmin(?, ?, ?)`;
+      parameters = [processed_sort as string, loc as string, parseInt(id as string, 10)];
+      break;
+    case "getFilteredMailSortedAsc":
+      query = `CALL getFilteredMailSortedAscAdmin(?, ?)`;
+      parameters = [filter as string, processed_sort as string];
+      break;
+    case "getFilteredMailSortedAscLoc":
+      query = `CALL getFilteredMailSortedAscLocAdmin(?, ?, ?)`;
+      parameters = [filter as string, processed_sort as string, loc as string];
+      break;
+    case "getFilteredMailSortedAscID":
+      query = `CALL getFilteredMailSortedAscIDAdmin(?, ?, ?)`;
+      parameters = [filter as string, processed_sort as string, parseInt(id as string, 10)];
+      break;
+    case "getFilteredMailSortedAscLocID":
+      query = `CALL getFilteredMailSortedAscLocIDAdmin(?, ?, ?, ?)`;
+      parameters = [filter as string, processed_sort as string, loc as string, parseInt(id as string, 10)];
+      break;
+    case "getFilteredMailSortedDesc":
+      query = `CALL getFilteredMailSortedDescAdmin(?, ?)`;
+      parameters = [filter as string, processed_sort as string];
+      break;
+    case "getFilteredMailSortedDescLoc":
+      query = `CALL getFilteredMailSortedDescLocAdmin(?, ?, ?)`;
+      parameters = [filter as string, processed_sort as string, loc as string];
+      break;
+    case "getFilteredMailSortedDescID":
+      query = `CALL getFilteredMailSortedDescIDAdmin(?, ?, ?)`;
+      parameters = [filter as string, processed_sort as string, parseInt(id as string, 10)];
+      break;
+    case "getFilteredMailSortedDescLocID":
+      query = `CALL getFilteredMailSortedDescLocIDAdmin(?, ?, ?, ?)`;
+      parameters = [filter as string, processed_sort as string, loc as string, parseInt(id as string, 10)];
       break;
     default:
       result("Error: filter, sort, loc or id were bad", null)

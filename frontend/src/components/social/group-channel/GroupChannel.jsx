@@ -11,6 +11,8 @@ import safeFetch, {accountIsAdmin} from "../../../util/Util";
 import CancelIcon from "@material-ui/icons/Cancel";
 import { isMobile } from "react-device-detect";
 import styled from 'styled-components';
+import { setError } from '../../../actions/globalActions';
+import { useDispatch } from 'react-redux';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -91,6 +93,7 @@ function GroupChannel() {
     const isAdmin = accountIsAdmin(accounts[0]);
     const [open, setOpen] = useState(false);
     const [channel, setChannel] = useState();
+    const dispatch = useDispatch();
 
     const getChannels = () => {
         var requestOptions = {
@@ -104,7 +107,10 @@ function GroupChannel() {
                 const res = JSON.parse(result);
                 //console.log(res);
                 setChannels(res);
-            }).catch(error => console.log('error', error));
+            }).catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
     };
 
     useEffect(() => {
@@ -150,7 +156,10 @@ function GroupChannel() {
             .then(() => {
                 getChannels();
             })
-            .catch(error => console.log('error', error));
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
         //console.log("Channel will be deleted");
         handleClose();
     };

@@ -14,33 +14,38 @@ import {useMsal} from "@azure/msal-react";
 import {accountIsAdmin} from "../util/Util";
 import MailRequestForm from "../components/mail/MailRequestForm";
 import RequestModule from "../components/mail/RequestModule";
+import { useDispatch, useSelector } from 'react-redux';
+import { setError } from '../actions/globalActions';
+import ErrorPopup from '../components/global/error-popup';
 
 const useStyles = makeStyles((theme) => ({
-    background: {
-        background: '#1E1E24',
-        flexGrow: 1,
-    },
-    sectionSpacing: {
-        marginBottom: '29px',
-    },
-    actionButtonCenter: {
-        background: '#00ADEF',
-        borderRadius: 20,
-        color: 'white',
-        height: '50px',
-        padding: '0 30px',
-        marginTop: '15px',
-        marginBottom: '10px',
-        fontFamily: 'Lato',
-        fontWeight: 'bolder',
-        fontSize: 18,
-        justifyContent: "center",
-        alignItems: "center"
-    }
+  background: {
+    background: '#1E1E24',
+    flexGrow: 1,
+  },
+  sectionSpacing: {
+    marginBottom: '29px',
+  },
+  actionButtonCenter: {
+    background: '#00ADEF',
+    borderRadius: 20,
+    color: 'white',
+    height: '50px',
+    padding: '0 30px',
+    marginTop: '15px',
+    marginBottom: '10px',
+    fontFamily: 'Lato',
+    fontWeight: 'bolder',
+    fontSize: 18,
+    justifyContent: "center",
+    alignItems: "center"
+  }
 
 }));
 
 function Mail() {
+  const dispatch = useDispatch()
+  const error = useSelector(state => state.global.error);
   const [open, setOpen] = useState(false);
 
   const { accounts } = useMsal();
@@ -49,11 +54,11 @@ function Mail() {
   const classes = useStyles();
 
   const handleNewMail = () => {
-        setOpen(true);
+    setOpen(true);
   }
 
   const closeNewMail = () => {
-      setOpen(false);
+    setOpen(false);
   }
 
     const newMailPopup = () => {
@@ -61,28 +66,37 @@ function Mail() {
     }
 
   return (
-      <div className={classes.background}>
-        <Grid container direction='column' justify='center' alignItems='center'>
-            {Title('MAIL MANAGER', 1, 8, 1)}
-          <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-            {MailModule(4, "NEW MAIL")}
-            <Grid item xs={2}></Grid>
-            {AllRequestsMailModule(4, "ALL REQUESTS")}
-          </Grid>
+    <div className={classes.background}>
+      <Modal
+        open={error}
+        onClose={() =>
+          dispatch(setError(false))
+        }
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <ErrorPopup />
+      </Modal>
+      <Grid container direction='column' justify='center' alignItems='center'>
+        {Title('MAIL MANAGER', 1, 8, 1)}
+        <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
+          {MailModule(4, "NEW MAIL")}
+          <Grid item xs={2}></Grid>
+          {AllRequestsMailModule(4, "ALL REQUESTS")}
+        </Grid>
 
-          {isAdmin && window.innerWidth > 1500 && Subheader('MANAGE REQUESTS', 4, 2, 4)}
-          {isAdmin && window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
+        {window.innerWidth > 1500 && Subheader('MANAGE REQUESTS', 4, 2, 4)}
+        {window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
 
 
-            {isAdmin && <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-            {NewlyCreatedRequestsMailModule(3, "NEWLY SUBMITTED MAIL")}
-            <Grid item xs={'auto'}></Grid>
-            {AllRequestsAdminMailModule(3, "ALL ACTIVE REQUESTS")}
-            <Grid item xs={'auto'}></Grid>
-            {AllClosedRequestsAdminMailModule(3, "ALL CLOSED REQUESTS")}
-          </Grid>}
-            {isAdmin && <Button className={classes.actionButtonCenter} onClick={handleNewMail}>
-            Submit New Mail
+        {isAdmin && <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
+          {NewlyCreatedRequestsMailModule(3, "NEWLY SUBMITTED MAIL")}
+          <Grid item xs={'auto'}></Grid>
+          {AllRequestsAdminMailModule(3, "ALL ACTIVE REQUESTS")}
+          <Grid item xs={'auto'}></Grid>
+          {AllClosedRequestsAdminMailModule(3, "ALL CLOSED REQUESTS")}
+        </Grid>}
+        {isAdmin && <Button className={classes.actionButtonCenter} onClick={handleNewMail}>
+          Submit New Mail
           </Button>}
             <Modal
                 open={open}

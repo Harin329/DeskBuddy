@@ -8,6 +8,8 @@ import safeFetch from "../../util/Util";
 import Endpoint from "../../config/Constants";
 import {useMsal} from "@azure/msal-react";
 import {isMobile} from "react-device-detect";
+import { setError } from '../../actions/globalActions';
+import { useDispatch } from 'react-redux';
 
 
 const useStyles = makeStyles({
@@ -77,6 +79,7 @@ function NewlyCreatedRequestsMailModule(size, text) {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const classes = useStyles();
+    const dispatch = useDispatch();
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
@@ -87,14 +90,17 @@ function NewlyCreatedRequestsMailModule(size, text) {
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/mail/99b9a9cf-1cb0-40c3-87c0-aa98d6ce68d1" + "?filter=new&sort=-modified_at", requestOptions)
+        safeFetch(Endpoint + "/mail?filter=new&sort=-modified_at", requestOptions)
           .then((response) => response.text())
           .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Waiting for Admin');
             setMailList([...mailList, ...mail]);
           })
-          .catch(error => console.log('error', error));
+          .catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
 
         setHasMore(false);
     };

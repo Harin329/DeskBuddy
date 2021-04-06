@@ -1,7 +1,8 @@
-import { SET_LOADING } from "../actions/actionTypes";
+import { SET_ERROR, SET_LOADING } from "../actions/actionTypes";
 import { combineReducers } from "redux";
 
 const initialState = true;
+const initialErrorState = false;
 
 const loading = (state = initialState, action) => {
   switch (action.type) {
@@ -14,5 +15,16 @@ const loading = (state = initialState, action) => {
   }
 };
 
-export default combineReducers({ loading });
+const error = (state = initialErrorState, action) => {
+  switch (action.type) {
+    case SET_ERROR: {
+        return action.payload;
+    }
+    default: {
+      return state;
+    }
+  }
+};
+
+export default combineReducers({ loading, error });
 

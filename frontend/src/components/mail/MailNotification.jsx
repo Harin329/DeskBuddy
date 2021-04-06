@@ -9,6 +9,7 @@ import Endpoint from "../../config/Constants";
 import { fetchOffices } from '../../actions/reservationActions';
 import CancelIcon from "@material-ui/icons/Cancel";
 import {isMobile} from "react-device-detect";
+import { setError } from '../../actions/globalActions';
 
 
 const useStyles = makeStyles({
@@ -176,7 +177,10 @@ function MailNotification(props) {
             .then((response) => response.text())
             .then(result => {
             })
-            .catch(error => console.log('error', error));
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
         closeMailDelete();
     }
 

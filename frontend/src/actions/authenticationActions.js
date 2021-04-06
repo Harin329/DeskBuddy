@@ -2,6 +2,7 @@ import {SET_EMPLOYEES, SET_PROFILE_PHOTO} from "./actionTypes";
 import safeFetch, {graphFetch} from "../util/Util";
 import Endpoint from "../config/Constants";
 import ICBC from "../assets/ICBC.png";
+import { setError } from "./globalActions";
 
 export const getProfilePhoto = () => dispatch => {
     const options = {
@@ -29,7 +30,10 @@ export const getProfilePhoto = () => dispatch => {
                     }))
             }
         })
-        .catch(error => console.log('error', error));
+        .catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
 }
 
 // Send profile photo to DeskBuddy database
@@ -47,7 +51,9 @@ const updateProfilePhoto = (data) => {
             if (!response.ok){
                 throw Error("Error updating profile photo");}
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            console.log('error', error);
+        });
 }
 
 export const fetchEmployees = () => dispatch => {
@@ -61,5 +67,8 @@ export const fetchEmployees = () => dispatch => {
         .then(result => {
             dispatch({ type: SET_EMPLOYEES, payload: JSON.parse(result) });
         })
-        .catch(error => console.log('error', error));
+        .catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
 }

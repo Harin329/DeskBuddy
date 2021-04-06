@@ -8,6 +8,8 @@ import AddUpdateForm from "./AddUpdateForm";
 import safeFetch, {accountIsAdmin} from "../../util/Util";
 import { isMobile } from "react-device-detect";
 import {useMsal} from "@azure/msal-react";
+import { setError } from '../../actions/globalActions';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -97,6 +99,7 @@ const useStyles = makeStyles((theme) => ({
 
 function CompanyUpdates() {
     const classes = useStyles();
+    const dispatch = useDispatch();
 
     const [announcementList, setAnnouncementList] = useState([]);
     const [hasMoreAnnouncements, setHasMoreAnnouncements] = useState(true);
@@ -149,7 +152,10 @@ function CompanyUpdates() {
                 setAnnouncementList(announcements);
                 setHasMoreAnnouncements(false);
             })
-            .catch(error => console.log('error', error))
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
     }
 
     const popup = () => {

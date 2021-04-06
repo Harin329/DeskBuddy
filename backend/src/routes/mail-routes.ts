@@ -56,7 +56,7 @@ router.get('/:employeeID', (req: Request, res: Response) => {
             err: "Malformed employeeID body"
         });
     } else {
-        mailServer.getMail(employeeID,
+        mailServer.getMailByEmployee(employeeID,
             filter as string | undefined,
             sort as string | undefined,
             loc as string | undefined,
@@ -91,6 +91,51 @@ router.post('/', (req: Request, res: Response) => {
     }
 });
 
+router.get('/', (req: Request, res: Response) => {
+    const filter = req.query.filter;
+    const sort = req.query.sort;
+    const loc = req.query.locname;
+    const id = req.query.locid;
+    // if it is not a string or undefined, or a string
+    if (typeof filter !== "undefined" &&
+        (typeof filter !== "string" || !Object.values(filterTypes).includes(filter))) {
+        res.status(400).json({
+            err: "Bad filter"
+        });
+    }
+    // same thing for sort
+    else if (typeof sort !== "undefined" &&
+        (typeof sort !== "string" || !Object.values(sortTypes).includes(sort))) {
+        res.status(400).json({
+            err: "Bad sort"
+        });
+    }
+    else if (typeof loc !== "undefined" && typeof loc !== "string") {
+        res.status(400).json({
+            err: "Bad office location"
+        });
+    }
+    else if (typeof id !== "undefined" && typeof id !== "string") {
+        res.status(400).json({
+            err: "Bad office id"
+        });
+    } else {
+        mailServer.getMail(
+            filter as string | undefined,
+            sort as string | undefined,
+            loc as string | undefined,
+            id as string | undefined).then((mailInfo: IMailResponse[]) => {
+            res.status(200).json({
+                mails: mailInfo
+            });
+        }).catch((err: any) => {
+            res.status(404).json({
+                err,
+            })
+        })
+    }
+})
+
 router.post('/CreateMailRequest', (req: Request, res: Response) => {
     const body = req.body;
     if (body === undefined || body === {}) {
@@ -123,9 +168,5 @@ router.delete('/:id', (req: Request, res: Response) => {
         })
     }
 });
-
-const getMailCheckFieldValidity = (req: any) => {
-    return req
-}
 
 export default router;
