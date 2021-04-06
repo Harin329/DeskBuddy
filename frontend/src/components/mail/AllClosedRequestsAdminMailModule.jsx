@@ -99,39 +99,7 @@ function AllClosedRequestsAdminMailModule(size, text) {
       method: 'GET',
       redirect: 'follow'
     };
-    switch(filter) {
-      case 'Admin has Responded':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=awaiting_employee_confirmation&sort=-modified_at", requestOptions)
-          .then((response) => response.text())
-          .then(result => {
-              const mail = JSON.parse(result).mails;
-              mail.map((mailObj) => mailObj.status = 'Admin has Responded');
-              setMailList([...mailList, ...mail]);
-            })
-          .catch(error => console.log('error', error));
-        break;
-      case 'Waiting for Admin':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=awaiting_admin_action&sort=-modified_at", requestOptions)
-          .then((response) => response.text())
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Waiting for Admin');
-            setMailList([...mailList, ...mail]);
-          })
-          .catch(error => console.log('error', error));
-        break;
-      case 'Cannot Complete':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=cannot_complete&sort=-modified_at", requestOptions)
-          .then((response) => response.text())
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Cannot Complete');           
-            setMailList([...mailList, ...mail]);
-          })
-          .catch(error => console.log('error', error));
-        break;
-      case 'Closed':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=closed&sort=-modified_at", requestOptions)
+    safeFetch(Endpoint + "/mail" + "?filter=closed&sort=-modified_at", requestOptions)
           .then((response) => response.text())
           .then(result => {
             const mail = JSON.parse(result).mails;
@@ -139,10 +107,6 @@ function AllClosedRequestsAdminMailModule(size, text) {
             setMailList([...mailList, ...mail]);
           })
           .catch(error => console.log('error', error));
-        break;
-      default:
-          break;
-    }
   }
 
   const handleStatusChoiceChange = (event) => {

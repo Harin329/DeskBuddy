@@ -71,14 +71,10 @@ function AllRequestsAdminMailModule(size, text) {
 
   const userOID = accounts[0].idTokenClaims.oid;
 
-  const mockData = ["ABC", "DEFG", "HIJ", "KLM", "NOP", "QRS", "TUV"];
-  const statusChoices = ['Admin has Responded', 'Waiting for Admin', 'Cannot Complete', 'Closed']
-
   useEffect(() => {
-    // TODO: use get all mail request endpoint
-    // fetchFilteredMail('Admin has Responded', false);
     fetchFilteredMail('Waiting for Admin', false);
-    // fetchFilteredMail('Cannot Complete', false);
+    fetchFilteredMail('Admin has Responded', false);
+    fetchFilteredMail('Cannot Complete', false);
     // await fetchFilteredMail('Closed', false);
   }, []);
 
@@ -101,42 +97,46 @@ function AllRequestsAdminMailModule(size, text) {
     };
     switch(filter) {
       case 'Admin has Responded':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=awaiting_employee_confirmation&sort=-modified_at", requestOptions)
+        safeFetch(Endpoint + "/mail" + "?filter=awaiting_employee_confirmation&sort=-modified_at", requestOptions)
           .then((response) => response.text())
           .then(result => {
               const mail = JSON.parse(result).mails;
               mail.map((mailObj) => mailObj.status = 'Admin Has Responded');
-              setMailList([...mailList, ...mail]);
+              setMailList((prevMailList) => [, ...prevMailList, ...mail]);
             })
           .catch(error => console.log('error', error));
         break;
       case 'Waiting for Admin':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=awaiting_admin_action&sort=-modified_at", requestOptions)
+        safeFetch(Endpoint + "/mail" + "?filter=awaiting_admin_action&sort=-modified_at", requestOptions)
           .then((response) => response.text())
           .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Waiting for Admin');
-            setMailList([...mailList, ...mail]);
+            setMailList((prevMailList) => [...mail, ...prevMailList]);
           })
           .catch(error => console.log('error', error));
         break;
       case 'Cannot Complete':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=cannot_complete&sort=-modified_at", requestOptions)
+        safeFetch(Endpoint + "/mail" + "?filter=cannot_complete&sort=-modified_at", requestOptions)
           .then((response) => response.text())
           .then(result => {
             const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Cannot Complete');           
-            setMailList([...mailList, ...mail]);
+            mail.map((mailObj) => mailObj.status = 'Cannot Complete');
+            if (mail.length > 0) {
+              setMailList((prevMailList) => [...prevMailList, ...mail]);
+            }
+            // console.log('~~~~~~~~~ mail: ' + JSON.stringify(mail));           
+            // setMailList((prevMailList) => [...prevMailList, ...mail]);
           })
           .catch(error => console.log('error', error));
         break;
       case 'Closed':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=closed&sort=-modified_at", requestOptions)
+        safeFetch(Endpoint + "/mail" + "?filter=closed&sort=-modified_at", requestOptions)
           .then((response) => response.text())
           .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Closed');
-            setMailList([...mailList, ...mail]);
+            setMailList((prevMailList) => [...prevMailList, ...mail]);
           })
           .catch(error => console.log('error', error));
         break;

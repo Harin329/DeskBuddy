@@ -87,7 +87,7 @@ function NewlyCreatedRequestsMailModule(size, text) {
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/mail/99b9a9cf-1cb0-40c3-87c0-aa98d6ce68d1" + "?filter=new&sort=-modified_at", requestOptions)
+        safeFetch(Endpoint + "/mail?filter=new&sort=-modified_at", requestOptions)
           .then((response) => response.text())
           .then(result => {
             const mail = JSON.parse(result).mails;
