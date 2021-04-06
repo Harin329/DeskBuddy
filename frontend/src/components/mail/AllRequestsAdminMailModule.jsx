@@ -125,8 +125,6 @@ function AllRequestsAdminMailModule(size, text) {
             if (mail.length > 0) {
               setMailList((prevMailList) => [...prevMailList, ...mail]);
             }
-            // console.log('~~~~~~~~~ mail: ' + JSON.stringify(mail));           
-            // setMailList((prevMailList) => [...prevMailList, ...mail]);
           })
           .catch(error => console.log('error', error));
         break;
