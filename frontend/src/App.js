@@ -17,6 +17,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {SET_IS_ADMIN, SET_OID, SET_USER_ADDED_TO_DB, SET_USER_DISPLAY_NAME} from "./actions/actionTypes";
 import { isMobile } from "react-device-detect";
 import { setError } from "./actions/globalActions";
+import spinner from "./components/reservation/map-popup/spinner/spinner";
 
 function App() {
     const {instance, accounts, inProgress} = useMsal();
@@ -102,11 +103,22 @@ function App() {
     return (
         <div>
             <UnauthenticatedTemplate>
-                <p style={{color: 'white'}}> Redirecting to login... </p>
+                <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
+                    {spinner()}
+                    {inProgress === "login" &&
+                        <p style={{color: 'white'}}> Redirecting to login... </p>
+                    }
+                    {inProgress === "handleRedirect" &&
+                        <p style={{color: 'white'}}> Signing in... </p>
+                    }
+                </div>
             </UnauthenticatedTemplate>
             <AuthenticatedTemplate>
                 {!addedToDB &&
-                    <p style={{color: 'white'}}> Signed in! Loading... </p>
+                    <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
+                        {spinner()}
+                        <p style={{color: 'white'}}> Signed in! Loading... </p>
+                    </div>
                 }
                 {addedToDB &&
                     <Router>
