@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
         color: 'white',
         height: '50px',
         padding: '0 30px',
-        marginTop: '10px',
+        marginTop: '15px',
         marginBottom: '10px',
         fontFamily: 'Lato',
         fontWeight: 'bolder',
@@ -36,11 +36,10 @@ const useStyles = makeStyles((theme) => ({
         alignItems: "center"
     },
     inputBoxes: {
-        width: '90%',
+        width: '100%',
         backgroundColor: 'white',
         borderRadius: 20,
-        marginTop: '10px',
-        margin: 8
+        marginTop: 10
     },
     sectionTextModal: {
         color: 'black',
@@ -48,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bolder',
         fontSize: 20,
         textAlign: 'center',
+        marginBottom: 20
     },
     makeRequest: {
         position: 'fixed',
@@ -60,29 +60,25 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'auto'
     },
     typeInput: {
-        marginTop: 10,
-        marginBottom: 15
+        fontFamily: 'Lato',
+        marginRight: 20,
+        marginLeft: 8
     }
 
 }));
 
 
 function MailRequestForm(props) {
-
-    const [name, setName] = useState("");
     const [type, setType] = useState("");
+    const data = JSON.parse(props.children.children);
+    console.log(data.mailID);
     const [forwardingLocation, setForwardingLocation] = useState("");
-    const [instructions, setInstructions] = useState(0);
+    const [instructions, setInstructions] = useState("");
     const [requestedDate, setRequestedDate] = useState(new Date());
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
     const classes = useStyles();
-
-
-    const handleNameInput = (input) => {
-        setName(input.target.value)
-    }
 
     const handleTypeInput = (input) => {
         setType(input.target.value);
@@ -98,77 +94,60 @@ function MailRequestForm(props) {
 
     const handleInstructionsInput = (input) => {
         setInstructions(input.target.value);
+        console.log(requestedDate);
     }
 
-    const handleUpdateLocationClose = () => {
+    const handleRequestFormClose = () => {
         props.whatToDoWhenClosed();
     }
 
     const handleSubmit = (event) => {
 
         let jsonBody = {
-            mail_id: 0,
+            mail_id: data.mailID,
             employee_id: userOID,
-            employee_name: name,
-            employee_email: "5",
-            employee_phone: "604",
+            employee_name: accounts[0].name,
+            employee_phone: null,
+            employee_email: accounts[0].idTokenClaims.email,
             request_type: type,
             forward_location: forwardingLocation,
             additional_instructions: instructions,
-            req_completion_date: requestedDate,
-            completion_date: new Date(),
-            status: null,
-            adminID: null
+            req_completion_date: requestedDate
         }
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json'},
             body: JSON.stringify(jsonBody)
         };
-
-        safeFetch(Endpoint + "/mail/CreateMailRequest", requestOptions)
+        safeFetch(Endpoint + "/request", requestOptions)
             .then((response) => response.text())
             .then(result => {
                 props.closeModal();
             })
             .catch(error => console.log('error', error));
-
+        handleRequestFormClose();
     }
 
     return (
-        <div className={classes.makeRequest} onClose={handleUpdateLocationClose}>
+        <div className={classes.makeRequest} onClose={handleRequestFormClose}>
             <Typography className={classes.sectionTextModal}>
                 Mail Assistance Form
             </Typography>
             <form>
-                <div><TextField
-                    id="name"
-                    label="Name"
-                    style={{ margin: 8 }}
-                    placeholder="Name (50)"
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                    onChange={handleNameInput}
-                /></div>
-                <div className={classes.typeInput}>
-                    <input type="radio" id="hold" name="type" value="hold" onSelect={handleTypeInput}/>
-                    <label>Hold</label>
-                    <input type="radio" id="forward" name="type" value="forward" onSelect={handleTypeInput}/>
-                    <label>Forward</label>
-                    <input type="radio" id="open" name="type" value="open" onSelect={handleTypeInput}/>
-                    <label>Open</label>
-                    <input type="radio" id="assist" name="type" value="assist" onSelect={handleTypeInput}/>
-                    <label>Assist</label>
+                <div>
+                    <input type="radio" id="hold" name="type" value="hold" onChange={handleTypeInput}/>
+                    <label  className={classes.typeInput}>Hold</label>
+                    <input type="radio" id="forward" name="type" value="forward" onChange={handleTypeInput}/>
+                    <label  className={classes.typeInput}>Forward</label>
+                    <input type="radio" id="open" name="type" value="open" onChange={handleTypeInput}/>
+                    <label  className={classes.typeInput}>Open</label>
+                    <input type="radio" id="assist" name="type" value="assist" onChange={handleTypeInput}/>
+                    <label  className={classes.typeInput}>Assist</label>
                 </div>
                 <div><TextField
                     id="location"
-                    label="Forwarding Location"
-                    style={{ margin: 8 }}
-                    placeholder="Optional (50)"
+                    style={{ marginTop: 20 }}
+                    placeholder="Forwarding Location (Optional)"
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -179,8 +158,7 @@ function MailRequestForm(props) {
                 /></div>
                 <div><TextField
                     id="instructions"
-                    label="Additional Instructions"
-                    style={{ margin: 8 }}
+                    style={{ marginTop: 20 }}
                     placeholder="Additional Instructions (500)"
                     variant="outlined"
                     fullWidth
@@ -190,10 +168,10 @@ function MailRequestForm(props) {
                     }}
                     onChange={handleInstructionsInput}
                 /></div>
-                    <Typography style={{ margin: 8 }}>
+                    <Typography style={{ marginTop: 20, fontFamily: 'Lato'}}>
                         Requested Completion Date
                     </Typography>
-                    <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onClick={handleDateInput}/>
+                    <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleDateInput}/>
                 <div>
                     <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
                         Send

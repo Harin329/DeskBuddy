@@ -1,7 +1,5 @@
 import React from 'react';
-// import JonSnow from './assets/jonsnow_pic.png';
-import Redflag from './assets/redflag.svg';
-import Flag from './assets/flag.svg';
+import ReportIcon from './assets/report.svg';
 import Thrash from './assets/delete.svg';
 import Endpoint from '../../../config/Constants';
 import Spinner from '../../reservation/map-popup/spinner/spinner';
@@ -27,7 +25,8 @@ import {
   ButtonContainers,
   DatePostedContainer,
   Icon,
-  PostingPopup
+  PostingPopup,
+  ReportPopup
 } from './styles';
 
 class Feed extends React.Component {
@@ -40,15 +39,22 @@ class Feed extends React.Component {
     flag_loaded: 1,
     post_loaded: 1,
     post_error: false,
+    report_popup: false,
+    reported_post: -1,
+    curr_category: 0,
+    unreported_popup: false,
+    delete_popup: false,
+    delete_post: null,
   };
 
   constructor(props) {
     super(props);
-    this.feed = null;
+    this.feed = [];
     this.channel_id = 1;
     this.init();
   }
 
+  // Load list of posts to be rendered
   init = () => {
     this.setState({ loaded: false, error: false });
 
@@ -63,28 +69,23 @@ class Feed extends React.Component {
     )
       .then((response) => response.text())
       .then((result) => {
-        // console.log(JSON.parse(result));
         this.feed = JSON.parse(result);
         this.setState({ loaded: true });
       })
       .catch((error) => this.setState({ loaded: true, error: true }));
   };
 
+  // request to POST a post
   handlePost = (oid) => {
-    // console.log(`Post the following: ${this.state.post}`);
     this.setState({
       post_error: false,
       post_loaded: (this.state.post_loaded + 1) % 2,
     });
     setTimeout(() => {
-      let date = new Date();
 
       const jsonBody = {
         employee_id: oid,
         channel_id: this.channel_id,
-        date_posted: `${date.getFullYear()}-${
-          date.getMonth() + 1
-        }-${date.getDate()}`,
         post_content: this.state.post,
       };
 
@@ -115,11 +116,10 @@ class Feed extends React.Component {
     }, 1000);
   };
 
-  handleFlag = (el) => {
-    // console.log(`Flaggin post with id: ${el.employee_id} which is flagged or not: ${el.is_flagged}`);
+  // request to POST a report of a post 
+  handleReport = (id) => {
     const raw = JSON.stringify({
-      post_id: el.post_id,
-      flag_val: !el.is_flagged,
+      post_id: id,
     });
 
     const requestOptions = {
@@ -132,17 +132,54 @@ class Feed extends React.Component {
     safeFetch(Endpoint + '/post/flagPost', requestOptions)
       .then((response) => response.text())
       .then((result) => {
-        console.log(JSON.parse(result));
-        el.is_flagged = !el.is_flagged;
-        this.setState({ flag_loaded: (this.state.flag_loaded + 1) % 2 });
+        // console.log(JSON.parse(result));
+        this.setState({
+          flag_loaded: (this.state.flag_loaded + 1) % 2,
+          report_popup: false,
+          reported_post: -1,
+        });
       })
-      .catch((error) => console.log('error', error));
+      .catch((error) => {
+        console.log('error', error);
+        this.setState({ report_popup: false, reported_post: -1})
+      });
   };
 
+  // request to POST an unreport to a post
+  handleUnreport = (id) => {
+    const raw = JSON.stringify({
+      post_id: id,
+    });
+
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: raw,
+      redirect: 'follow',
+    };
+
+    safeFetch(Endpoint + '/post/unreportPost', requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        this.setState({
+          flag_loaded: (this.state.flag_loaded + 1) % 2,
+          unreported_popup: false,
+          reported_post: -1,
+        });
+        this.init();
+      })
+      .catch((error) => {
+        console.log('error', error);
+        this.setState({ unreported_popup: false, reported_post: -1})
+      });
+  };
+
+  // handle change in textarea of post
   handleChange = (arg) => {
     this.setState({ post: arg.target.value.substr(0, 240) });
   };
 
+  // request to DELETE a post
   handleDelete = (el) => {
     const raw = JSON.stringify({
       post_id: el.post_id,
@@ -159,16 +196,40 @@ class Feed extends React.Component {
       .then((response) => response.text())
       .then((result) => {
         this.feed.splice(this.feed.indexOf(el), 1);
-        this.setState({ flag_loaded: (this.state.flag_loaded + 1) % 2 });
+        this.setState({
+          flag_loaded: (this.state.flag_loaded + 1) % 2,
+          delete_popup: false,
+          delete_post: null,
+        });
       })
-      .catch((error) => console.log('error', error));
+      .catch((error) => {
+        console.log('error', error);
+        this.setState({
+          delete_popup: false,
+          delete_post: null,
+          flag_loaded: (this.state.flag_loaded + 1) % 2,
+        });
+      });
   };
 
+  // handle which channel the social feed is currently displaying posts from
   handleChannelChange = (channel_id) => {
     this.channel_id = channel_id;
     this.init();
     this.setState({ flag_load: (this.state.flag_loaded + 1) % 2 });
   };
+
+  handleOpenReport = (oid) => {
+    this.setState({ report_popup: true, reported_post: oid });
+  }
+
+  handleOpenUnreport = (oid) => {
+    this.setState({ unreported_popup: true, reported_post: oid });
+  }
+
+  handleOpenDelete = (el) => {
+    this.setState({ delete_popup: true, delete_post: el });
+  }
 
   render() {
     const isAdmin = accountIsAdmin(this.context.accounts[0]);
@@ -177,7 +238,7 @@ class Feed extends React.Component {
     let list_of_feed = <Spinner />;
 
     if (this.state.loaded && !this.state.error && Array.isArray(this.feed)) {
-      list_of_feed = this.feed.reverse().map((el) => {
+      list_of_feed = this.feed.map((el) => {
         return (
           <SinglePostContainer key={el.post_id}>
             <UserContainer>
@@ -196,11 +257,16 @@ class Feed extends React.Component {
             <TextContainer>{el.post_content}</TextContainer>
             <ButtonContainers>
               <Icon
-                src={el.is_flagged ? Redflag : Flag}
-                onClick={() => this.handleFlag(el)}
+                src={ReportIcon}
+                onClick={() => {
+                  if (this.channel_id !== 0)
+                    this.handleOpenReport(el.post_id);
+                  else if (this.channel_id === 0)
+                    this.handleOpenUnreport(el.post_id);
+                }}
               />
               {el.employee_id === oid || isAdmin ? (
-                <Icon src={Thrash} onClick={() => this.handleDelete(el)} />
+                <Icon src={Thrash} onClick={() => this.handleOpenDelete(el)} />
               ) : null}
             </ButtonContainers>
           </SinglePostContainer>
@@ -228,34 +294,123 @@ class Feed extends React.Component {
           <PostingPopup>Posting...</PostingPopup>
         </Modal>
       );
+    } else if (this.state.post_loaded && this.state.post_error) {
+      isPosting = (
+        <Modal
+          open={this.state.post_error}
+          onClose={() => this.setState({post_error: false})}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <PostingPopup>There was an error posting. Try again later.</PostingPopup>
+        </Modal>
+      );
     }
+
+    let reportPopup = (
+      <Modal
+        open={this.state.report_popup}
+        onClose={() =>
+          this.setState({ report_popup: false, reported_post: -1 })
+        }
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <ReportPopup>
+          <div>Are you sure you want to report this post?</div>
+          <Btn
+            type="button"
+            value="Yes"
+            onClick={() => this.handleReport(this.state.reported_post)}
+          />
+        </ReportPopup>
+      </Modal>
+    );
+
+    let unreportPopup = (
+      <Modal
+        open={this.state.unreported_popup}
+        onClose={() =>
+          this.setState({ unreported_popup: false, reported_post: -1 })
+        }
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <ReportPopup>
+          <div>Are you sure you want to unreport this post?</div>
+          <Btn
+            type="button"
+            value="Yes"
+            onClick={() => this.handleUnreport(this.state.reported_post)}
+          />
+        </ReportPopup>
+      </Modal>
+    );
+
+    let deletePopup = (
+      <Modal
+        open={this.state.delete_popup}
+        onClose={() =>
+          this.setState({ delete_popup: false, delete_post: null })
+        }
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <ReportPopup>
+          <div>Are you sure you want to delete this post? You cannot undo this action.</div>
+          <Btn
+            type="button"
+            value="Yes"
+            onClick={() => this.handleDelete(this.state.delete_post)}
+          />
+        </ReportPopup>
+      </Modal>
+    );
+
 
     return (
       <Container>
         {isPosting}
+        {reportPopup}
+        {unreportPopup}
+        {deletePopup}
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <SocialFeed>
-            <ShareContainer>
-              <ShareForm>
-                <ShareTextArea
-                  placeholder="Share something!"
-                  onChange={(e) => this.handleChange(e)}
-                  value={this.state.post}
-                  maxLength="240"
-                />
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <Btn
-                    type="button"
-                    value="Post"
-                    onClick={() => this.handlePost(oid)}
-                    disabled={this.state.post === '' ? true : false}
+            { this.channel_id !== 0 ?
+              <ShareContainer>
+                <ShareForm>
+                  <ShareTextArea
+                    placeholder="Share something!"
+                    onChange={(e) => this.handleChange(e)}
+                    value={this.state.post}
+                    maxLength="240"
                   />
-                  <div
-                    style={{ color: 'white', height: '8px' }}
-                  >{`${this.state.post.length}/240`}</div>
-                </div>
-              </ShareForm>
-            </ShareContainer>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Btn
+                      type="button"
+                      value="Post"
+                      onClick={() => this.handlePost(oid)}
+                      disabled={this.state.post === '' ? true : false}
+                    />
+                    <div
+                      style={{ color: 'white', height: '8px' }}
+                    >{`${this.state.post.length}/240`}</div>
+                  </div>
+                </ShareForm>
+              </ShareContainer> : null
+            }
             <PostsContainer>{list_of_feed}</PostsContainer>
           </SocialFeed>
         </div>

@@ -1,32 +1,36 @@
 import { Mail } from '../models/mail'
 import { User } from '../models/user'
-import { IMail } from '../interfaces/mail.interface';
-import {Announcement} from "../models/announcement";
+import { IMail, IMailResponse } from '../interfaces/mail.interface';
 
 export default class MailController {
   // tslint:disable-next-line:no-empty
   constructor() { }
 
-  getMail(employeeID: string): Promise<IMail[]> {
+  getMail(employeeID: string,
+    filter: string | undefined,
+    sort: string | undefined,
+    loc: string | undefined,
+    id: string | undefined): Promise<IMailResponse[]> {
     return new Promise((resolve, reject) => {
       User.getUserNameAndEmailByOID(employeeID, (nameErr: any, nameRes: any) => {
         if (nameErr) {
           reject (nameErr);
         } else {
-          Mail.getMail(employeeID, (err: any, res: any) => {
+          Mail.getMail(employeeID ,filter, sort, loc, id, (err: any, res: any) => {
             if (err) {
               reject(err);
             } else {
               try {
                 const employeeInfo = JSON.parse(JSON.stringify(nameRes))[0];
                 const result = JSON.parse(JSON.stringify(res));
-                const output: IMail[] = [];
+                const output: IMailResponse[] = [];
                 for (const mail of result) {
                   let date = mail.date_arrived;
                   if (date !== null) {
                     date = date.substring(0, 10); // truncates time
                   }
-                  const parsedMail: IMail = {
+                  const parsedMail: IMailResponse = {
+                    mailID: mail.mail_id,
                     officeID: mail.fk_office_id,
                     officeLocation: mail.fk_office_location,
                     recipient_first: employeeInfo.first_name,
@@ -55,9 +59,6 @@ export default class MailController {
   // posts a mail, returns mail_id
   createMail(body: IMail): Promise<number> {
     return new Promise((resolve, reject) => {
-      console.log(body.recipient_email);
-      console.log(body.recipient_first);
-      console.log(body.recipient_last);
       if (!body.recipient_email || !body.recipient_first || !body.recipient_last) {
         reject("Bad body");
       }
@@ -90,7 +91,7 @@ export default class MailController {
   }
   createMailRequest(req: any) {
     return new Promise((resolve, reject) => {
-      Mail.createMailRequest(req, (err: any, result: any) => {
+      Mail.createRequest(req, (err: any, result: any) => {
         if (err) {
           reject(err);
         }

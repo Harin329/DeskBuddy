@@ -6,25 +6,35 @@ export default class PostController {
 
   // functions
   findPostByCategory(category: number) {
-    return new Promise((resolve, reject) => {
-      Post.getPostByCategory(category, (err: any, res: any) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(res);
-      })
-    })
-  };
+    if (category === 0) {
+      return new Promise((resolve, reject) => {
+        Post.getReportedPosts(category, (err: any, res: any) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        });
+      });
+    } else {
+      return new Promise((resolve, reject) => {
+        Post.getPostByCategory(category, (err: any, res: any) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(res);
+        });
+      });
+    }
+  }
 
   createPost(req: any) {
     const post = {
       employee_id: req.body.employee_id,
       channel_id: req.body.channel_id,
-      date_posted: req.body.date_posted,
       post_title: null,
       post_content: req.body.post_content,
       post_image: null,
-      is_flagged: false,
+      num_reports: 0,
     };
 
     return new Promise((resolve, reject) => {
@@ -33,34 +43,47 @@ export default class PostController {
           reject(err);
         }
         resolve(result);
-      })
-    })
-  };
+      });
+    });
+  }
 
   flagPost(req: any) {
-    const flag = {
-      post_id: req.body.post_id,
-      is_flagged: req.body.flag_val,
-    }
-
     return new Promise((resolve, reject) => {
-      Post.flagPost(flag, (err: any, result: any) => {
+      Post.flagPost(req.body.post_id, (err: any, result: any) => {
         if (err) {
           reject(err);
         }
         resolve(result);
-      })
-    })
-  };
+      });
+    });
+  }
 
-  deletePost(req: any) {
+  unreportPost(req: any) {
     return new Promise((resolve, reject) => {
-      Post.deletePost(req.body.post_id, (err: any, result: any) => {
-        if (err)
+      Post.unreportPost(req.body.post_id, (err: any, result: any) => {
+        if (err) {
           reject(err);
+        }
         resolve(result);
-      })
-    })
-  };
+      });
+    });
+  }
 
+  deletePost(req: any, isAdmin: boolean) {
+    if (isAdmin) {
+      return new Promise((resolve, reject) => {
+        Post.deletePost(req.body.post_id, (err: any, result: any) => {
+          if (err) reject(err);
+          resolve(result);
+        });
+      });
+    } else {
+      return new Promise((resolve, reject) => {
+        Post.deletePostAssertUser(req.body.post_id, req.authInfo.oid, (err: any, result: any) => {
+          if (err) reject(err);
+          resolve(result);
+        });
+      });
+    }
+  }
 }

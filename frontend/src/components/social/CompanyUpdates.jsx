@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import InfiniteScroll from "react-infinite-scroller";
-import {makeStyles, withStyles} from "@material-ui/core/styles";
+import {makeStyles} from "@material-ui/core/styles";
 import Endpoint from "../../config/Constants";
 import {updatePopup} from "./UpdatePopup";
 import {Button, Modal} from '@material-ui/core';
@@ -10,69 +10,89 @@ import { isMobile } from "react-device-detect";
 import {useMsal} from "@azure/msal-react";
 
 const useStyles = makeStyles((theme) => ({
-    title: {
-        fontFamily: 'Lato',
-        textAlign: 'center',
-        fontSize: 30,
-        marginLeft: isMobile? 10: 0
-    },
-    titleBox: {
-        alignItems: 'center',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center'
-    },
-    updateBox: {
-        background: '#EEF0F2',
-        borderRadius: 10,
-        width: '90%',
-        height: 82,
-        margin: 'auto',
-        marginTop: 2,
-        marginBottom: 2,
-    },
-    backgroundBox: {
-        background: '#FFFCF7',
-        borderRadius: 20,
-        width: isMobile ? '95%' : '85%',
-        height: 500,
-        alignItems: 'center',
-        marginBottom: isMobile? 15 : 0
-    },
-    announcementName: {
-        fontSize: isMobile ? 19 : 26,
-        paddingLeft: 15,
-        paddingTop: 5
-    },
-    announcementText: {
-        fontSize: isMobile ? 16 : 20,
-        paddingLeft: 15
-    },
-    inputBoxes: {
-        marginLeft: 20
-    },
-    actionButton: {
-        background: '#00ADEF',
-        borderRadius: 20,
-        color: 'white',
-        height: '50px',
-        padding: '0 30px',
-        marginTop: '10px',
-        marginBottom: '10px',
-        marginRight: isMobile? 10: 0,
-        marginLeft: isMobile? 0: 10,
-        fontFamily: 'Lato',
-        fontWeight: 'bolder',
-        fontSize: 18
-    },
-    popup: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: isMobile? '85%' : '1100px',
-        marginLeft: isMobile? '8%' : 0
-    }
+  title: {
+    fontFamily: 'Lato',
+    textAlign: 'center',
+    fontSize: 30,
+    marginLeft: isMobile ? 10 : 0,
+  },
+  titleBox: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  updateBox: {
+    // background: '#EEF0F2',
+    // borderRadius: 10,
+    width: '90%',
+    height: 82,
+    margin: 'auto',
+    marginTop: 2,
+    marginBottom: '10px',
 
+    background: '#EEF0F2',
+    border: '1px solid #000000',
+    boxSizing: 'border-box',
+    borderRadius: '5px',
+  },
+  backgroundBox: {
+    background: '#FFFCF7',
+    borderRadius: 20,
+    width: isMobile ? '95%' : '85%',
+    height: 500,
+    alignItems: 'center',
+    marginBottom: isMobile ? 15 : 0,
+  },
+  announcementName: {
+    // fontSize: isMobile ? 19 : 26,
+    paddingLeft: 15,
+    paddingTop: 5,
+
+    fontFamily: 'Lato',
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    fontSize: isMobile ? '15px' : '20px',
+    lineHeight: '18px',
+    display: 'flex',
+    alignItems: 'center',
+    color: '#000000',
+  },
+  announcementText: {
+    // fontSize: isMobile ? 16 : 20,
+    paddingLeft: 15,
+
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    fontSize: isMobile ? '12px' : '15px',
+    lineHeight: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    color: 'rgba(0, 0, 0, 0.8)',
+  },
+  inputBoxes: {
+    marginLeft: 20,
+  },
+  actionButton: {
+    background: '#00ADEF',
+    borderRadius: 20,
+    color: 'white',
+    height: '50px',
+    padding: '0 30px',
+    marginBottom: '10px',
+    marginRight: isMobile ? 10 : 0,
+    marginLeft: isMobile ? 0 : 10,
+    fontFamily: 'Lato',
+    fontWeight: 'bolder',
+    fontSize: 18,
+  },
+  popup: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: isMobile ? '85%' : '1100px',
+    marginLeft: isMobile ? '8%' : 0,
+  },
 }));
 
 function CompanyUpdates() {
@@ -101,10 +121,14 @@ function CompanyUpdates() {
 
     const handleAddUpdateClose = () => {
         setAddAnnouncement(false);
+        getAnnouncements()
     }
 
     const addUpdateBody = () => {
-        return <AddUpdateForm closeModal={handleAddUpdateClose} whatToDoWhenClosed={(bool) => {setAddAnnouncement(bool)}}/>
+        return <AddUpdateForm closeModal={handleAddUpdateClose} whatToDoWhenClosed={(bool) => {
+            setAddAnnouncement(bool);
+            getAnnouncements();
+        }} global={true}/>
     }
 
     const handleAddUpdateOpen = () => {

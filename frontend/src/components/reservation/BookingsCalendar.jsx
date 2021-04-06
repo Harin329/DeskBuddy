@@ -100,8 +100,8 @@ function BookingsCalendar(UID) {
         setOpenDate(true);
         let selectedYear = newValue.year;
         let selectedMonth = newValue.month;
-        let selectedDayz = newValue.day;
-        const selectedDate = selectedYear.toString() + "-" + selectedMonth.toString() + "-" + selectedDayz.toString();
+        let selectedDays = newValue.day;
+        const selectedDate = selectedYear.toString() + "-" + selectedMonth.toString() + "-" + selectedDays.toString();
         setSelectedDayFormatted(new Date(selectedDate).toUTCString());
     }
 

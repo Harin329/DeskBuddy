@@ -24,39 +24,70 @@ Post.getPostByCategory = (category: number, result: any) => {
   )
 }
 
+Post.getReportedPosts = (category: number, result: any) => {
+  con.query('CALL getReportedPosts()',
+    [],
+    (err: any, res: any) => {
+      if (err) {
+        console.log(`Error: ${err}`);
+        result(err, null);
+      } else {
+        let voi = res[0];
+        if (Array.isArray(voi) && voi.length > 30) {
+          voi = voi.slice(voi.length - 30, voi.length);
+        }
+        result(null, voi);
+      }
+    }
+  )
+}
+
 Post.createPost = (newPost: any, result: any) => {
   // console.log(newPost);
-  con.query('CALL createPost(?,?,?,?,?,?,?)',
+  con.query('CALL createPostNow(?,?,?,?,?,?)',
     [
       newPost.employee_id,
       newPost.channel_id,
-      newPost.date_posted,
       newPost.post_title,
       newPost.post_content,
       newPost.post_image,
-      newPost.is_flagged
+      newPost.num_reports
     ],
     (err: any, res: any) => {
       if (err) {
         result(err, null);
       } else {
-        result(null, newPost)
+        result(null, res[0][0]['LAST_INSERT_ID()'])
       }
     }
   )
 };
 
-Post.flagPost = (flag: any, result: any) => {
-  con.query('CALL flagPost(?,?)',
+Post.flagPost = (post: any, result: any) => {
+  con.query('CALL reportPost(?)',
     [
-      flag.post_id,
-      flag.is_flagged
+      post,
     ],
     (err: any, res: any) => {
       if (err) {
         result(err, null);
       } else {
-        result(null, flag);
+        result(null, post);
+      }
+    }
+  )
+};
+
+Post.unreportPost = (post: any, result: any) => {
+  con.query('CALL clearReports(?)',
+    [
+      post,
+    ],
+    (err: any, res: any) => {
+      if (err) {
+        result(err, null);
+      } else {
+        result(null, post);
       }
     }
   )
@@ -74,5 +105,22 @@ Post.deletePost = (post_id: number, result: any) => {
         result(null, post_id);
     }
   )
+}
 
+Post.deletePostAssertUser = (post_id: number, oid: string, result: any) => {
+    con.query('CALL deletePostAssertUser(?,?)',
+        [
+            post_id,
+            oid
+        ],
+        (err: any, res: any) => {
+            if (err) {
+                result(err, null);
+            } else if (res.affectedRows === 0){
+                result(new Error("No matching posts"), null);
+            } else {
+                result(null, post_id);
+            }
+        }
+    )
 }

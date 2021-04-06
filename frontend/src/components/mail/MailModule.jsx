@@ -1,7 +1,13 @@
-import React from 'react';
-import { Typography, Grid, ListItem, Divider } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import {Typography, Grid, ListItem, Divider, Button, Modal} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InfiniteScroll from "react-infinite-scroller";
+import MailNotification from './MailNotification';
+import MailRequestForm from "./MailRequestForm";
+import safeFetch from "../../util/Util";
+import Endpoint from "../../config/Constants";
+import {useMsal} from "@azure/msal-react";
+import {isMobile} from "react-device-detect";
 
 
 const useStyles = makeStyles({
@@ -29,46 +35,80 @@ const useStyles = makeStyles({
         fontSize: 16,
         textAlign: 'center'
     },
-    reservationCard: { backgroundColor: '#E5E5E5', height: '110px', marginBottom: '10px', },
+    reservationCard: {
+        backgroundColor: '#E5E5E5',
+        height: '110px',
+        marginBottom: '10px'
+    },
+    reservationCardTruncated: {
+        backgroundColor: '#E5E5E5',
+        height: '110px',
+        marginBottom: '10px',
+        '&:hover': {
+          backgroundColor: '#FFFCF7'
+        }
+    },
+    reservationCardExpanded: {
+        backgroundColor: '#E5E5E5',
+        height: '180px',
+        marginBottom: '10px',
+        '&:hover': {
+          backgroundColor: '#FFFCF7'
+        }
+    },
+    actionButton: {
+        background: '#00ADEF',
+        borderRadius: 20,
+        color: 'white',
+        height: '50px',
+        padding: '0 30px',
+        marginTop: '10px',
+        marginBottom: '10px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 18
+    }
 });
 
 
 function MailModule(size, text) {
+    const [mailList, setMailList] = useState([]);
+    const [hasMore, setHasMore] = useState(true);
+    const [isExpanded, setIsExpanded] = useState(false);
+
     const classes = useStyles();
 
-    const mockData = ["ABC", "DEF"];
+    const { accounts } = useMsal();
+    const userOID = accounts[0].idTokenClaims.oid;
+
+    const getMail = () => {
+        const requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+
+        safeFetch(Endpoint + "/mail/" + userOID, requestOptions)
+            .then((response) => response.text())
+            .then(result => {
+                setMailList(JSON.parse(result).mails);
+            })
+            .catch(error => console.log('error', error));
+
+        setHasMore(false);
+    };
 
     return (
-        <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null }}>
+        <Grid item xs={size} style={{ height: '500px', borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll' }}>
             <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: '20%', height: 30, textAlign: 'center', marginTop: -10, fontSize: 20, position: 'absolute' }}>{text}</h1>
             <InfiniteScroll
+                loadMore={getMail}
+                hasMore={hasMore}
                 style={{ padding: 30, width: '90%' }}
                 useWindow={false}
             >
-                {mockData.map((option) => {
+                {mailList.map((update, i) => {
                     return (
-                        <ListItem className={classes.reservationCard}>
-                            <div style={{ width: '25%', height: '100px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                <Typography className={classes.officeText}>
-                                    PARCEL
-                      </Typography>
-                            </div>
-                            <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '90px', width: '3px' }} />
-                            <div style={{ width: '80%', height: '100px', alignItems: 'center', display: 'flex', flexDirection: 'row', marginLeft: 30 }}>
-                                <div style={{ width: '40%', height: '100px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                                    <Typography className={classes.deskSectionText}>
-                                        MAIL ID: <Typography className={classes.deskText}>
-                                            {option}
-                                        </Typography>
-                                    </Typography>
-                                    <Typography className={classes.deskSectionText}>
-                                        DATE ARRIVED: <Typography className={classes.deskText}>
-                                            Date
-                                                </Typography>
-                                    </Typography>
-                                </div>
-                            </div>
-                        </ListItem>
+                        <MailNotification>{JSON.stringify(update)}</MailNotification>
                     )
                 })}
             </InfiniteScroll>

@@ -13,6 +13,6 @@
   "settings": {
     "validateIssuer": true,
     "passReqToCallback": false,
-    "loggingLevel": "info"
+    "loggingLevel": "error"
   }
 }

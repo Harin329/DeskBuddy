@@ -6,6 +6,8 @@ import BranchUpdates from "../components/social/BranchUpdates";
 import {makeStyles} from "@material-ui/core/styles";
 import { isMobile } from "react-device-detect";
 import Subheader from '../components/global/Subheader';
+import { useMsal } from '@azure/msal-react';
+import { accountIsAdmin } from '../util/Util';
 
 const useStyles = makeStyles((theme) => ({
     updatesSection: {
@@ -24,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
 function Social() {
     const classes = useStyles();
 
+    const { accounts } = useMsal();
+    const isAdmin = accountIsAdmin(accounts[0]);
+
   return (
     <div className="App">
       <header className="App-header">
@@ -31,7 +36,7 @@ function Social() {
       <div className={classes.updatesSection}>
         <CompanyUpdates>
         </CompanyUpdates>
-        <BranchUpdates>
+        <BranchUpdates isAdmin={isAdmin}>
         </BranchUpdates>
        </div>
         {window.innerWidth > 1500 && Subheader('FEED', 4, 2, 4)}
