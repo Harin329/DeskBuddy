@@ -95,6 +95,7 @@ function MailResponseForm(props){
 
         let adminBody = {
             mail_id: data.mailID,
+            admin_eid: userOID,
             response: response
         };
         const adminOptions = {
@@ -110,6 +111,9 @@ function MailResponseForm(props){
     }
 
     const handleUserResponse = () => {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
         let employeeBody = {
             mail_id: data.mailID,
             employee_id: userOID,
@@ -121,6 +125,7 @@ function MailResponseForm(props){
         }
         const employeeOptions = {
             method: 'PUT',
+            headers: myHeaders,
             redirect: 'follow',
             body: JSON.stringify(employeeBody)
         };
