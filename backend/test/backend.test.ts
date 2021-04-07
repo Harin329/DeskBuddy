@@ -178,6 +178,111 @@ const reservationDeleter = async (res: any) => {
     await request.delete(`/reservation/deleteReservation`).send(body).set(adminJSON);
 }
 
+describe("Announcement endpoints tests", () => {
+    it("POST /announcement/postCompanyAnnouncement normal", async done => {
+        const body = loadJSON("test/jsonBody/announcementBody/postCompanyAnnouncementNormal.json");
+        body.user = adminOID;
+        const res = await request.post('/announcement/postCompanyAnnouncement').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        await announcementDeleter(res, true);
+        done();
+    });
+
+    it("POST /announcement/postCompanyAnnouncement as a non-admin", async done => {
+        const body = loadJSON("test/jsonBody/announcementBody/postCompanyAnnouncementNormal.json");
+        body.user = testUserOID;
+        const res = await request.post('/announcement/postCompanyAnnouncement').send(body).set(userJSON);
+        expect(res.status).toBe(401);
+        done();
+    });
+
+    it("POST /announcement/postBranchAnnouncement normal", async done => {
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const body = loadJSON("test/jsonBody/announcementBody/postBranchAnnouncementNormal.json");
+        body.office_id = officeID;
+        const res2 = await request.post('/announcement/postBranchAnnouncement').send(body).set(adminJSON);
+        expect(res2.status).toBe(200);
+        await announcementDeleter(res2, false);
+        await locationDeleter(res1)
+        done();
+    });
+
+    it("POST /announcement/postBranchAnnouncement as a non-admin", async done => {
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const body = loadJSON("test/jsonBody/announcementBody/postBranchAnnouncementNormal.json");
+        body.office_id = officeID;
+        const res2 = await request.post('/announcement/postBranchAnnouncement').send(body).set(userJSON);
+        expect(res2.status).toBe(401);
+        await locationDeleter(res1)
+        done();
+    });
+
+    it("GET /announcement/getCompanyAnnouncements", async done => {
+        const body = loadJSON("test/jsonBody/announcementBody/postCompanyAnnouncementNormal.json");
+        body.user = adminOID;
+        const res1 = await request.post('/announcement/postCompanyAnnouncement').send(body).set(adminJSON);
+        expect(res1.status).toBe(200);
+        const res2 = await request.get('/announcement/getCompanyAnnouncements').set(userJSON);
+        expect(res2.status).toBe(200);
+        expect(res2.body.length).toBeGreaterThanOrEqual(1);
+        await announcementDeleter(res1, true);
+        done();
+    });
+
+    it("GET /announcement/getBranchAnnouncements with 0 announcements", async done => {
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const officeLocation = JSON.parse(res1.text).code.split("-")[0];
+        const res2 = await request.get(`/announcement/getBranchAnnouncements/${officeLocation}/${officeID}`).set(userJSON);
+        expect(res2.status).toBe(200);
+        expect(res2.body.length).toBe(0);
+        await locationDeleter(res1)
+        done();
+    });
+
+    it("GET /announcement/getBranchAnnouncements with 1 announcement", async done => {
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const officeLocation = JSON.parse(res1.text).code.split("-")[0];
+        const body = loadJSON("test/jsonBody/announcementBody/postBranchAnnouncementNormal.json");
+        body.office_id = officeID;
+        const res2 = await request.post('/announcement/postBranchAnnouncement').send(body).set(adminJSON);
+        expect(res2.status).toBe(200);
+        const res3 = await request.get(`/announcement/getBranchAnnouncements/${officeLocation}/${officeID}`).set(userJSON);
+        expect(res3.status).toBe(200);
+        expect(res3.body.length).toBe(1);
+        await announcementDeleter(res2, false);
+        await locationDeleter(res1)
+        done();
+    });
+
+    it("GET /office/getAllOffices", async done => {
+        const res1 = await locationCreator();
+        const res2 = await request.get('/office/getAllOffices').set(userJSON);
+        expect(res2.status).toBe(200);
+        expect(res2.body.length).toBeGreaterThanOrEqual(1);
+        let officeCodes = [];
+        for (let i = 0; i < res2.body.length; i++){
+            officeCodes.push(res2.body[i].office_location + "-" + res2.body[i].office_id);
+        }
+        expect(officeCodes).toContain(JSON.parse(res1.text).code);
+        await locationDeleter(res1)
+        done();
+    });
+})
+
+const announcementDeleter = async (res: any, isCompanyAnnouncement: boolean) => {
+    const id = res.body.announcement_id;
+    const body = {"announcement_id" : id};
+    if (isCompanyAnnouncement){
+        await request.delete(`/announcement/deleteCompanyAnnouncement`).send(body).set(adminJSON);
+    } else {
+        await request.delete(`/announcement/deleteBranchAnnouncement`).send(body).set(adminJSON);
+    }
+}
+
 describe("Channel endpoints tests", () => {
     it("POST /channel/ normal", async done => {
         const body = { user : adminOID, channel_name : "jest channel" };

@@ -61,11 +61,10 @@ Announcement.postCompanyAnnouncement = (req: any, result: any) => {
         req.body.user, req.body.title, req.body.subtitle, req.body.content
     ], (err: any, res: any) => {
         if (err) {
-            console.log("Error: ", err);
+            result(err, null);
         } else {
-            console.log(res);
+            result(null, res.insertId);
         }
-        console.log(res);
     })
 }
 
@@ -76,10 +75,34 @@ Announcement.postBranchAnnouncement = (req: any, result: any) => {
         req.body.title, req.body.subtitle, req.body.content
     ], (err: any, res: any) => {
         if (err) {
-            console.log("Error: ", err);
+            result(err, null);
         } else {
-            console.log(res);
+            result(null, res.insertId);
         }
-        console.log(res);
     })
 }
+
+Announcement.deleteCompanyAnnouncement = (req: any, result: any) => {
+    con.query("DELETE FROM company_announcement WHERE announcement_id=?", [
+        req.body.announcement_id
+    ], (err: any, res: any) => {
+        if (err) {
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    })
+}
+
+Announcement.deleteBranchAnnouncement = (req: any, result: any) => {
+    con.query("DELETE FROM branch_announcement WHERE announcement_id=?", [
+        req.body.announcement_id
+    ], (err: any, res: any) => {
+        if (err) {
+            result(err, null);
+        } else {
+            result(null, res);
+        }
+    })
+}
+
