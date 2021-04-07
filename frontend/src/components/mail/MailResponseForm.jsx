@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-function MailResponseForm(props) {
+function MailResponseForm(props){
 
     const data = JSON.parse(props.children.data);
     console.log(data);
@@ -94,22 +94,21 @@ function MailResponseForm(props) {
     }
 
     const handleAdminResponse = () => {
-        let jsonBody = {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        let adminBody = {
             mail_id: data.mailID,
-            employee_id: "",
-            request_type: "",
-            forward_location: "",
-            additional_instructions: data.comments,
             admin_eid: userOID,
             response: response
         }
-        const requestOptions = {
+        const adminOptions = {
             method: 'PUT',
-            redirect: 'follow',
-            body: JSON.stringify(jsonBody)
+            headers: myHeaders,
+            body: JSON.stringify(adminBody),
+            redirect: 'follow'
         };
-
-        safeFetch(Endpoint + "/request/admin", requestOptions)
+        safeFetch(Endpoint + "/request/admin", adminOptions)
             .then(response => {
                 if (!response.ok) {
                     dispatch(setError(true));
@@ -126,49 +125,26 @@ function MailResponseForm(props) {
     }
 
     const handleUserResponse = () => {
-        let jsonBody = {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        let employeeBody = {
             mail_id: data.mailID,
             employee_id: userOID,
             employee_phone: null,
             request_type: "",
             forward_location: "",
-            additional_instruction: data.comments,
+            additional_instruction: response,
             req_completion_date: ""
         }
-        const requestOptions = {
+        const employeeOptions = {
             method: 'PUT',
+            headers: myHeaders,
             redirect: 'follow',
-            body: JSON.stringify(jsonBody)
+            body: JSON.stringify(employeeBody)
         };
 
-        safeFetch(Endpoint + "/request/employee", requestOptions)
-            .then(response => {
-                if (!response.ok) {
-                    dispatch(setError(true));
-                }
-                return response.text();
-            })
-            .then(result => {
-            })
-            .catch(error => {
-                console.log('error', error);
-                dispatch(setError(true));
-            });
-
-    }
-
-    const deleteRequest = () => {
-        let jsonBody = {
-            mail_id: 135,
-            employee_id: 123,
-        }
-        const requestOptions = {
-            method: 'PUT',
-            redirect: 'follow',
-            body: JSON.stringify(jsonBody)
-        };
-
-        safeFetch(Endpoint + "/request/close", requestOptions)
+        safeFetch(Endpoint + "/request/employee", employeeOptions)
             .then(response => {
                 if (!response.ok) {
                     dispatch(setError(true));
@@ -193,10 +169,10 @@ function MailResponseForm(props) {
                 Employee Name: {data.recipient_first + " " + data.recipient_last}
             </Typography>}
             <Typography className={classes.subheading}>
-                Request Type:
+                Request Type: {data.request_type}
             </Typography>
             <Typography className={classes.subheading}>
-                Forwarding Location:
+                Forwarding Location: {data.forward_location || "N/A"}
             </Typography>
             <Typography className={classes.subheading}>
                 Additional Instructions: {data.comments}
@@ -205,10 +181,10 @@ function MailResponseForm(props) {
                 Admin Response:
             </Typography>}
             <form>
-                {isAdmin && <div><TextField
+                <div><TextField
                     id="location"
                     style={{ marginTop: 20 }}
-                    placeholder="Administrator Response"
+                    placeholder="Response"
                     variant="outlined"
                     fullWidth
                     margin="normal"
@@ -216,17 +192,7 @@ function MailResponseForm(props) {
                         shrink: true,
                     }}
                     onChange={handleResponseInput}
-                /></div>}
-                <Typography className={classes.subheading}>
-                    Status: {data.status}
-                </Typography>
-                {isAdmin && <TextField className={classes.inputBoxes} id="outlined-basic" variant="outlined" select onChange={handleStatusInput} value={status}>
-                    {statusList.map((option) => (
-                        <MenuItem key={option} value={option}>
-                            {option}
-                        </MenuItem>
-                    ))}
-                </TextField>}
+                /></div>
                 <div>
                     {isAdmin && <Button className={classes.actionButtonCenter} onClick={handleAdminResponse}>
                         Update
@@ -236,11 +202,6 @@ function MailResponseForm(props) {
                     {!isAdmin && <Button className={classes.actionButtonCenter} onClick={handleUserResponse}>
                         Request More Assistance
                     </Button>}
-                </div>
-                <div>
-                    <Button className={classes.actionButtonCenter} onClick={deleteRequest}>
-                        Close Request
-                    </Button>
                 </div>
             </form>
         </div>

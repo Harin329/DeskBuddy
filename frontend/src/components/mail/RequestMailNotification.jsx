@@ -6,6 +6,11 @@ import InfiniteScroll from "react-infinite-scroller";
 import { fetchOffices } from '../../actions/reservationActions';
 import MailResponseForm from "./MailResponseForm";
 import MailRequestForm from "./MailRequestForm";
+import {isMobile} from "react-device-detect";
+import safeFetch, {accountIsAdmin} from "../../util/Util";
+import Endpoint from "../../config/Constants";
+import {setError} from "../../actions/globalActions";
+import {useMsal} from "@azure/msal-react";
 
 const useStyles = makeStyles({
     sectionText: {
@@ -74,7 +79,30 @@ const useStyles = makeStyles({
       fontWeight: 'bolder',
       fontSize: 12,
       margin: 'auto'
-  }
+  },
+    popup: {
+        position: 'fixed',
+        top: '30%',
+        left: isMobile ? '3%' : '35%',
+        width: isMobile ? '80%' : '20%',
+        height: 'auto',
+        backgroundColor: 'white',
+        padding: '30px',
+        alignItems: 'center'
+    },
+    cancelButton: {
+        background: '#ba0000',
+        borderRadius: 30,
+        color: 'white',
+        height: '30px',
+        padding: '0 15px',
+        marginTop: '5px',
+        marginBottom: '5px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 14,
+        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    },
 });
 
 
@@ -87,9 +115,14 @@ function RequestMailNotification(props) {
     const [responseOpen, setResponseOpen] = useState(false);
     const [requestOpen, setRequestOpen] = useState(false);
     const [officeName, setOfficeName] = useState('');
+    const [reportOpen, setReportOpen] = useState(false);
+    const [closeOpen, setCloseOpen] = useState(false);
 
     const dispatch = useDispatch();
     const officeList = useSelector(state => state.reservations.offices);
+
+    const { accounts } = useMsal();
+    const userOID = accounts[0].idTokenClaims.oid;
 
     useEffect(() => {
         dispatch(fetchOffices());
@@ -100,19 +133,44 @@ function RequestMailNotification(props) {
         setOfficeName(tempOfficeName);
     }, []);
 
-    const handleMailRequest = () => {
+    const handleRequestPopup = () => {
         setIsExpanded(true);
         setRequestOpen(true);
       };
   
-      const closeMailRequest = () => {
+      const closeRequestPopup = () => {
         setRequestOpen(false);
       };
   
       const mailRequestPopup = () => {
         return <MailResponseForm closeModal={closeMailResponse} whatToDoWhenClosed={(bool) => {setRequestOpen(bool)}}>{props}</MailResponseForm>
       };
-    
+
+      const closeRequest = () => {
+          let jsonBody = {
+              mail_id: JSON.parse(data).mailID,
+              employee_id: userOID
+          }
+
+          let headers = new Headers();
+          headers.append("Content-Type", "application/json");
+          const requestOptions = {
+              method: 'PUT',
+              headers: headers,
+              redirect: 'follow',
+              body: JSON.stringify(jsonBody)
+          };
+
+          safeFetch(Endpoint + "/request/close", requestOptions)
+              .then((response) => response.text())
+              .then(result => {
+              })
+              .catch(error => {
+                  console.log('error', error);
+                  dispatch(setError(true));
+              });
+          handleClose();
+      }
     
     const handleMailResponse = () => {
       setIsExpanded(true);
@@ -131,6 +189,73 @@ function RequestMailNotification(props) {
         return isExpanded ? classes.reservationCardExpanded : classes.reservationCardTruncated;
     };
 
+    const handleReportOpen = () => {
+        setReportOpen(true);
+    }
+
+    const handleReportClose = () => {
+        setReportOpen(false);
+    }
+
+    const reportPopup = () => {
+        return (
+            <div className={classes.popup} style={{
+                width: '40%',
+                height: '140px',
+                justifyContent: 'center',
+                display: 'flex',
+                flexDirection: 'column'
+            }}>
+                <Typography className={classes.officeText}>Mail ID: {JSON.parse(data).mailID}</Typography>
+                <Typography className={classes.deskSectionText}>LOCATION: <Typography className={classes.deskText}>
+                    {officeName}
+                </Typography></Typography>
+                <Typography className={classes.deskSectionText}>STATUS: <Typography className={classes.deskText}>
+                    {JSON.parse(data).status}
+                </Typography>
+                </Typography>
+                <Typography className={classes.deskSectionText}>REQUEST TYPE: <Typography className={classes.deskText}>
+                    {JSON.parse(data).request_type}
+                </Typography>
+                </Typography>
+                <Typography className={classes.deskSectionText}>FORWARDING LOCATION: <Typography className={classes.deskText}>
+                    {JSON.parse(data).forward_location || "N/A"}
+                </Typography>
+                </Typography>
+                <Typography className={classes.deskSectionText}>ADMIN RESPONSE: <Typography className={classes.deskText}>
+                    {JSON.parse(data).response || "None"}
+                </Typography>
+                </Typography>
+            </div>
+        )
+    };
+
+    const handleClosePopup = () => {
+        setCloseOpen(true);
+    }
+
+    const handleClose = () => {
+        setCloseOpen(false);
+    }
+
+    const closePopup = () => {
+        return (
+            <div className={classes.popup} style={{
+                width: '40%',
+                height: '140px',
+                justifyContent: 'center',
+                display: 'flex',
+                flexDirection: 'column'
+            }}>
+                <Typography className={classes.officeText}>Are you sure you want to close this request?</Typography>
+                <Typography className={classes.officeText}>Mail ID: {JSON.parse(data).mailID}</Typography>
+                <div style={{ width: '100%', marginTop: '10px', justifyContent: 'center', display: 'flex' }}>
+                    <Button className={classes.cancelButton} onClick={() => {closeRequest()}}>CLOSE</Button>
+                </div>
+            </div>
+        )
+    };
+
     let expandedNotifText;
     let expandedNotifButtons;
     if (isExpanded) {
@@ -144,11 +269,6 @@ function RequestMailNotification(props) {
             {JSON.parse(data).comments}
             </Typography>
           </Typography>
-          {/* <Typography className={classes.deskSectionText}>
-            APPROXIMATE ARRIVAL DATE: <Typography className={classes.deskText}>
-            {JSON.parse(data).approx_date}
-             </Typography>
-          </Typography>*/}
           <Typography className={classes.deskSectionText}>MAIL ID: <Typography className={classes.deskText}>
             {JSON.parse(data).mailID}
             </Typography>
@@ -156,22 +276,25 @@ function RequestMailNotification(props) {
         </div>
         expandedNotifButtons = !isAdminModule ?
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, marginBottom: '-20px', width: '80%'}}>
-            <Button className={classes.actionButton}>Close</Button>
-            <Button className={classes.requestActionButton} onClick={handleMailRequest}>Request Assistance</Button>
-            <Button className={classes.actionButton}>See Report</Button>            
+            <Button className={classes.actionButton} onClick={handleClosePopup}>Close</Button>
+            <Button className={classes.requestActionButton} onClick={handleRequestPopup}>Request Assistance</Button>
+            <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>
         </div> : JSON.parse(data).status === 'Admin Has Responded' ? 
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
         <Button className={classes.actionButton}>Close</Button>
         <Button className={classes.actionButton}>See Report</Button>            
     </div> :  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
-        <Button className={classes.actionButton}>Close</Button>
+        <Button className={classes.actionButton} onClick={handleClosePopup}>Close</Button>
         <Button className={classes.requestActionButton} onClick={handleMailResponse}>Respond</Button>
-        <Button className={classes.actionButton}>See Report</Button>            
+        <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>
     </div>
     }
 
     return (
-      <ListItem className={getNotifClass()} onClick={() => {setIsExpanded(!isExpanded)}}>
+      <ListItem className={getNotifClass()} onClick={() => {
+          if (!responseOpen && !requestOpen && !reportOpen && !closeOpen){
+              setIsExpanded(!isExpanded)
+          }}}>
       <div style={{ width: '25%', height: '100px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
           <Typography className={classes.officeText}>
               {JSON.parse(data).type}
@@ -202,9 +325,21 @@ function RequestMailNotification(props) {
           </Modal>
           <Modal
               open={requestOpen}
-              onClose={closeMailRequest}
+              onClose={closeRequestPopup}
           >
               {mailRequestPopup()}
+          </Modal>
+          <Modal
+              open={reportOpen}
+              onClose={handleReportClose}
+          >
+              {reportPopup()}
+          </Modal>
+          <Modal
+              open={closeOpen}
+              onClose={handleClose}
+          >
+              {closePopup()}
           </Modal>
   </ListItem>
     );

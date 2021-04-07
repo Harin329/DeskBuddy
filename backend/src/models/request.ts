@@ -71,12 +71,8 @@ Request.updateRequestEmployee = (req: any, result: any) => {
 // admin responds to the request (updates request)
 Request.updateRequestAdmin = (req: any, result: any) => {
     const currDate = getFormattedDate();
-    con.query(`CALL updateRequestAdmin(?,?,?,?,?,?,?,?,?)`, [
+    con.query(`CALL updateRequestAdmin(?,?,?,?,?)`, [
         req.mail_id,
-        req.employee_id,
-        req.request_type,
-        req.forward_location,
-        req.additional_instructions,
         "awaiting employee confirmation", // placeholder, will likely be an enum?
         req.admin_eid,
         req.response,
@@ -92,8 +88,11 @@ Request.updateRequestAdmin = (req: any, result: any) => {
 
 // admin or user can close request (request is updated to closed)
 Request.closeRequest = (req: any, result: any) => {
-    con.query("UPDATE mail_request SET `status` = ? WHERE mail_id = ? AND employee_id = ?", [
+    const currDate = getFormattedDate();
+    con.query("UPDATE mail_request SET `status` = ?, `completion_date` = ?, `modified_at` = ? WHERE mail_id = ? AND employee_id = ?", [
         "closed", // will be changed to an enum or something. i.e won't be hardcoded
+        currDate,
+        currDate,
         req.mail_id,
         req.employee_id
     ], (err: any, res: any) => {

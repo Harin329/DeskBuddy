@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { makeStyles } from "@material-ui/core/styles";
-import { Button, Grid, TextField, Typography } from "@material-ui/core";
+import React, {useState} from 'react';
+import {makeStyles} from "@material-ui/core/styles";
+import {Button, Grid, TextField, Typography} from "@material-ui/core";
 import Endpoint from "../../config/Constants";
 import safeFetch from "../../util/Util"
-import { useMsal } from "@azure/msal-react";
-import { isMobile } from "react-device-detect";
+import {useMsal} from "@azure/msal-react";
+import {isMobile} from "react-device-detect";
 import { setError } from '../../actions/globalActions';
 import { useDispatch } from 'react-redux';
 
@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
 
 function MailRequestForm(props) {
     const [type, setType] = useState("");
-    const data = props.data;
+    const data = JSON.parse(props.children.children);
     const [forwardingLocation, setForwardingLocation] = useState("");
     const [instructions, setInstructions] = useState("");
     const [requestedDate, setRequestedDate] = useState(new Date());
@@ -81,6 +81,8 @@ function MailRequestForm(props) {
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
     const classes = useStyles();
+
+    const today = new Date().toISOString().substring(0,10);
 
     const handleTypeInput = (input) => {
         setType(input.target.value);
@@ -104,8 +106,9 @@ function MailRequestForm(props) {
     }
 
     const handleSubmit = (event) => {
+
         let jsonBody = {
-            mail_id: JSON.parse(data).mailID,
+            mail_id: data.mailID,
             employee_id: userOID,
             employee_name: accounts[0].name,
             employee_phone: null,
@@ -128,7 +131,6 @@ function MailRequestForm(props) {
                 return response.text();
             })
             .then(result => {
-                console.log("ok closing")
                 props.closeModal();
             })
             .catch(error => {
@@ -145,14 +147,14 @@ function MailRequestForm(props) {
             </Typography>
             <form>
                 <div>
-                    <input type="radio" id="hold" name="type" value="hold" onChange={handleTypeInput} />
-                    <label className={classes.typeInput}>Hold</label>
-                    <input type="radio" id="forward" name="type" value="forward" onChange={handleTypeInput} />
-                    <label className={classes.typeInput}>Forward</label>
-                    <input type="radio" id="open" name="type" value="open" onChange={handleTypeInput} />
-                    <label className={classes.typeInput}>Open</label>
-                    <input type="radio" id="assist" name="type" value="assist" onChange={handleTypeInput} />
-                    <label className={classes.typeInput}>Assist</label>
+                    <input type="radio" id="hold" name="type" value="hold" onChange={handleTypeInput}/>
+                    <label  className={classes.typeInput}>Hold</label>
+                    <input type="radio" id="forward" name="type" value="forward" onChange={handleTypeInput}/>
+                    <label  className={classes.typeInput}>Forward</label>
+                    <input type="radio" id="open" name="type" value="open" onChange={handleTypeInput}/>
+                    <label  className={classes.typeInput}>Open</label>
+                    <input type="radio" id="assist" name="type" value="assist" onChange={handleTypeInput}/>
+                    <label  className={classes.typeInput}>Assist</label>
                 </div>
                 <div><TextField
                     id="location"
@@ -178,10 +180,10 @@ function MailRequestForm(props) {
                     }}
                     onChange={handleInstructionsInput}
                 /></div>
-                <Typography style={{ marginTop: 20, fontFamily: 'Lato' }}>
-                    Requested Completion Date
+                    <Typography style={{ marginTop: 20, fontFamily: 'Lato'}}>
+                        Requested Completion Date
                     </Typography>
-                <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleDateInput} />
+                <TextField id="calendar" variant="outlined" type="date" InputProps={{inputProps: { min: today} }} className={classes.inputBoxes} onChange={handleDateInput}/>
                 <div>
                     <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
                         Send

@@ -45,7 +45,8 @@ export default class MailController {
                     comments: mail.additional_notes,
                     adminID: mail.fk_admin_eid,
                     request_type: null as any,
-                    forward_location: null as any
+                    forward_location: null as any,
+                    response: null as any
                   }
                   output.push(parsedMail);
                 }
@@ -54,14 +55,16 @@ export default class MailController {
                 for (const element of typesAndLocations) {
                   requestMap.set(element.mail_id, {
                     request_type: element.request_type,
-                    forward_location: element.forward_location
+                    forward_location: element.forward_location,
+                    response: element.response
                   });
                 }
                 for (const mail of output) {
                   const mapping = requestMap.get(mail.mailID)
                   if (mapping !== undefined) {
                     mail.request_type = mapping.request_type;
-                    mail.forward_location = mapping.forward_location
+                    mail.forward_location = mapping.forward_location;
+                    mail.response = mapping.response
                   }
                 }
                 resolve(output);
@@ -118,7 +121,8 @@ export default class MailController {
                 comments: mail.additional_notes,
                 adminID: mail.fk_admin_eid,
                 request_type: null as any,
-                forward_location: null as any
+                forward_location: null as any,
+                response: null as any
               }
               output.push(parsedMail);
             }
@@ -127,7 +131,8 @@ export default class MailController {
             for (const element of typesAndLocations) {
               requestMap.set(element.mail_id, {
                 request_type: element.request_type,
-                forward_location: element.forward_location
+                forward_location: element.forward_location,
+                response: element.response
               });
             }
             for (const mail of output) {

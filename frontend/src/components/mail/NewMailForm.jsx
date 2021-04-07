@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { makeStyles } from "@material-ui/core/styles";
-import { Button, Grid, MenuItem, TextField, Typography } from "@material-ui/core";
+import React, {useEffect, useState} from 'react';
+import {makeStyles} from "@material-ui/core/styles";
+import {Button, Grid, MenuItem, TextField, Typography} from "@material-ui/core";
 import Endpoint from "../../config/Constants";
 import safeFetch from "../../util/Util"
-import { useMsal } from "@azure/msal-react";
-import { isMobile } from "react-device-detect";
-import { fetchOffices } from "../../actions/reservationActions";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchEmployees } from "../../actions/authenticationActions";
+import {useMsal} from "@azure/msal-react";
+import {isMobile} from "react-device-detect";
+import {fetchOffices} from "../../actions/reservationActions";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchEmployees} from "../../actions/authenticationActions";
 import { setError } from '../../actions/globalActions';
 import Select from "react-select";
 
@@ -56,8 +56,8 @@ const useStyles = makeStyles((theme) => ({
     makeRequest: {
         position: 'fixed',
         top: '20%',
-        left: isMobile ? '5%' : '25%',
-        width: isMobile ? '75%' : '45%',
+        left: isMobile? '5%' : '25%',
+        width: isMobile? '75%' : '45%',
         height: '450',
         background: '#FFFCF7',
         padding: '30px',
@@ -93,6 +93,8 @@ function NewMailForm(props) {
     const officeList = useSelector(state => state.reservations.offices);
     const employeeList = useSelector(state => state.authentication.users);
 
+    const today = new Date().toISOString().substring(0,10);
+
     useEffect(() => {
         dispatch(fetchOffices());
         dispatch(fetchEmployees());
@@ -124,12 +126,10 @@ function NewMailForm(props) {
 
     const handleDateChange = (event) => {
         setArrivalDate(new Date(event.target.value));
-        console.log(arrivalDate);
     }
 
     const handleSenderInput = (input) => {
         setSender(input.target.value);
-        console.log(sender);
     }
 
     const handleCommentInput = (input) => {
@@ -220,7 +220,7 @@ function NewMailForm(props) {
                 <Typography className={classes.titles}>
                     Arrival Date
                 </Typography>
-                <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleDateChange} />
+                <TextField id="outlined-basic" variant="outlined" type="date" InputProps={{inputProps: { max: today} }} className={classes.inputBoxes} onChange={handleDateChange}/>
                 <div><TextField
                     id="sender"
                     style={{ margin: 8, width: '90%' }}
