@@ -52,7 +52,9 @@ router.post('/', upload.any(), (req: Request, res: Response) => {
     } else {
         channelServer.addChannel(req)
             .then((channel: any) => {
-                res.status(200).json(channel);
+                res.status(200).json({
+                    channel_id : channel
+                });
             })
             .catch((err: any) => {
                 res.json(err);
