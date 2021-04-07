@@ -89,7 +89,20 @@ const useStyles = makeStyles({
         backgroundColor: 'white',
         padding: '30px',
         alignItems: 'center'
-    }
+    },
+    cancelButton: {
+        background: '#ba0000',
+        borderRadius: 30,
+        color: 'white',
+        height: '30px',
+        padding: '0 15px',
+        marginTop: '5px',
+        marginBottom: '5px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: 14,
+        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    },
 });
 
 
@@ -103,6 +116,7 @@ function RequestMailNotification(props) {
     const [requestOpen, setRequestOpen] = useState(false);
     const [officeName, setOfficeName] = useState('');
     const [reportOpen, setReportOpen] = useState(false);
+    const [closeOpen, setCloseOpen] = useState(false);
 
     const dispatch = useDispatch();
     const officeList = useSelector(state => state.reservations.offices);
@@ -119,12 +133,12 @@ function RequestMailNotification(props) {
         setOfficeName(tempOfficeName);
     }, []);
 
-    const handleMailRequest = () => {
+    const handleRequestPopup = () => {
         setIsExpanded(true);
         setRequestOpen(true);
       };
   
-      const closeMailRequest = () => {
+      const closeRequestPopup = () => {
         setRequestOpen(false);
       };
   
@@ -155,6 +169,7 @@ function RequestMailNotification(props) {
                   console.log('error', error);
                   dispatch(setError(true));
               });
+          handleClose();
       }
     
     const handleMailResponse = () => {
@@ -215,6 +230,32 @@ function RequestMailNotification(props) {
         )
     };
 
+    const handleClosePopup = () => {
+        setCloseOpen(true);
+    }
+
+    const handleClose = () => {
+        setCloseOpen(false);
+    }
+
+    const closePopup = () => {
+        return (
+            <div className={classes.popup} style={{
+                width: '40%',
+                height: '140px',
+                justifyContent: 'center',
+                display: 'flex',
+                flexDirection: 'column'
+            }}>
+                <Typography className={classes.officeText}>Are you sure you want to close this request?</Typography>
+                <Typography className={classes.officeText}>Mail ID: {JSON.parse(data).mailID}</Typography>
+                <div style={{ width: '100%', marginTop: '10px', justifyContent: 'center', display: 'flex' }}>
+                    <Button className={classes.cancelButton} onClick={() => {closeRequest()}}>CLOSE</Button>
+                </div>
+            </div>
+        )
+    };
+
     let expandedNotifText;
     let expandedNotifButtons;
     if (isExpanded) {
@@ -228,11 +269,6 @@ function RequestMailNotification(props) {
             {JSON.parse(data).comments}
             </Typography>
           </Typography>
-          {/* <Typography className={classes.deskSectionText}>
-            APPROXIMATE ARRIVAL DATE: <Typography className={classes.deskText}>
-            {JSON.parse(data).approx_date}
-             </Typography>
-          </Typography>*/}
           <Typography className={classes.deskSectionText}>MAIL ID: <Typography className={classes.deskText}>
             {JSON.parse(data).mailID}
             </Typography>
@@ -240,15 +276,15 @@ function RequestMailNotification(props) {
         </div>
         expandedNotifButtons = !isAdminModule ?
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, marginBottom: '-20px', width: '80%'}}>
-            <Button className={classes.actionButton} onClick={closeRequest}>Close</Button>
-            <Button className={classes.requestActionButton} onClick={handleMailRequest}>Request Assistance</Button>
+            <Button className={classes.actionButton} onClick={handleClosePopup}>Close</Button>
+            <Button className={classes.requestActionButton} onClick={handleRequestPopup}>Request Assistance</Button>
             <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>
         </div> : JSON.parse(data).status === 'Admin Has Responded' ? 
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
         <Button className={classes.actionButton}>Close</Button>
         <Button className={classes.actionButton}>See Report</Button>            
     </div> :  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
-        <Button className={classes.actionButton} onClick={closeRequest}>Close</Button>
+        <Button className={classes.actionButton} onClick={handleClosePopup}>Close</Button>
         <Button className={classes.requestActionButton} onClick={handleMailResponse}>Respond</Button>
         <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>
     </div>
@@ -256,7 +292,7 @@ function RequestMailNotification(props) {
 
     return (
       <ListItem className={getNotifClass()} onClick={() => {
-          if (!responseOpen && !requestOpen && !reportOpen){
+          if (!responseOpen && !requestOpen && !reportOpen && !closeOpen){
               setIsExpanded(!isExpanded)
           }}}>
       <div style={{ width: '25%', height: '100px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
@@ -289,7 +325,7 @@ function RequestMailNotification(props) {
           </Modal>
           <Modal
               open={requestOpen}
-              onClose={closeMailRequest}
+              onClose={closeRequestPopup}
           >
               {mailRequestPopup()}
           </Modal>
@@ -298,6 +334,12 @@ function RequestMailNotification(props) {
               onClose={handleReportClose}
           >
               {reportPopup()}
+          </Modal>
+          <Modal
+              open={closeOpen}
+              onClose={handleClose}
+          >
+              {closePopup()}
           </Modal>
   </ListItem>
     );
