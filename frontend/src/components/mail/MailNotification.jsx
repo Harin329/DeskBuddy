@@ -136,6 +136,7 @@ function MailNotification(props) {
     }
 
     const closeMailRequest = () => {
+        console.log('closing')
         setRequestOpen(false);
     }
 

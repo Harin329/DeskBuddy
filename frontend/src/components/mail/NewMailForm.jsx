@@ -1,14 +1,15 @@
-import React, {useEffect, useState} from 'react';
-import {makeStyles} from "@material-ui/core/styles";
-import {Button, Grid, MenuItem, TextField, Typography} from "@material-ui/core";
+import React, { useEffect, useState } from 'react';
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, Grid, MenuItem, TextField, Typography } from "@material-ui/core";
 import Endpoint from "../../config/Constants";
 import safeFetch from "../../util/Util"
-import {useMsal} from "@azure/msal-react";
-import {isMobile} from "react-device-detect";
-import {fetchOffices} from "../../actions/reservationActions";
-import {useDispatch, useSelector} from "react-redux";
-import {fetchEmployees} from "../../actions/authenticationActions";
+import { useMsal } from "@azure/msal-react";
+import { isMobile } from "react-device-detect";
+import { fetchOffices } from "../../actions/reservationActions";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchEmployees } from "../../actions/authenticationActions";
 import { setError } from '../../actions/globalActions';
+import Select from "react-select";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -55,8 +56,8 @@ const useStyles = makeStyles((theme) => ({
     makeRequest: {
         position: 'fixed',
         top: '20%',
-        left: isMobile? '5%' : '25%',
-        width: isMobile? '75%' : '45%',
+        left: isMobile ? '5%' : '25%',
+        width: isMobile ? '75%' : '45%',
         height: '450',
         background: '#FFFCF7',
         padding: '30px',
@@ -109,8 +110,8 @@ function NewMailForm(props) {
     }
 
     const handleEmployeeChange = (event) => {
-        setEmployee(event.target.value);
-        const params = event.target.value.split(['-']);
+        setEmployee(event.value);
+        const params = event.value.split(['-']);
         setRecipientFN(params[0]);
         setRecipientLN(params[1]);
         setRecipientEmail(params[2]);
@@ -161,7 +162,12 @@ function NewMailForm(props) {
             body: JSON.stringify(jsonBody)
         };
         safeFetch(Endpoint + "/mail", requestOptions)
-            .then((response) => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
             .then(result => {
                 // TODO: This is suppose to be where the re-render is triggered
                 props.handleNewMailRefresh();
@@ -173,6 +179,8 @@ function NewMailForm(props) {
 
         handleFormClose();
     }
+
+    const employees = employeeList.map((option) => { return {value: option.first_name + "-" + option.last_name + "-" + option.email, label: option.first_name + " " + option.last_name } })
 
     return (
         <div className={classes.makeRequest}>
@@ -193,13 +201,12 @@ function NewMailForm(props) {
                 <Typography className={classes.titles}>
                     Recipient
                 </Typography>
-                <TextField id="outlined-basic" variant="outlined" select onChange={handleEmployeeChange} value={employee} className={classes.inputBoxes}>
-                    {employeeList.map((option) => (
-                        <MenuItem key={option.first_name + "-" + option.last_name} value={option.first_name + "-" + option.last_name + "-" + option.email}>
-                            {option.first_name + " " + option.last_name}
-                        </MenuItem>
-                    ))}
-                </TextField>
+                <Select
+                    defaultValue={employee}
+                    onChange={handleEmployeeChange}
+                    options={employees}
+                    className={classes.inputBoxes}
+                />
                 <Typography className={classes.titles}>
                     Mail Type
                 </Typography>
@@ -213,7 +220,7 @@ function NewMailForm(props) {
                 <Typography className={classes.titles}>
                     Arrival Date
                 </Typography>
-                <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleDateChange}/>
+                <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleDateChange} />
                 <div><TextField
                     id="sender"
                     style={{ margin: 8, width: '90%' }}

@@ -267,7 +267,7 @@ function GroupChannel() {
                 </div>
                 {/*{props.isAdmin && <Divider/>}*/}
                 {isAdmin && <div style={{ justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
-                    <Button onClick={(event) => handleAddChannelOpen(event)} className={classes.addChannelButton}>Add Channel</Button>
+                    <Button onClick={() => handleAddChannelOpen()} className={classes.addChannelButton}>Add Channel</Button>
                 </div>}
                 <Modal
                     open={addChannel}
