@@ -7,6 +7,8 @@ import safeFetch, { accountIsAdmin } from "../../util/Util";
 import { isMobile } from "react-device-detect";
 import { useMsal } from "@azure/msal-react";
 import { updatePopup } from '../social/UpdatePopup';
+import { setError } from '../../actions/globalActions';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -103,6 +105,8 @@ function DashboardUpdates() {
     const [hasMoreAnnouncements, setHasMoreAnnouncements] = useState(true);
     const [open, setOpen] = useState(false);
     const [currAnnouncement, setCurrAnnouncement] = useState(null);
+    const dispatch = useDispatch();
+
 
     const handleUpdateOpen = (el) => {
         console.log("update is: " + el);
@@ -129,7 +133,10 @@ function DashboardUpdates() {
                 setAnnouncementList(announcements);
                 setHasMoreAnnouncements(false);
             })
-            .catch(error => console.log('error', error))
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
     }
 
     const popup = () => {
@@ -138,7 +145,7 @@ function DashboardUpdates() {
                 <Modal
                     open={open}
                     onClose={handleClose}
-                    className={classes.popup}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                     {updatePopup(currAnnouncement)}
                 </Modal>

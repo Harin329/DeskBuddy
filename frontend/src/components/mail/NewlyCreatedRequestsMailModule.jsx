@@ -73,7 +73,7 @@ const useStyles = makeStyles({
 });
 
 
-function MailModule(size, text) {
+function NewlyCreatedRequestsMailModule(size, text) {
     const [mailList, setMailList] = useState([]);
     const [hasMore, setHasMore] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -90,15 +90,17 @@ function MailModule(size, text) {
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/mail/" + userOID, requestOptions)
-            .then((response) => response.text())
-            .then(result => {
-                setMailList(JSON.parse(result).mails);
-            })
-            .catch(error => {
-                console.log('error', error);
-                dispatch(setError(true));
-            });
+        safeFetch(Endpoint + "/mail?filter=new&sort=-modified_at", requestOptions)
+          .then((response) => response.text())
+          .then(result => {
+            const mail = JSON.parse(result).mails;
+            mail.map((mailObj) => mailObj.status = 'Waiting for Admin');
+            setMailList([...mailList, ...mail]);
+          })
+          .catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
 
         setHasMore(false);
     };
@@ -114,7 +116,7 @@ function MailModule(size, text) {
             >
                 {mailList.map((update, i) => {
                     return (
-                        <MailNotification isAdminModule={false}>{JSON.stringify(update)}</MailNotification>
+                        <MailNotification isAdminModule={true}>{JSON.stringify(update)}</MailNotification>
                     )
                 })}
             </InfiniteScroll>
@@ -123,4 +125,4 @@ function MailModule(size, text) {
     );
 }
 
-export default MailModule;
+export default NewlyCreatedRequestsMailModule;

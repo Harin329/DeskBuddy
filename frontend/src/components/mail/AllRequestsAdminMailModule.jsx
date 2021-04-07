@@ -8,6 +8,8 @@ import Endpoint from "../../config/Constants";
 import RequestMailNotification from './RequestMailNotification';
 import { useMsal } from "@azure/msal-react";
 import { useSelector, useDispatch } from 'react-redux'
+import { fetchOffices } from '../../actions/reservationActions';
+import { ConsoleView } from 'react-device-detect';
 import { setError } from '../../actions/globalActions';
 
 
@@ -56,7 +58,7 @@ const useStyles = makeStyles({
 });
 
 
-function AllRequestsMailModule(size, text) {
+function AllRequestsAdminMailModule(size, text) {
   const classes = useStyles();
 
   const [statusChoice, setStatusChoice] = useState('Admin has Responded');
@@ -70,14 +72,10 @@ function AllRequestsMailModule(size, text) {
 
   const userOID = accounts[0].idTokenClaims.oid;
 
-  const mockData = ["ABC", "DEFG", "HIJ", "KLM", "NOP", "QRS", "TUV"];
-  const statusChoices = ['Admin has Responded', 'Waiting for Admin', 'Cannot Complete', 'Closed']
-
-  useEffect(async () => {
-    // TODO: use get all mail request endpoint
-    await fetchFilteredMail('Admin has Responded', false);
-    // await fetchFilteredMail('Waiting for Admin', false);
-    // await fetchFilteredMail('Cannot Complete', false);
+  useEffect(() => {
+    fetchFilteredMail('Waiting for Admin', false);
+    fetchFilteredMail('Admin has Responded', false);
+    fetchFilteredMail('Cannot Complete', false);
     // await fetchFilteredMail('Closed', false);
   }, []);
 
@@ -100,17 +98,13 @@ function AllRequestsMailModule(size, text) {
     };
     switch (filter) {
       case 'Admin has Responded':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=awaiting_employee_confirmation&sort=-modified_at", requestOptions)
+        safeFetch(Endpoint + "/mail" + "?filter=awaiting_employee_confirmation&sort=-modified_at", requestOptions)
           .then((response) => response.text())
           .then(result => {
+
             const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => {
-              mailObj.status = 'Admin has Responded';
-              // mailObj.officeName = officeList ? officeList.find(existingOffice => existingOffice.office_location == mailObj.officeLocation && existingOffice.office_id == mailObj.officeID).name : officeName;
-              // console.log('--------- office list: ' + officeList);
-              // console.log('--------- office list filter: ' + officeList.find(existingOffice => existingOffice.office_location == mailObj.officeLocation && existingOffice.office_id == mailObj.officeID).name);
-            });
-            setMailList([...mail]);
+              mail.map((mailObj) => mailObj.status = 'Admin Has Responded');
+              setMailList((prevMailList) => [, ...prevMailList, ...mail]);
           })
           .catch(error => {
             console.log('error', error);
@@ -118,12 +112,12 @@ function AllRequestsMailModule(size, text) {
           });
         break;
       case 'Waiting for Admin':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=awaiting_admin_action&sort=-modified_at", requestOptions)
+        safeFetch(Endpoint + "/mail" + "?filter=awaiting_admin_action&sort=-modified_at", requestOptions)
           .then((response) => response.text())
           .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Waiting for Admin');
-            setMailList([...mail]);
+            setMailList((prevMailList) => [...mail, ...prevMailList]);
           })
           .catch(error => {
             console.log('error', error);
@@ -131,12 +125,14 @@ function AllRequestsMailModule(size, text) {
           });
         break;
       case 'Cannot Complete':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=cannot_complete&sort=-modified_at", requestOptions)
+        safeFetch(Endpoint + "/mail" + "?filter=cannot_complete&sort=-modified_at", requestOptions)
           .then((response) => response.text())
           .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Cannot Complete');
-            setMailList([...mail]);
+            if (mail.length > 0) {
+              setMailList((prevMailList) => [...prevMailList, ...mail]);
+            }
           })
           .catch(error => {
             console.log('error', error);
@@ -144,12 +140,12 @@ function AllRequestsMailModule(size, text) {
           });
         break;
       case 'Closed':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=closed&sort=-modified_at", requestOptions)
+        safeFetch(Endpoint + "/mail" + "?filter=closed&sort=-modified_at", requestOptions)
           .then((response) => response.text())
           .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Closed');
-            setMailList([...mail]);
+            setMailList((prevMailList) => [...prevMailList, ...mail]);
           })
           .catch(error => {
             console.log('error', error);
@@ -170,29 +166,19 @@ function AllRequestsMailModule(size, text) {
   let mail = [];
   mailList.map((update, i) => {
     mail.push(
-      <RequestMailNotification isAdminModule={false} data={JSON.stringify(update)}></RequestMailNotification>
+      <RequestMailNotification isAdminModule={true} data={JSON.stringify(update)}></RequestMailNotification>
     );
   });
 
   return (
-    <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null }}>
+    <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll' }}>
       <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: '20%', height: 30, textAlign: 'center', marginTop: -10, fontSize: 20, position: 'absolute' }}>{text}</h1>
-      <Grid container direction='row' justify='flex-start' alignItems='baseline'>
-        <TextField id="outlined-basic" label="Status" variant="outlined" select onChange={handleStatusChoiceChange} value={statusChoice} className={classes.inputBoxes}>
-          {statusChoices.map((option) => {
-            return <MenuItem key={option} value={option}>{option}</MenuItem>
-          })
-          }
-        </TextField>
-        <Grid item xs={12} style={{ height: 400, border: 3, borderRadius: 20, display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll' }}>
-          <InfiniteScroll
-            style={{ padding: 30, width: '90%' }}
-            useWindow={false}
-          >
-            {mail}
-          </InfiniteScroll>
-        </Grid>
-      </Grid>
+      <InfiniteScroll
+        style={{ padding: 30, width: '90%' }}
+        useWindow={false}
+      >
+        {mail}
+      </InfiniteScroll>
 
 
       <Modal
@@ -205,4 +191,4 @@ function AllRequestsMailModule(size, text) {
   );
 }
 
-export default AllRequestsMailModule;
+export default AllRequestsAdminMailModule;

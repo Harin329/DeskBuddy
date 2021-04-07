@@ -99,10 +99,12 @@ const UserContainer = styled.div`
 const UserPic = styled.img`
   margin-left: 20px;
   margin-right: 20px;
-  width: 50px;
+  max-width: 50px;
+  max-height: 50px;
 
   @media (min-width: 1000px) {
-    width: 67px;
+    max-width: 67px;
+    max-height: 67px;
   }
 `;
 
@@ -113,7 +115,7 @@ const TextContainer = styled.div`
   font-size: 15px;
   line-height: 30px;
   width: 95%;
-  height: 169px;
+  height: 95%;
   border-radius: 10px;
   padding: 20px;
   text-align: center;
@@ -121,6 +123,8 @@ const TextContainer = styled.div`
   justify-content: center;
   align-items: center;
   align-self: center;
+  overflow: auto;
+  scrollbar-color: red;
 
   @media (min-width: 1000px) {
     font-size: 22px;
@@ -141,7 +145,7 @@ const DatePostedContainer = styled.div`
 
 const Icon = styled.img`
   width: 25px;
-  margin: 15px;
+  margin: 15px 0px 15px 15px;
   cursor: pointer;
 
   @media (min-width: 1000px) {

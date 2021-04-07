@@ -6,7 +6,7 @@ export default class MailController {
   // tslint:disable-next-line:no-empty
   constructor() { }
 
-  getMail(employeeID: string,
+  getMailByEmployee(employeeID: string,
     filter: string | undefined,
     sort: string | undefined,
     loc: string | undefined,
@@ -16,7 +16,7 @@ export default class MailController {
         if (nameErr) {
           reject (nameErr);
         } else {
-          Mail.getMail(employeeID ,filter, sort, loc, id, (err: any, res: any) => {
+          Mail.getMailByEmployee(employeeID ,filter, sort, loc, id, (err: any, res: any) => {
             if (err) {
               reject(err);
             } else {
@@ -55,6 +55,50 @@ export default class MailController {
       })
     });
   }
+
+  getMail(filter: string | undefined,
+    sort: string | undefined,
+    loc: string | undefined,
+    id: string | undefined): Promise<IMailResponse[]> {
+    return new Promise((resolve, reject) => {
+      Mail.getMailWithEmployeeInfo(filter, sort, loc, id, (err: any, res: any) => {
+              if (err) {
+                reject(err);
+              } else {
+                try {
+                  const result = JSON.parse(JSON.stringify(res));
+                  const output: IMailResponse[] = [];
+                  for (const mail of result) {
+                    let date = mail.date_arrived;
+                    if (date !== null) {
+                      date = date.substring(0, 10); // truncates time
+                    }
+                    const parsedMail: IMailResponse = {
+                      mailID: mail.mail_id,
+                      officeID: mail.fk_office_id,
+                      officeLocation: mail.fk_office_location,
+                      recipient_first: mail.first_name,
+                      recipient_last: mail.last_name,
+                      recipient_email: mail.email,
+                      type: mail.type,
+                      approx_date: date,
+                      sender: mail.sender_info,
+                      dimensions: mail.dimensions,
+                      comments: mail.additional_notes,
+                      adminID: mail.fk_admin_eid
+                    }
+                    output.push(parsedMail);
+                  }
+                  resolve(output);
+                } catch (err) {
+                  reject(err);
+                }
+              }
+            }
+      );
+    });
+  }
+
 
   // posts a mail, returns mail_id
   createMail(body: IMail): Promise<number> {

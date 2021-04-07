@@ -8,6 +8,7 @@ export const SET_OFFICES = "SET_OFFICES";
 export const SET_DESKS = "SET_DESKS";
 export const SET_FLOORPLAN_AVAILABLE = "SET_FLOORPLAN_AVAILABLE";
 export const SET_FLOORS_IN_UPDATE = "SET_FLOORS_IN_UPDATE";
+export const SET_EMPLOYEES = "SET_EMPLOYEES";
 
 export const SET_MSAL_INSTANCE = "SET_MSAL_INSTANCE";
 export const GET_MSAL_INSTANCE = "GET_MSAL_INSTANCE";
@@ -19,3 +20,5 @@ export const SET_OID = "SET_OID";
 export const SET_IS_ADMIN = "SET_IS_ADMIN";
 
 export const SET_LOADING = "SET_LOADING";
+export const SET_ERROR = "SET_ERROR";
+

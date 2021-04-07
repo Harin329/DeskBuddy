@@ -30,7 +30,7 @@ Office.addOffice = (id: number, office: IOffice, result: any) => {
 }
 
 Office.deleteOffice = (city: string, id: number, result: any) => {
-    con.query('CALL deleteOffice(?, ?)',
+    con.query('CALL deleteDesksFloorsOffice(?, ?)',
     [
         id,
         city

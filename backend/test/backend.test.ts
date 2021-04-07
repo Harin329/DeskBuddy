@@ -7,13 +7,46 @@ import { IMail } from "../src/interfaces/mail.interface";
 let server: DeskbuddyServer;
 let request: any;
 
-const adminToken = ""; // token for Global Admin administrator
-const userToken = ""; // token for Dana White user
-const adminJSON = {"Authorization": `Bearer ${adminToken}`};
-const userJSON = {"Authorization": `Bearer ${userToken}`};
-const testUserOID = `606ac3ca-afce-4337-b0b7-831f4c2dad90`;
+let adminToken:any = ""; // token for Global Admin administrator
+let userToken:any = ""; // token for Dana White user
+let adminJSON = {"Authorization": `Bearer ${adminToken}`};
+let userJSON = {"Authorization": `Bearer ${userToken}`};
+const testUserOID = `606ac3ca-afce-4337-b0b7-831f4c2dad90`; // test OID
+// const testUserOID = `ce17e073-774c-42a0-8b2b-a4eadb93e193`; // jestuser OID
+const adminOID = "f91d5bbe-76a9-4078-970e-6617e75368fb"; // jestadmin OID
 
-beforeAll(done => {
+const requestToken = async (username: any, password: any) => {
+    const tokenRequest = require("request");
+    return new Promise((resolve, reject) => {
+        tokenRequest.post({
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            url: "https://login.microsoftonline.com/65f40c4a-aa31-4c7c-8e53-5c0ca832c7ed/oauth2/v2.0/token/",
+            form : {
+                "grant_type" : "password",
+                "username" : username,
+                "password" : password,
+                "scope" : "api://d111cdab-6637-46bb-86b1-3685db9d744e/.default",
+                "client_id" : "42a72579-a163-4e8b-b427-aa7eb197eb87",
+                "client_secret" : process.env.CLIENT_SECRET
+            }
+        }, (err: any, res: any) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(JSON.parse(res.body).access_token);
+            }
+        });
+    });
+}
+
+beforeAll(async done => {
+    userToken = await requestToken(process.env.USER_USERNAME, process.env.USER_PASSWORD);
+    adminToken = await requestToken(process.env.ADMIN_USERNAME, process.env.ADMIN_PASSWORD);
+    userJSON = {"Authorization": `Bearer ${userToken}`};
+    adminJSON = {"Authorization": `Bearer ${adminToken}`};
+
     server = new DeskbuddyServer(3000);
     server.start().then(() => {
         request = supertest(server.getApp());
@@ -34,41 +67,116 @@ describe("Reservation endpoints tests", () => {
         done();
     });
 
-    it("POST /reservation", async done => {
-        // todo
+    it("POST /reservation with empty body", async done => {
+        const body = {};
+        const res1 = await request.post('/reservation/').send(body).set(userJSON);
+        expect(res1.status).toBe(400);
+        await reservationDeleter(res1);
         done();
     });
 
-    it("POST /reservation with malformed packet", async done => {
-        // todo
+    it("POST /reservation normal", async done => {
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const body = loadJSON("test/jsonBody/reservationBody/postReservationNormal.json");
+        body.office_id = officeID;
+        body.employee_id = testUserOID;
+        const res2 = await request.post('/reservation/').send(body).set(userJSON);
+        expect(res2.status).toBe(200);
+        await reservationDeleter(res2);
+        await locationDeleter(res1);
         done();
     });
 
     it("POST /reservation duplicated", async done => {
-        // todo
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const body = loadJSON("test/jsonBody/reservationBody/postReservationNormal.json");
+        body.office_id = officeID;
+        body.employee_id = testUserOID;
+        const res2 = await request.post('/reservation/').send(body).set(userJSON);
+        expect(res2.status).toBe(200);
+        body.employee_id = adminOID;
+        const res3 = await request.post('/reservation/').send(body).set(adminJSON);
+        expect(res3.status).toBe(404);
+        await reservationDeleter(res2);
+        await locationDeleter(res1);
         done();
     });
 
-    it("GET /reservation/upcoming", async done => {
-        // todo
+    it("GET /reservation/upcomingByUID/:userID with no reservations", async done => {
+        const res = await request.get(`/reservation/upcomingByUID/${testUserOID}`).set(userJSON);
+        expect(res.status).toBe(200);
+        expect(res.body.length).toBe(0);
         done();
     });
 
-    it("POST /reservation/upcoming/:date", async done => {
-        // todo
+    it("GET /reservation/upcomingByUID/:userID with 2 reservations", async done => {
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const body1 = loadJSON("test/jsonBody/reservationBody/postReservationNormal.json");
+        body1.office_id = officeID;
+        body1.employee_id = testUserOID;
+        const res2 = await request.post('/reservation/').send(body1).set(userJSON);
+        expect(res2.status).toBe(200);
+        const body2 = loadJSON("test/jsonBody/reservationBody/postReservationNormal2.json");
+        body2.office_id = officeID;
+        body2.employee_id = testUserOID;
+        const res3 = await request.post('/reservation/').send(body2).set(userJSON);
+        expect(res3.status).toBe(200);
+        const res4 = await request.get(`/reservation/upcomingByUID/${testUserOID}`).set(userJSON);
+        expect(res4.status).toBe(200);
+        console.log(res4.body);
+        expect(res4.body.length).toBe(2);
+        await reservationDeleter(res2);
+        await reservationDeleter(res3);
+        await locationDeleter(res1);
         done();
     });
 
-    it("GET /reservation/count/:officeID/:start/:end", async done => {
-        // todo
+    it("GET /reservation/upcomingByUID/:userID for someone else's oid", async done => {
+        const res = await request.get(`/reservation/upcomingByUID/${adminOID}`).set(userJSON);
+        expect(res.status).toBe(401);
         done();
     });
 
-    it("DEL /reservation/:reservationID", async done => {
-        // todo
+    it("DEL /reservation/:reservationID for someone else's reservation", async done => {
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const body1 = loadJSON("test/jsonBody/reservationBody/postReservationNormal.json");
+        body1.office_id = officeID;
+        body1.employee_id = adminOID;
+        const res2 = await request.post('/reservation/').send(body1).set(adminJSON);
+        expect(res2.status).toBe(200);
+        const body2 = {"reservation_id" :  res2.body.reservation_id};
+        const res3 = await request.delete('/reservation/deleteReservation').send(body2).set(userJSON);
+        expect(res3.status).toBe(404);
+        await reservationDeleter(res2);
+        await locationDeleter(res1);
+        done();
+    });
+
+    it("DEL /reservation/:reservationID normal", async done => {
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const body1 = loadJSON("test/jsonBody/reservationBody/postReservationNormal.json");
+        body1.office_id = officeID;
+        body1.employee_id = testUserOID;
+        const res2 = await request.post('/reservation/').send(body1).set(userJSON);
+        expect(res2.status).toBe(200);
+        const body2 = {"reservation_id" :  res2.body.reservation_id};
+        const res3 = await request.delete('/reservation/deleteReservation').send(body2).set(userJSON);
+        expect(res3.status).toBe(200);
+        await locationDeleter(res1);
         done();
     });
 });
+
+const reservationDeleter = async (res: any) => {
+    const id = res.body.reservation_id;
+    const body = {"reservation_id" : id};
+    await request.delete(`/reservation/deleteReservation`).send(body).set(adminJSON);
+}
 
 describe("Social feed endpoints tests", () => {
     it("POST /createPost with empty body", async done => {
@@ -78,23 +186,10 @@ describe("Social feed endpoints tests", () => {
         done();
     });
 
-    it("POST /createPost with null channel_id", async done => {
-        const body = loadJSON("test/jsonBody/postBody/postPostNullChannel.json");
-        const res = await request.post('/post/createPost').send(body).set(userJSON);
-        expect(res.status).toBe(400);
-        done();
-    });
-
-    it("POST /createPost with null employee_id", async done => {
-        const body = loadJSON("test/jsonBody/postBody/postPostNullEmployee.json");
-        const res = await request.post('/post/createPost').send(body).set(userJSON);
-        expect(res.status).toBe(400);
-        done();
-    });
-
     it("POST /createPost to reports channel", async done => {
         const body = loadJSON("test/jsonBody/postBody/postPostAdminChannel.json");
-        const res = await request.post('/post/createPost').send(body).set(adminJSON);
+        body.employee_id = testUserOID;
+        const res = await request.post('/post/createPost').send(body).set(userJSON);
         expect(res.status).toBe(400);
         done();
     });
@@ -108,6 +203,7 @@ describe("Social feed endpoints tests", () => {
 
     it("POST /createPost normal", async done => {
         const body = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        body.employee_id = testUserOID;
         const res = await request.post('/post/createPost').send(body).set(userJSON);
         expect(res.status).toBe(200);
         await postDeleter(res);
@@ -121,17 +217,9 @@ describe("Social feed endpoints tests", () => {
         done();
     });
 
-    it("POST /flagPost with null post_id", async done => {
-        const body = {
-            post_id: null
-        };
-        const res = await request.post('/post/flagPost').send(body).set(userJSON);
-        expect(res.status).toBe(400);
-        done();
-    });
-
     it("POST /flagPost normal", async done => {
         const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        body1.employee_id = testUserOID;
         const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
         expect(res1.status).toBe(200);
         const body2 = {
@@ -150,17 +238,9 @@ describe("Social feed endpoints tests", () => {
         done();
     });
 
-    it("POST /unreportPost with null post_id", async done => {
-        const body = {
-            post_id: null
-        };
-        const res = await request.post('/post/unreportPost').send(body).set(adminJSON);
-        expect(res.status).toBe(400);
-        done();
-    });
-
     it("POST /unreportPost as non-admin", async done => {
         const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        body1.employee_id = testUserOID;
         const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
         expect(res1.status).toBe(200);
         const body2 = {
@@ -176,6 +256,7 @@ describe("Social feed endpoints tests", () => {
 
     it("POST /unreportPost normal", async done => {
         const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        body1.employee_id = testUserOID;
         const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
         expect(res1.status).toBe(200);
         const body2 = {
@@ -196,17 +277,9 @@ describe("Social feed endpoints tests", () => {
         done();
     });
 
-    it("DELETE /deletePost with null post_id", async done => {
-        const body = {
-            post_id: null
-        };
-        const res = await request.delete('/post/deletePost').send(body).set(adminJSON);
-        expect(res.status).toBe(400);
-        done();
-    });
-
     it("DELETE /deletePost as user for same user's post", async done => {
         const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        body1.employee_id = testUserOID;
         const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
         expect(res1.status).toBe(200);
         const body2 = {
@@ -218,7 +291,8 @@ describe("Social feed endpoints tests", () => {
     });
 
     it("DELETE /deletePost as user for different user's post", async done => {
-        const body1 = loadJSON("test/jsonBody/postBody/postPostNormalAdmin.json");
+        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        body1.employee_id = adminOID;
         const res1 = await request.post('/post/createPost').send(body1).set(adminJSON);
         expect(res1.status).toBe(200);
         const body2 = {
@@ -232,6 +306,7 @@ describe("Social feed endpoints tests", () => {
 
     it("DELETE /deletePost as admin for different user's post", async done => {
         const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        body1.employee_id = testUserOID;
         const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
         expect(res1.status).toBe(200);
         const body2 = {
@@ -241,8 +316,6 @@ describe("Social feed endpoints tests", () => {
         expect(res2.status).toBe(200);
         done();
     });
-
-
 });
 
 const postDeleter = async (res: any) => {
@@ -283,7 +356,7 @@ describe("Mail manager endpoints tests", () => {
         done();
     });
 
-    it("GET /mail", async done => {
+    it("GET /mail/:employeeID", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
@@ -302,7 +375,7 @@ describe("Mail manager endpoints tests", () => {
         done();
     });
 
-    it("GET /mail where no mail has been added", async done => {
+    it("GET /mail/:employeeID where no mail has been added", async done => {
         const getRes = await request.get(`/mail/${testUserOID}`).set(userJSON);
         try {
             const output = JSON.parse(getRes.text);
@@ -314,7 +387,7 @@ describe("Mail manager endpoints tests", () => {
         done();
     });
 
-    it("GET /mail where two mails have been added", async done => {
+    it("GET /mail/:employeeID where two mails have been added", async done => {
         const body1: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const body2: IMail = loadJSON("test/jsonBody/mailBody/postMailValidNulls.json");
         const res1 = await request.post(`/mail`).send(body1).set(adminJSON);
@@ -336,7 +409,7 @@ describe("Mail manager endpoints tests", () => {
         done();
     });
 
-    it("GET new /mail where there is one", async done => {
+    it("GET new /mail/:employeeID where there is one", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
@@ -355,7 +428,7 @@ describe("Mail manager endpoints tests", () => {
         done();
     });
 
-    it("GET /mail filtered on awaiting admin action only", async done => {
+    it("GET /mail/:employeeID filtered on awaiting admin action only", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
@@ -372,7 +445,7 @@ describe("Mail manager endpoints tests", () => {
         done();
     });
 
-    it("GET /mail from the NV buildings, where there is one", async done => {
+    it("GET /mail/:employeeID from the NV buildings, where there is one", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
@@ -389,7 +462,7 @@ describe("Mail manager endpoints tests", () => {
         done();
     });
 
-    it("GET /mail from the NV buildings, where there is none", async done => {
+    it("GET /mail/:employeeID from the NV buildings, where there is none", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
@@ -406,7 +479,7 @@ describe("Mail manager endpoints tests", () => {
         done();
     });
 
-    it("GET /mail from NV01, where there is one", async done => {
+    it("GET /mail/:employeeID from NV01, where there is one", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
@@ -423,7 +496,7 @@ describe("Mail manager endpoints tests", () => {
         done();
     });
 
-    it("GET /mail from NV01, where there is none", async done => {
+    it("GET /mail/:employeeID from NV01, where there is none", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
@@ -432,6 +505,96 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(0);
+            await mailDeleter(res);
+        } catch(err) {
+            await mailDeleter(res);
+            throw new Error(err);
+        }
+        done();
+    });
+
+    it("GET /mail", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        // at least one mail
+        const getRes = await request.get(`/mail`).set(adminJSON);
+        try {
+            const output = JSON.parse(getRes.text);
+            const results: IMail[] = output.mails;
+            expect(results.length).toBeGreaterThanOrEqual(1);
+            await mailDeleter(res);
+        } catch(err) {
+            await mailDeleter(res);
+            throw new Error(err);
+        }
+        done();
+    });
+
+    it("GET /mail while filtering for location NV01", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        // at least one mail
+        const getRes = await request.get(`/mail?locname=NV&locid=1`).set(adminJSON);
+        try {
+            const output = JSON.parse(getRes.text);
+            const results: IMail[] = output.mails;
+            expect(results.length).toBeGreaterThanOrEqual(1);
+            await mailDeleter(res);
+        } catch(err) {
+            await mailDeleter(res);
+            throw new Error(err);
+        }
+        done();
+    });
+
+    it("GET /mail while filtering for location IMPOSSIBLE99", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        // at least one mail
+        const getRes = await request.get(`/mail?locname=IMPOSSIBLE&locid=99`).set(adminJSON);
+        try {
+            const output = JSON.parse(getRes.text);
+            const results: IMail[] = output.mails;
+            expect(results.length).toBe(0);
+            await mailDeleter(res);
+        } catch(err) {
+            await mailDeleter(res);
+            throw new Error(err);
+        }
+        done();
+    });
+
+    it("GET /mail while filtering for new mail", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        // at least one mail
+        const getRes = await request.get(`/mail?filter=new`).set(adminJSON);
+        try {
+            const output = JSON.parse(getRes.text);
+            const results: IMail[] = output.mails;
+            expect(results.length).toBeGreaterThanOrEqual(1);
+            await mailDeleter(res);
+        } catch(err) {
+            await mailDeleter(res);
+            throw new Error(err);
+        }
+        done();
+    });
+
+    it("GET /mail while sorting for modified date descending", async done => {
+        const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const res = await request.post('/mail').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        // at least one mail
+        const getRes = await request.get(`/mail?sort=-modified_at`).set(adminJSON);
+        try {
+            const output = JSON.parse(getRes.text);
+            const results: IMail[] = output.mails;
+            expect(results.length).toBeGreaterThanOrEqual(1);
             await mailDeleter(res);
         } catch(err) {
             await mailDeleter(res);
@@ -455,6 +618,13 @@ describe("Miscellaneous tests", () => {
 });
 
 describe("Location endpoint tests", () => {
+    it("POST /location as a non-admin", async done => {
+        const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationNormal.json");
+        const res = await request.post('/location').field("body", JSON.stringify(body)).set(userJSON);
+        expect(res.status).toBe(401);
+        done();
+    });
+
     it("POST /location", async done => {
         const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationNormal.json");
         const res = await request.post('/location').field("body", JSON.stringify(body)).set(adminJSON);
@@ -504,6 +674,11 @@ describe("Location endpoint tests", () => {
         done();
     });
 });
+
+const locationCreator = async () => {
+    const body: IOffice = loadJSON("test/jsonBody/locationBody/postLocationNormal.json");
+    return await request.post('/location').field("body", JSON.stringify(body)).set(adminJSON);
+}
 
 const locationDeleter = async (res: any) => {
     const result = JSON.parse(res.text).code;

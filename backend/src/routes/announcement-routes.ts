@@ -3,6 +3,7 @@ import { Router, Request, Response } from 'express';
 const router = Router();
 
 import AnnouncementController from '../controllers/announcement-controller';
+import {requestIsAdmin} from "../util";
 const announcementServer = new AnnouncementController();
 
 router.get('/getCompanyAnnouncements', (req, res: Response) => {
@@ -36,40 +37,51 @@ router.get('/getBranchAnnouncements/:officeloc/:officeid', (req, res: Response) 
 })
 
 router.post('/postCompanyAnnouncement', (req: Request, res: Response) => {
-    if (!req.body) {
+    if (!requestIsAdmin(req.authInfo)) {
+        res.status(401).send({
+            message: 'Unauthorized'
+        });
+    }
+    else if (!req.body) {
         res.status(400).send({
             message: 'Content can not be empty!'
         });
+    } else {
+        announcementServer.postCompanyAnnouncement(req)
+            .then((announcement: any) => {
+                res.status(200);
+                res.send();
+            })
+            .catch((err: any) => {
+                res.status(401).send({
+                    message: err
+                });
+            })
     }
-
-    announcementServer.postCompanyAnnouncement(req)
-        .then((announcement: any) => {
-            res.status(200);
-            res.send();
-        })
-        .catch((err: any) => {
-            res.status(401).send({
-                message: err
-            });
-        })
 })
 
 router.post('/postBranchAnnouncement', (req: Request, res: Response) => {
-    if (!req.body) {
+    if (!requestIsAdmin(req.authInfo)) {
+        res.status(401).send({
+            message: 'Unauthorized'
+        });
+    }
+    else if (!req.body) {
         res.status(400).send({
             message: 'Content can not be empty!'
         });
-    }
-    announcementServer.postBranchAnnouncement(req)
-        .then((result: any) => {
-            res.status(200);
-            res.send();
-        })
-        .catch((err: any) => {
-            res.status(401).send({
-                message: err
+    } else {
+        announcementServer.postBranchAnnouncement(req)
+            .then((result: any) => {
+                res.status(200);
+                res.send();
+            })
+            .catch((err: any) => {
+                res.status(401).send({
+                    message: err
+                });
             });
-        });
+    }
 });
 
 export default router;

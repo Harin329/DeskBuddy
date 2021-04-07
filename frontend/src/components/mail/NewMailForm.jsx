@@ -7,6 +7,8 @@ import {useMsal} from "@azure/msal-react";
 import {isMobile} from "react-device-detect";
 import {fetchOffices} from "../../actions/reservationActions";
 import {useDispatch, useSelector} from "react-redux";
+import {fetchEmployees} from "../../actions/authenticationActions";
+import { setError } from '../../actions/globalActions';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -75,7 +77,6 @@ function NewMailForm(props) {
     const [recipientFN, setRecipientFN] = useState("");
     const [recipientLN, setRecipientLN] = useState("");
     const [recipientEmail, setRecipientEmail] = useState("");
-    const [employeeList, setEmployeeList] = useState([]);
     const [arrivalDate, setArrivalDate] = useState(new Date());
     const [mailType, setMailType] = useState("");
     const [sender, setSender] = useState("");
@@ -89,32 +90,18 @@ function NewMailForm(props) {
 
     const dispatch = useDispatch();
     const officeList = useSelector(state => state.reservations.offices);
+    const employeeList = useSelector(state => state.authentication.users);
 
     useEffect(() => {
         dispatch(fetchOffices());
+        dispatch(fetchEmployees());
     }, []);
 
     const handleOfficeChange = (event) => {
-        setEmployeeList([]);
         setOffice(event.target.value);
         const params = event.target.value.split(['-']);
         setOfficeLocation(params[0]);
         setOfficeID(params[1]);
-
-        console.log(params[0])
-        console.log(params[1])
-
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow',
-        };
-
-        safeFetch(Endpoint + "/user/GetUserNameByOffice/" + params[0] +  "/" + params[1], requestOptions)
-            .then((response) => response.text())
-            .then(result => {
-                setEmployeeList(JSON.parse(result));
-            })
-            .catch(error => console.log('error', error));
     };
 
     const handleFormClose = () => {
@@ -155,8 +142,6 @@ function NewMailForm(props) {
     }
 
     const handleSubmit = (event) => {
-        let userName = accounts[0].name.split(" ");
-
         let jsonBody = {
             officeID: officeID,
             officeLocation: officeLocation,
@@ -179,7 +164,10 @@ function NewMailForm(props) {
             .then((response) => response.text())
             .then(result => {
             })
-            .catch(error => alert(error));
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
 
         handleFormClose();
     }

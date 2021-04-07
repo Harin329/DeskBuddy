@@ -8,6 +8,7 @@ import { useMsal } from "@azure/msal-react";
 import { Chart } from "react-google-charts";
 import safeFetch from "../../util/Util";
 import Endpoint from '../../config/Constants';
+import { setError } from '../../actions/globalActions';
 
 
 const useStyles = makeStyles({
@@ -23,7 +24,7 @@ const useStyles = makeStyles({
     },
     sectionSpacing: {
         height: '25%',
-        marginBottom: '29px',
+        marginBottom: isMobile ? '0px' : '80px',
     },
     deskSectionText: {
         color: 'black',
@@ -96,7 +97,10 @@ function Today() {
                 const res = JSON.parse(result)
                 setOfficeDays(res[0].length)
             })
-            .catch(error => console.log('error', error))
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
     }, []);
 
     const convertDate = (date) => {
@@ -141,7 +145,7 @@ function Today() {
                 </div>}
             </Grid>
             {!isMobile && <Grid item xs={6} className={classes.titleLines} >
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginLeft: 30, marginTop: 15}}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginLeft: '5px', marginTop: 15}}>
                     <Chart
                         width={'100%'}
                         height={'100%'}
