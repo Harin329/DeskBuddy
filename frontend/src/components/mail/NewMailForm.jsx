@@ -10,6 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {fetchEmployees} from "../../actions/authenticationActions";
 import { setError } from '../../actions/globalActions';
 import Select from "react-select";
+import { getNewMail } from '../../actions/mailActions';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -169,7 +170,7 @@ function NewMailForm(props) {
                 return response.text();
             })
             .then(result => {
-                // TODO: This is suppose to be where the re-render is triggered
+                dispatch(getNewMail(userOID));
                 props.handleNewMailRefresh();
             })
             .catch(error => {

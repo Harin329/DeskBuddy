@@ -7,6 +7,7 @@ import {useMsal} from "@azure/msal-react";
 import {isMobile} from "react-device-detect";
 import { setError } from '../../actions/globalActions';
 import { useDispatch } from 'react-redux';
+import { getNewMail } from '../../actions/mailActions';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -131,6 +132,7 @@ function MailRequestForm(props) {
                 return response.text();
             })
             .then(result => {
+                dispatch(getNewMail(userOID));
                 props.closeModal();
             })
             .catch(error => {

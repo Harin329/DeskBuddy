@@ -9,7 +9,8 @@ import Endpoint from "../../config/Constants";
 import {useMsal} from "@azure/msal-react";
 import {isMobile} from "react-device-detect";
 import { setError } from '../../actions/globalActions';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getNewMail } from '../../actions/mailActions';
 
 
 const useStyles = makeStyles({
@@ -74,39 +75,18 @@ const useStyles = makeStyles({
 
 
 function MailModule(size, text) {
-    const [mailList, setMailList] = useState([]);
     const [hasMore, setHasMore] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
 
     const classes = useStyles();
     const dispatch = useDispatch();
+    const mailList = useSelector(state => state.mail.newMail);
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
 
     const getMail = () => {
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=new", requestOptions)
-        .then(response => {
-            if (!response.ok) {
-                dispatch(setError(true));
-            }
-            return response.text();
-        })
-            .then(result => {
-                const mail = JSON.parse(result).mails;
-                const sortedMail = mail.sort((a, b) => { return new Date(b.approx_date) - new Date(a.approx_date) });
-                setMailList([...sortedMail]);
-            })
-            .catch(error => {
-                console.log('error', error);
-                dispatch(setError(true));
-            });
-
+        dispatch(getNewMail(userOID));
         setHasMore(false);
     };
 

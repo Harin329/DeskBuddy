@@ -22,3 +22,6 @@ export const SET_IS_ADMIN = "SET_IS_ADMIN";
 export const SET_LOADING = "SET_LOADING";
 export const SET_ERROR = "SET_ERROR";
 
+export const SET_NEW_MAIL = "SET_NEW_MAIL";
+
+
