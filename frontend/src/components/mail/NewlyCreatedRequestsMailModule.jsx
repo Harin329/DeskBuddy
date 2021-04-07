@@ -73,10 +73,13 @@ const useStyles = makeStyles({
 });
 
 
-function NewlyCreatedRequestsMailModule(size, text) {
+function NewlyCreatedRequestsMailModule(size, text, newMailRefresh, office) {
+    const [officeLocation, officeId] = office ? office.split('-') : [];
+
     const [mailList, setMailList] = useState([]);
     const [hasMore, setHasMore] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [shouldRefresh, setShouldRefresh] = useState(newMailRefresh);
 
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -84,18 +87,26 @@ function NewlyCreatedRequestsMailModule(size, text) {
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
 
+    // TODO: My attempt at making use of the refresh trigger to retrieve the updated list of mail and re-render the component
+    // useEffect(() => {
+    //     getMail();
+    // }, [shouldRefresh]);
+
     const getMail = () => {
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/mail?filter=new&sort=-modified_at", requestOptions)
+        const fullEndpoint = officeLocation && officeId ? `${Endpoint}/mail?filter=new&locname=${officeLocation}$locid=${officeId}` : `${Endpoint}/mail?filter=new`;
+
+        safeFetch(fullEndpoint, requestOptions)
           .then((response) => response.text())
           .then(result => {
             const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Waiting for Admin');
-            setMailList([...mailList, ...mail]);
+            mail.map((mailObj) => mailObj.status = 'New');
+            const sortedMail = mail.sort((a, b) => { return new Date(b.approx_date) - new Date(a.approx_date) });
+            setMailList([...mailList, ...sortedMail]);
           })
           .catch(error => {
             console.log('error', error);

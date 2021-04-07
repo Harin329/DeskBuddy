@@ -163,6 +163,8 @@ function NewMailForm(props) {
         safeFetch(Endpoint + "/mail", requestOptions)
             .then((response) => response.text())
             .then(result => {
+                // TODO: This is suppose to be where the re-render is triggered
+                props.handleNewMailRefresh();
             })
             .catch(error => {
                 console.log('error', error);
