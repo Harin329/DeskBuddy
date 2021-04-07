@@ -3,17 +3,17 @@ import supertest from "supertest";
 import fs from 'fs';
 import { IOffice } from "../src/interfaces/location.interface";
 import { IMail } from "../src/interfaces/mail.interface";
+import * as config from "../src/config.json";
 
 let server: DeskbuddyServer;
 let request: any;
 
-let adminToken:any = ""; // token for Global Admin administrator
-let userToken:any = ""; // token for Dana White user
+let adminToken:any = "";
+let userToken:any = "";
 let adminJSON = {"Authorization": `Bearer ${adminToken}`};
 let userJSON = {"Authorization": `Bearer ${userToken}`};
-const testUserOID = `606ac3ca-afce-4337-b0b7-831f4c2dad90`; // test OID
-// const testUserOID = `ce17e073-774c-42a0-8b2b-a4eadb93e193`; // jestuser OID
-const adminOID = "f91d5bbe-76a9-4078-970e-6617e75368fb"; // jestadmin OID
+const testUserOID = process.env.USER_OID;
+const adminOID = process.env.ADMIN_OID;
 
 const requestToken = async (username: any, password: any) => {
     const tokenRequest = require("request");
@@ -22,13 +22,13 @@ const requestToken = async (username: any, password: any) => {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            url: "https://login.microsoftonline.com/65f40c4a-aa31-4c7c-8e53-5c0ca832c7ed/oauth2/v2.0/token/",
+            url: `https://login.microsoftonline.com/${config.credentials.tenantID}/oauth2/v2.0/token/`,
             form : {
                 "grant_type" : "password",
                 "username" : username,
                 "password" : password,
-                "scope" : "api://d111cdab-6637-46bb-86b1-3685db9d744e/.default",
-                "client_id" : "42a72579-a163-4e8b-b427-aa7eb197eb87",
+                "scope" : `api://${config.credentials.clientID}/.default`,
+                "client_id" : config.credentials.appClientID,
                 "client_secret" : process.env.CLIENT_SECRET
             }
         }, (err: any, res: any) => {
