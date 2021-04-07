@@ -63,7 +63,12 @@ export const fetchEmployees = () => dispatch => {
     };
 
     return safeFetch(Endpoint + "/user/", requestOptions)
-        .then((response) => response.text())
+    .then(response => {
+        if (!response.ok) {
+            dispatch(setError(true));
+        }
+        return response.text();
+    })
         .then(result => {
             dispatch({ type: SET_EMPLOYEES, payload: JSON.parse(result) });
         })

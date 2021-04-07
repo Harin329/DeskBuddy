@@ -136,6 +136,7 @@ function MailNotification(props) {
     }
 
     const closeMailRequest = () => {
+        console.log('closing')
         setRequestOpen(false);
     }
 
@@ -179,7 +180,12 @@ function MailNotification(props) {
         };
 
         safeFetch(Endpoint + "/mail/" + data.mailID, requestOptions)
-            .then((response) => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
             .then(result => {
             })
             .catch(error => {

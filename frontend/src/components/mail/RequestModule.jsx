@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {Typography, Grid, ListItem, Divider, Modal} from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { Typography, Grid, ListItem, Divider, Modal } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InfiniteScroll from "react-infinite-scroller";
 import MailRequestForm from "./MailRequestForm";
 import safeFetch from "../../util/Util";
 import Endpoint from "../../config/Constants";
-import {useMsal} from "@azure/msal-react";
+import { useMsal } from "@azure/msal-react";
 import MailResponseForm from "./MailResponseForm";
 import MailNotification from "./MailNotification";
 import { setError } from '../../actions/globalActions';
@@ -62,7 +62,12 @@ function RequestModule(size, text) {
         };
 
         safeFetch(Endpoint + "/request/" + userOID, requestOptions)
-            .then((response) => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
             .then(result => {
                 const requests = JSON.parse(result);
                 setRequestList(requests);
@@ -82,7 +87,7 @@ function RequestModule(size, text) {
     }
 
     const mailResponsePopup = () => {
-        return <MailResponseForm closeModal={closeMailResponse} whatToDoWhenClosed={(bool) => {setOpen(bool)}}/>
+        return <MailResponseForm closeModal={closeMailResponse} whatToDoWhenClosed={(bool) => { setOpen(bool) }} />
     }
 
     let requests = [];
@@ -100,13 +105,13 @@ function RequestModule(size, text) {
                     <div style={{ width: '40%', height: '100px', justifyContent: 'center', display: 'flex', flexDirection: 'column' }} onClick={handleMailResponse}>
                         <Typography className={classes.deskSectionText}>
                             STATUS: <Typography className={classes.deskText}>
-                            {requests[i]}
-                        </Typography>
+                                {requests[i]}
+                            </Typography>
                         </Typography>
                         <Typography className={classes.deskSectionText}>
                             ADMIN: <Typography className={classes.deskText}>
-                            {requests[i]}
-                        </Typography>
+                                {requests[i]}
+                            </Typography>
                         </Typography>
                     </div>
                 </div>

@@ -88,7 +88,12 @@ function BookingsCalendar(UID) {
         };
 
         safeFetch(Endpoint + "/reservation/upcomingByUID/" + userID, requestOptions)
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
             .then(result => {
                 const res = JSON.parse(result)
                 formatReservations(res);

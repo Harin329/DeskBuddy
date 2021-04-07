@@ -110,7 +110,12 @@ function MailResponseForm(props) {
         };
 
         safeFetch(Endpoint + "/request/admin", requestOptions)
-            .then((response) => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
             .then(result => {
             })
             .catch(error => {
@@ -137,7 +142,12 @@ function MailResponseForm(props) {
         };
 
         safeFetch(Endpoint + "/request/employee", requestOptions)
-            .then((response) => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
             .then(result => {
             })
             .catch(error => {
@@ -159,7 +169,12 @@ function MailResponseForm(props) {
         };
 
         safeFetch(Endpoint + "/request/close", requestOptions)
-            .then((response) => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
             .then(result => {
             })
             .catch(error => {

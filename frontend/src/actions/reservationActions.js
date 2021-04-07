@@ -27,7 +27,12 @@ export const makeReservation = (userID, deskObj, filter) => dispatch => {
         };
 
         safeFetch(Endpoint + "/reservation", requestOptions)
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
             .then(result => console.log(result))
             .then(() => {
                 dispatch(fetchReservations(userID))
@@ -46,7 +51,12 @@ export const hasFloorplan = (params) => dispatch => {
     };
 
     return safeFetch(Endpoint + "/floor/getFloorsByOffice/" + params[0] + "/" + params[1], requestOptions)
-        .then((response) => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
         .then(result => {
             const res = JSON.parse(result)
             // console.log(res);
@@ -69,7 +79,12 @@ export const fetchOffices = () => dispatch => {
     };
 
     return safeFetch(Endpoint + "/office/getAllOffices", requestOptions)
-        .then((response) => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
         .then(result => {
             dispatch({ type: SET_OFFICES, payload: JSON.parse(result) });
         })
@@ -113,7 +128,12 @@ export const fetchDesks = (filter, append, pageStart, deskResults) => dispatch =
     };
 
     return safeFetch(Endpoint + "/desk/getOpenDesks", requestOptions)
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
         .then(result => {
             const res = JSON.parse(result)
             if (deskResults.length === 0 || !append) {
@@ -143,7 +163,12 @@ export const fetchDesksByOffice = (params) => dispatch => {
     };
 
     return safeFetch(Endpoint + "/desk/getDesksByOffice/" + params[0] + "/" + params[1], requestOptions)
-        .then((response) => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
         .then(result => {
             dispatch({ type: SET_DESKS, payload: JSON.parse(result) })
             // console.log(JSON.parse(result));
@@ -160,7 +185,12 @@ export const fetchFloorsByOffice = (params) => dispatch => {
         redirect: 'follow'
     };
     return safeFetch(Endpoint + "/floor/getFloorsByOffice/" + params[0] + "/" + params[1], requestOptions)
-        .then((response) => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
         .then((result) => {
             dispatch({ type: SET_FLOORS_IN_UPDATE, payload: JSON.parse(result) })
         })
@@ -168,7 +198,7 @@ export const fetchFloorsByOffice = (params) => dispatch => {
             console.log('error', error);
             dispatch(setError(true));
         });
-    
+
 }
 
 export const fetchReservations = (userID) => dispatch => {
@@ -178,7 +208,12 @@ export const fetchReservations = (userID) => dispatch => {
     };
 
     return safeFetch(Endpoint + "/reservation/upcomingByUID/" + userID, requestOptions)
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
         .then(result => {
             const res = JSON.parse(result)
             // console.log(res)
@@ -203,7 +238,12 @@ export const cancelReservations = (userID, rawBody, filter) => dispatch => {
     };
 
     return safeFetch(Endpoint + "/reservation/deleteReservation", requestOptions)
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
         .then(result => console.log(result))
         .then(() => {
             dispatch(fetchReservations(userID));
@@ -222,7 +262,12 @@ export const getEmployeeCount = (deskObj, filter) => dispatch => {
     };
 
     return safeFetch(Endpoint + "/reservation/count/" + deskObj.office_id + "/" + filter.from + "/" + filter.to, requestOptions)
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
         .then(result => {
             const res = JSON.parse(result)
             //console.log(res[0].avg)
@@ -244,7 +289,12 @@ export const getEmployeeCountUpcomingRes = (reservationObj) => dispatch => {
     };
 
     return safeFetch(Endpoint + "/reservation/count/" + reservationObj.fk_office_id + "/" + reservationObj.start_date.split("T")[0] + "/" + reservationObj.end_date.split("T")[0], requestOptions)
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
         .then(result => {
             const res = JSON.parse(result)
             console.log(res[0].avg)

@@ -15,7 +15,7 @@ export default class DBCon {
                 user: process.env.DB_USER,
                 password: process.env.DB_PASS,
                 database: process.env.DB_NAME,
-                timezone: 'utc',
+                timezone: 'America/Vancouver',
             });
             return this.con.connect(err => {
                 if (err) {

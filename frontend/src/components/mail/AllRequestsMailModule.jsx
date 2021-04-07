@@ -101,7 +101,12 @@ function AllRequestsMailModule(size, text) {
     switch (filter) {
       case 'Admin has Responded':
         safeFetch(Endpoint + "/mail/" + userOID + "?filter=awaiting_employee_confirmation&sort=-modified_at", requestOptions)
-          .then((response) => response.text())
+        .then(response => {
+          if (!response.ok) {
+              dispatch(setError(true));
+          }
+          return response.text();
+      })
           .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => {
@@ -116,7 +121,12 @@ function AllRequestsMailModule(size, text) {
         break;
       case 'Waiting for Admin':
         safeFetch(Endpoint + "/mail/" + userOID + "?filter=awaiting_admin_action&sort=-modified_at", requestOptions)
-          .then((response) => response.text())
+        .then(response => {
+          if (!response.ok) {
+              dispatch(setError(true));
+          }
+          return response.text();
+      })
           .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Waiting for Admin');
@@ -129,7 +139,12 @@ function AllRequestsMailModule(size, text) {
         break;
       case 'Cannot Complete':
         safeFetch(Endpoint + "/mail/" + userOID + "?filter=cannot_complete&sort=-modified_at", requestOptions)
-          .then((response) => response.text())
+        .then(response => {
+          if (!response.ok) {
+              dispatch(setError(true));
+          }
+          return response.text();
+      })
           .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Cannot Complete');
@@ -142,7 +157,12 @@ function AllRequestsMailModule(size, text) {
         break;
       case 'Closed':
         safeFetch(Endpoint + "/mail/" + userOID + "?filter=closed&sort=-modified_at", requestOptions)
-          .then((response) => response.text())
+        .then(response => {
+          if (!response.ok) {
+              dispatch(setError(true));
+          }
+          return response.text();
+      })
           .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Closed');
