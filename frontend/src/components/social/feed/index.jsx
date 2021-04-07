@@ -250,7 +250,7 @@ class Feed extends React.Component {
     const isAdmin = accountIsAdmin(this.context.accounts[0]);
     const oid = this.context.accounts[0].idTokenClaims.oid;
 
-    let list_of_feed = <Spinner />;
+    let list_of_feed = Spinner();
 
     if (this.state.loaded && !this.state.error && Array.isArray(this.feed)) {
       list_of_feed = this.feed.map((el) => {
