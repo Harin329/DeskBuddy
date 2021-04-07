@@ -90,10 +90,12 @@ function MailModule(size, text) {
             redirect: 'follow'
         };
 
-        safeFetch(Endpoint + "/mail/" + userOID, requestOptions)
+        safeFetch(Endpoint + "/mail/" + userOID + "?filter=new", requestOptions)
             .then((response) => response.text())
             .then(result => {
-                setMailList(JSON.parse(result).mails);
+                const mail = JSON.parse(result).mails;
+                const sortedMail = mail.sort((a, b) => { return new Date(b.approx_date) - new Date(a.approx_date) });
+                setMailList([...sortedMail]);
             })
             .catch(error => {
                 console.log('error', error);
