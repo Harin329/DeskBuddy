@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {makeStyles} from "@material-ui/core/styles";
-import {Button, MenuItem, TextField, Typography} from "@material-ui/core";
+import React, { useEffect, useState } from 'react';
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, MenuItem, TextField, Typography } from "@material-ui/core";
 import Endpoint from "../../../config/Constants";
 import safeFetch from "../../../util/Util"
-import {useMsal} from "@azure/msal-react";
-import {isMobile} from "react-device-detect";
+import { useMsal } from "@azure/msal-react";
+import { isMobile } from "react-device-detect";
+import ImageUploader from 'react-images-upload';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -45,8 +46,8 @@ const useStyles = makeStyles((theme) => ({
     addChannel: {
         position: 'fixed',
         top: '20%',
-        left: isMobile? '5%' : '25%',
-        width: isMobile? '75%' : '45%',
+        left: isMobile ? '5%' : '25%',
+        width: isMobile ? '75%' : '45%',
         height: '400',
         background: '#FFFCF7',
         padding: '30px',
@@ -89,7 +90,7 @@ function AddChannelForm(props) {
 
     useEffect(() => {
         getChannels();
-    },[]);
+    }, []);
 
     const handleTitleInput = (input) => {
         setTitle(input.target.value);
@@ -101,7 +102,7 @@ function AddChannelForm(props) {
     }
 
     const handleChannelIconInput = (input) => {
-        setChannelIcon(input.target.files[0]);
+        setChannelIcon(input[0]);
     }
 
     const handleDuplicateTitle = () => {
@@ -130,7 +131,7 @@ function AddChannelForm(props) {
 
         formData.append("body", JSON.stringify(jsonBody));
         formData.append("icon", icon);
-        
+
         // TODO: Show screens for duplicate title
         handleDuplicateTitle();
 
@@ -146,11 +147,11 @@ function AddChannelForm(props) {
                     getChannels();
                 })
                 .catch(error => console.log('error', error));
-            
-                handleAddChannelClose();
-            } else {
-                console.log("FAILED")
-            }
+
+            handleAddChannelClose();
+        } else {
+            console.log("FAILED")
+        }
     }
 
     return (
@@ -171,13 +172,32 @@ function AddChannelForm(props) {
                         shrink: true,
                     }}
                     onChange={handleTitleInput}
-                    //onChange={handleChannelIconInput}
                 /></div>
                 <h1 className={classes.iconTitle}>Attach Icon (Optional)</h1>
-                <Button className={classes.actionButton} component="label">
-                        Attach Image &nbsp; <b>{icon ? 'Y' : 'N'}</b>
-                        <input type='file' accept='image/*' hidden onChange={handleChannelIconInput} />
-                </Button>
+                <ImageUploader
+                    buttonStyles={{
+                        background: '#00ADEF',
+                        borderRadius: 20,
+                        color: 'white',
+                        height: '50px',
+                        padding: '0 30px',
+                        marginTop: '10px',
+                        marginBottom: '10px',
+                        fontFamily: 'Lato',
+                        fontWeight: 'bolder',
+                        fontSize: 18,
+                        alignSelf: 'flex-start'
+                    }}
+                    withIcon={false}
+                    buttonText='ATTACH IMAGE'
+                    onChange={handleChannelIconInput}
+                    imgExtension={['.jpg', '.gif', '.png', '.gif']}
+                    maxFileSize={5242880}
+                    withPreview={true}
+                    withLabel={false}
+                    singleImage={true}
+                    fileContainerStyle={{ padding: '0px', margin: '0px', boxShadow: '0px 0px 0px 0px', backgroundColor: '#FFFCF7' }}
+                />
                 <div>
                     <Button className={classes.actionButtonCenter} onClick={handleSubmit} disabled={title == '' ? true : false}>
                         Create

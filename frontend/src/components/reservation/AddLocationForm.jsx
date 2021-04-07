@@ -3,6 +3,7 @@ import { Button, Typography, TextField } from '@material-ui/core';
 import { withStyles } from "@material-ui/core/styles";
 import Endpoint from '../../config/Constants';
 import safeFetch from "../../util/Util";
+import ImageUploader from 'react-images-upload';
 
 const styles = theme => ({
     actionButton: {
@@ -180,7 +181,7 @@ class AddLocationForm extends React.Component {
         this.setState(prevState => ({
             inputFloors: prevState.inputFloors.map((floor) => {
                 if (floor.floor_id === id) {
-                    floor.floor_image = input.target.files[0];
+                    floor.floor_image = input[0];
                 }
                 return floor;
             })
@@ -208,7 +209,7 @@ class AddLocationForm extends React.Component {
 
     handleOfficeImageInput(input) {
         this.setState({
-            image: input.target.files[0]
+            image: input[0]
         });
     }
 
@@ -240,10 +241,30 @@ class AddLocationForm extends React.Component {
                         }}
                         onChange={this.handleFloorNumberInput.bind(this, floor.floor_id)}
                     />
-                    <Button className={classes.actionButton} component="label">
-                        Attach Image &nbsp; <b>{floor.floor_image ? 'Y' : 'N'}</b>
-                        <input type='file' accept='image/*' hidden onChange={this.handleFloorImageInput.bind(this, floor.floor_id)} />
-                    </Button>
+                    <ImageUploader
+                                buttonStyles={{
+                                    background: '#00ADEF',
+                                    borderRadius: 20,
+                                    color: 'white',
+                                    height: '50px',
+                                    padding: '0 30px',
+                                    marginTop: '10px',
+                                    marginBottom: '10px',
+                                    fontFamily: 'Lato',
+                                    fontWeight: 'bolder',
+                                    fontSize: 18,
+                                    alignSelf: 'flex-start'
+                                }}
+                                withIcon={false}
+                                buttonText='ATTACH IMAGE'
+                                onChange={this.handleFloorImageInput.bind(this, floor.floor_id)}
+                                imgExtension={['.jpg', '.gif', '.png', '.gif']}
+                                maxFileSize={5242880}
+                                withPreview={true}
+                                withLabel={false}
+                                singleImage={true}
+                                fileContainerStyle={{ padding: '0px', margin: '0px', boxShadow: '0px 0px 0px 0px', backgroundColor: '#FFFCF7' }}
+                            />
                     <Button className={classes.actionButton} onClick={this.deleteFloor.bind(this, floor.floor_id)}>
                         Remove Floor
                     </Button>
@@ -320,10 +341,30 @@ class AddLocationForm extends React.Component {
                         <Button className={classes.actionButton} onClick={this.addFloor.bind(this)}>
                             Add Floor
                         </Button>
-                        <Button className={classes.actionButton} component="label">
-                            Attach Image &nbsp; {this.state.image ? 'Y' : 'N'}
-                            <input type='file' accept='image/*' hidden onChange={this.handleOfficeImageInput.bind(this)} />
-                        </Button>
+                            <ImageUploader
+                                buttonStyles={{
+                                    background: '#00ADEF',
+                                    borderRadius: 20,
+                                    color: 'white',
+                                    height: '50px',
+                                    padding: '0 30px',
+                                    marginTop: '10px',
+                                    marginBottom: '10px',
+                                    fontFamily: 'Lato',
+                                    fontWeight: 'bolder',
+                                    fontSize: 18,
+                                    alignSelf: 'flex-start'
+                                }}
+                                withIcon={false}
+                                buttonText='ATTACH IMAGE'
+                                onChange={this.handleOfficeImageInput.bind(this)}
+                                imgExtension={['.jpg', '.gif', '.png', '.gif']}
+                                maxFileSize={5242880}
+                                withPreview={true}
+                                withLabel={false}
+                                singleImage={true}
+                                fileContainerStyle={{ padding: '0px', margin: '0px', boxShadow: '0px 0px 0px 0px', backgroundColor: '#FFFCF7' }}
+                            />
                     </div>
                     {this.renderFloors.bind(this)()}
                     <div>
