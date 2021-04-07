@@ -203,7 +203,7 @@ function UpdateLocationPopup (props) {
 
     const handleSubmit = (event) => {
         if (!office) {
-            alert("name is still null");
+            alert("No city identifier has been provided");
         } else {
             const originalCity = office.split('-')[0];
             const id = office.split('-')[1];
@@ -231,7 +231,7 @@ function UpdateLocationPopup (props) {
 
             let parsedDesks;
             if (currLocationEdits.floor.deskIds) {
-                parsedDesks = parseDesksFromSring(currLocationEdits.floor.deskIds);
+                parsedDesks = parseDesksFromString(currLocationEdits.floor.deskIds);
             }
             const floors = [{
                 floor_num: currLocationEdits.floor.level,
@@ -255,6 +255,7 @@ function UpdateLocationPopup (props) {
                 dispatchPutlocation(formData);
 
             } else {
+                // perhaps we want to return nil instead?
                 fetch('data:image/png;base64,' + Buffer.from(originalOfficePhoto, 'base64').toString('base64'))
                     .then(res => res.blob()
                         .then(data => {
@@ -265,7 +266,7 @@ function UpdateLocationPopup (props) {
         }
     };
 
-    const parseDesksFromSring = (input) => {
+    const parseDesksFromString = (input) => {
         const parsedDesks = [];
         const tokens = input.split(";");
         for (const token of tokens) {

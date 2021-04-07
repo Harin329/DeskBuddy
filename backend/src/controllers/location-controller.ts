@@ -83,30 +83,6 @@ export default class LocationController {
         });
     }
 
-    /*
-        private async addOffice(id: number, office: IOffice) {
-            return new Promise((resolve, reject) => {
-                Jimp.read(Buffer.from(office.image, 'base64'))
-                    .then(image => {
-                        image.resize(75,75);
-                        image.getBufferAsync(image.getMIME())
-                            .then(buffer => {
-                                office.image = buffer.toString('base64');
-                                Office.addOffice(id, office, (err: any, res: any) => {
-                                    if (err) {
-                                        reject(err);
-                                    } else {
-                                        resolve(true);
-                                    }
-                                });
-                            })
-                    })
-                    .catch(err => {
-                        reject(err);
-                    });
-            })
-        }*/
-
     private async addFloors(id: number, office: IOffice) {
         const promises = [];
         for (const floor of office.floors) {
@@ -149,7 +125,7 @@ export default class LocationController {
 
     private async addDesk(id: number, desk: IDesk, floor: IFloor, office: IOffice) {
         return new Promise((resolve, reject) => {
-            Desk.addDesk(id, desk, floor, office , (err: any, res: any) => {
+            Desk.addDesk(id, desk, floor, office, (err: any, res: any) => {
                 if (err) {
                     reject(false);
                 } else {
@@ -233,27 +209,37 @@ export default class LocationController {
                     desks: floors[0].desks
                 }];
             }
-            if (floors[0].desks !== null && floors[0].desks !== undefined && floors[0].desks !== []) {
+
+            // switch (true) {
+            //     case this.isNotEmpty(floors):
+            //         this.handleDesksAndImage(office, req, id, originalId, originalCity);
+            //     case !this.isNotEmpty(floors) && this.hasFloorImage(req.files):
+            //         this.handleImageOnly(office, req, id, originalId, originalCity);
+            //         break;
+            //     default:
+            //         this.handleOfficeOnly(office, req, id, originalId, originalCity);
+            // }
+
+            if (this.isNotEmpty(floors) || this.hasFloorImage(req.files)) {
                 // if there is a floor update, check if a matching floor exists
                 const floorCheckRes = await this.getFloorsByOfficeId(originalId, originalCity);
                 const matchingFloor = floorCheckRes.find((floor) => floor.floor_num === office.floors[0].floor_num);
-                if (floorCheckRes === [] || matchingFloor === undefined) {
-                    // if a matching floor doesn't exist, user has entered a non-existing floor number that we can't update
-                    // TODO: remove this condition- this can't happen anymore because of dispatch(fetchFloorByOffice) in update pop-up
-                    return Promise.reject(floorCheckRes);
-                } else {
                 // confirmed right floor, so update office and desks
-                    this.populateUpdateImages(office, req.files, matchingFloor.floor_num);
-                    const officeRes = await this.updateOffice(id, office, originalId, originalCity);
-                    if (officeRes !== true) {
-                        await this.rollback(conn);
-                        return Promise.reject(officeRes);
-                    } else {
+                this.populateUpdateImages(office, req.files, matchingFloor.floor_num);
+                const officeRes = await this.updateOffice(id, office, originalId, originalCity);
+                if (officeRes !== true) {
+                    await this.rollback(conn);
+                    return Promise.reject(officeRes);
+                } else {
+                    if (this.hasFloorImage(req.files)) {
+                        // has a floor image, so we update
                         const floorRes = await this.updateFloor(office, matchingFloor.floor_num, originalCity, originalId);
                         if (floorRes !== true) {
                             await this.rollback(conn);
                             throw new Error("error in updating floor image")
                         }
+                    }
+                    if (this.isNotEmpty(floors)) {
                         const originalFloorNum = matchingFloor.floor_num;
                         const deskRes = await this.updateDesks(id, office, originalId, originalCity, originalFloorNum);
                         if (deskRes === true) {
@@ -263,6 +249,8 @@ export default class LocationController {
                             await this.rollback(conn);
                             throw new Error("error at updating desks");
                         }
+                    } else {
+                        return Promise.resolve(true);
                     }
                 }
             } else {
@@ -280,6 +268,19 @@ export default class LocationController {
             console.log(err);
             return err;
         }
+    }
+
+    private isNotEmpty(floors: any): boolean {
+        return floors[0].desks !== null && floors[0].desks !== undefined && floors[0].desks !== [];
+    }
+
+    private hasFloorImage(files: any): boolean {
+        for (const file of files) {
+            if (file.fieldname === 'floor_image') {
+                return true;
+            }
+        }
+        return false;
     }
 
     private async updateOffice(id: number, office: IOffice, originalId: number, originalCity: string) {
@@ -324,12 +325,13 @@ export default class LocationController {
                         deskPromises.push(deskPromise);
                     }
                     return Promise.all(deskPromises)
-                    .then((res) => {
-                        return resolve(true);
-                    }).catch((err) => {
-                        return reject(err);
-                    });
-                }})
+                        .then((res) => {
+                            return resolve(true);
+                        }).catch((err) => {
+                            return reject(err);
+                        });
+                }
+            })
         });
     }
 
@@ -423,7 +425,7 @@ export default class LocationController {
             if (file.fieldname === "image") {
                 office.image = Buffer.from(file.buffer).toString('base64');
             } else if (file.fieldname.startsWith("floor_") &&
-                        file.fieldname.endsWith("_image")) {
+                file.fieldname.endsWith("_image")) {
                 const floor_num = file.fieldname.charAt(6);
                 // tslint:disable-next-line:prefer-for-of
                 for (let i = 0; i < office.floors.length; i++) {
