@@ -92,7 +92,12 @@ function Today() {
         };
 
         safeFetch(Endpoint + "/reservation/month/" + userOID, requestOptions)
-            .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
             .then(result => {
                 const res = JSON.parse(result)
                 setOfficeDays(res[0].length)
@@ -111,7 +116,7 @@ function Today() {
     };
 
     const desk = (option) => {
-        return option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.fk_desk_id
+        return option.fk_office_location + option.fk_office_id + ": " + option.fk_floor_num + "-" + option.fk_desk_id
     }
 
     return (

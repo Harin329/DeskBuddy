@@ -1,13 +1,13 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Endpoint from '../../../config/Constants';
-import {Button, Divider, Grid, IconButton, List, ListItem, Modal, Typography,} from '@material-ui/core';
+import { Button, Divider, Grid, IconButton, List, ListItem, Modal, Typography, } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Home from '../../../assets/home.png';
 import LinedHeader from "./LinedHeader";
 import Delete from "../../../assets/delete.png";
 import Feed from '../feed';
-import {useMsal} from "@azure/msal-react";
-import safeFetch, {accountIsAdmin} from "../../../util/Util";
+import { useMsal } from "@azure/msal-react";
+import safeFetch, { accountIsAdmin } from "../../../util/Util";
 import CancelIcon from "@material-ui/icons/Cancel";
 import { isMobile } from "react-device-detect";
 import styled from 'styled-components';
@@ -108,7 +108,12 @@ function GroupChannel() {
         };
 
         safeFetch(Endpoint + "/channel", requestOptions)
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
             .then(result => {
                 const res = JSON.parse(result);
                 //console.log(res);
@@ -121,7 +126,7 @@ function GroupChannel() {
 
     useEffect(() => {
         getChannels();
-    },[]);
+    }, []);
 
     const handleOpen = (option) => {
         setChannel(option);
@@ -158,7 +163,12 @@ function GroupChannel() {
         };
 
         safeFetch(Endpoint + "/channel", requestOptions)
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
             .then(() => {
                 getChannels();
             })
@@ -175,7 +185,7 @@ function GroupChannel() {
 
     const addChannelBody = () => {
         return (
-                <AddChannelForm closeModal={handleAddChannelClose} whatToDoWhenClosed={(bool) => {setAddChannel(bool)}}/>
+            <AddChannelForm closeModal={handleAddChannelClose} whatToDoWhenClosed={(bool) => { setAddChannel(bool) }} />
         )
     }
 
@@ -205,44 +215,44 @@ function GroupChannel() {
 
     return (
         <Container>
-            <div style={{ justifyContent: 'center', alignItems: 'center', width: '350px', height: '500px', backgroundColor: '#353B3C', borderRadius: 25}}>
+            <div style={{ justifyContent: 'center', alignItems: 'center', width: '350px', height: '500px', backgroundColor: '#353B3C', borderRadius: 25 }}>
                 <Typography noWrap={true} className={classes.title}>{channelName}</Typography>
                 {LinedHeader('YOUR GROUPS', 3, 3, 3)}
                 <div>
-                    <List style={{width: '95%', height: "200px", overflow: 'auto'}}>
+                    <List style={{ width: '95%', height: "200px", overflow: 'auto' }}>
                         {channels.map((option, index) => {
                             return (
-                                <div style={{alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row'}}>
+                                <div style={{ alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
                                     <div style={{ width: '70%', height: '30px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
-                                        <ListItem button={true} onClick={(event) => handleListItemClicked(event, option.channel_id, option.channel_name)} selected={selectedChannel === option.channel_id} style={{overflow: 'hidden'}}>
-                                            <div style={{width: '20%', height: '15px', alignItems: 'center'}}>
+                                        <ListItem button={true} onClick={(event) => handleListItemClicked(event, option.channel_id, option.channel_name)} selected={selectedChannel === option.channel_id} style={{ overflow: 'hidden' }}>
+                                            <div style={{ width: '20%', height: '15px', alignItems: 'center' }}>
                                                 {(option.channel_icon != null)
                                                     ? <img src={'data:image/png;base64,' + new Buffer(option.channel_icon, 'binary')
                                                         .toString('base64')}
-                                                           alt={""} style={{height:'15px', width: '15px', borderRadius: 10, backgroundColor: 'transparent'}} />
-                                                    : <img src={Home} alt={"home"} style={{ width: '15px', height: '15px', backgroundColor: 'transparent', borderRadius: 10}} />}
+                                                        alt={""} style={{ height: '15px', width: '15px', borderRadius: 10, backgroundColor: 'transparent' }} />
+                                                    : <img src={Home} alt={"home"} style={{ width: '15px', height: '15px', backgroundColor: 'transparent', borderRadius: 10 }} />}
                                             </div>
-                                            <div style={{ width: '80%', height: '15px',  alignItems: 'center'}}>
+                                            <div style={{ width: '80%', height: '15px', alignItems: 'center' }}>
                                                 <Typography className={classes.channelText}>
                                                     {option.channel_name}
                                                 </Typography>
                                             </div>
                                         </ListItem>
                                     </div>
-                                    {(isAdmin) && <div style={{width: '35px', height: '20px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}
-                                    onMouseEnter={e => {
-                                        setButtonStyle('block');
-                                        setButtonHoveredID(option.channel_id);
-                                    }}
-                                    onMouseLeave={e => {
-                                        setButtonStyle('none');
-                                        setButtonHoveredID(-1);
-                                    }}>
+                                    {(isAdmin) && <div style={{ width: '35px', height: '20px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}
+                                        onMouseEnter={e => {
+                                            setButtonStyle('block');
+                                            setButtonHoveredID(option.channel_id);
+                                        }}
+                                        onMouseLeave={e => {
+                                            setButtonStyle('none');
+                                            setButtonHoveredID(-1);
+                                        }}>
                                         {(option.channel_id !== 0 && option.channel_id !== 1) &&
-                                        <Button onClick={() => handleOpen(option.channel_id)}
-                                                style={{ width: 15, height: 15, marginBottom: '10px', border: 'none', display: buttonHoveredID === option.channel_id ? buttonStyle : 'none'}}>
-                                            <img src={Delete} alt={"Delete"} style={{width: '15px', height: '15px', backgroundColor: 'transparent'}}/>
-                                        </Button>}
+                                            <Button onClick={() => handleOpen(option.channel_id)}
+                                                style={{ width: 15, height: 15, marginBottom: '10px', border: 'none', display: buttonHoveredID === option.channel_id ? buttonStyle : 'none' }}>
+                                                <img src={Delete} alt={"Delete"} style={{ width: '15px', height: '15px', backgroundColor: 'transparent' }} />
+                                            </Button>}
                                     </div>}
                                 </div>
                             )
@@ -255,18 +265,18 @@ function GroupChannel() {
                         </Modal>
                     </List>
                 </div>
-            {/*{props.isAdmin && <Divider/>}*/}
-            {isAdmin && <div style={{justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
-                <Button onClick={(event) => handleAddChannelOpen(event)} className={classes.addChannelButton}>Add Channel</Button>
-            </div>}
-            <Modal
+                {/*{props.isAdmin && <Divider/>}*/}
+                {isAdmin && <div style={{ justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
+                    <Button onClick={() => handleAddChannelOpen()} className={classes.addChannelButton}>Add Channel</Button>
+                </div>}
+                <Modal
                     open={addChannel}
                     onClose={handleAddChannelClose}
                 >
                     {addChannelBody()}
                 </Modal>
             </div>
-            <Feed ref={ feedElement } style={{ flex: '1' }}/>
+            <Feed ref={feedElement} style={{ flex: '1' }} />
         </Container>
     )
 }

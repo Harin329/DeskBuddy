@@ -95,14 +95,15 @@ class AddLocationForm extends React.Component {
     }
 
     handleSubmit(event) {
-        if (this.state.city === null) {
-            alert("city is still null");
+        if (this.state.city === "") {
+            alert("No city identifier has been provided");
+        } else if (JSON.stringify(this.state.inputFloors) === "[]"){
+            alert("No floors have been added");
         } else {
             const floors = [];
             for (const floor of this.state.inputFloors) {
                 floors.push(this.parseFloorFromInputFloor(floor));
             }
-
             const jsonBody = {
                 city: this.state.city,
                 name: this.state.name,

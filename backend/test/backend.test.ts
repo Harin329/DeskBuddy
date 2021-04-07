@@ -2,19 +2,19 @@ import { DeskbuddyServer } from "../src/server";
 import supertest from "supertest";
 import fs from 'fs';
 import { IOffice } from "../src/interfaces/location.interface";
+import * as config from "../src/config.json";
 import { IMail, IRequest, IRequestComplete } from "../src/interfaces/mail.interface";
 import { parse } from "dotenv/types";
 
 let server: DeskbuddyServer;
 let request: any;
 
-let adminToken:any = ""; // token for Global Admin administrator
-let userToken:any = ""; // token for Dana White user
+let adminToken:any = "";
+let userToken:any = "";
 let adminJSON = {"Authorization": `Bearer ${adminToken}`};
 let userJSON = {"Authorization": `Bearer ${userToken}`};
-const testUserOID = `606ac3ca-afce-4337-b0b7-831f4c2dad90`; // test OID
-// const testUserOID = `ce17e073-774c-42a0-8b2b-a4eadb93e193`; // jestuser OID
-const adminOID = "f91d5bbe-76a9-4078-970e-6617e75368fb"; // jestadmin OID
+const testUserOID = process.env.USER_OID;
+const adminOID = process.env.ADMIN_OID;
 
 const requestToken = async (username: any, password: any) => {
     const tokenRequest = require("request");
@@ -23,13 +23,13 @@ const requestToken = async (username: any, password: any) => {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            url: "https://login.microsoftonline.com/65f40c4a-aa31-4c7c-8e53-5c0ca832c7ed/oauth2/v2.0/token/",
+            url: `https://login.microsoftonline.com/${config.credentials.tenantID}/oauth2/v2.0/token/`,
             form : {
                 "grant_type" : "password",
                 "username" : username,
                 "password" : password,
-                "scope" : "api://d111cdab-6637-46bb-86b1-3685db9d744e/.default",
-                "client_id" : "42a72579-a163-4e8b-b427-aa7eb197eb87",
+                "scope" : `api://${config.credentials.clientID}/.default`,
+                "client_id" : config.credentials.appClientID,
                 "client_secret" : process.env.CLIENT_SECRET
             }
         }, (err: any, res: any) => {
@@ -179,6 +179,186 @@ const reservationDeleter = async (res: any) => {
     await request.delete(`/reservation/deleteReservation`).send(body).set(adminJSON);
 }
 
+describe("Announcement endpoints tests", () => {
+    it("POST /announcement/postCompanyAnnouncement normal", async done => {
+        const body = loadJSON("test/jsonBody/announcementBody/postCompanyAnnouncementNormal.json");
+        body.user = adminOID;
+        const res = await request.post('/announcement/postCompanyAnnouncement').send(body).set(adminJSON);
+        expect(res.status).toBe(200);
+        await announcementDeleter(res, true);
+        done();
+    });
+
+    it("POST /announcement/postCompanyAnnouncement as a non-admin", async done => {
+        const body = loadJSON("test/jsonBody/announcementBody/postCompanyAnnouncementNormal.json");
+        body.user = testUserOID;
+        const res = await request.post('/announcement/postCompanyAnnouncement').send(body).set(userJSON);
+        expect(res.status).toBe(401);
+        done();
+    });
+
+    it("POST /announcement/postBranchAnnouncement normal", async done => {
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const body = loadJSON("test/jsonBody/announcementBody/postBranchAnnouncementNormal.json");
+        body.office_id = officeID;
+        const res2 = await request.post('/announcement/postBranchAnnouncement').send(body).set(adminJSON);
+        expect(res2.status).toBe(200);
+        await announcementDeleter(res2, false);
+        await locationDeleter(res1)
+        done();
+    });
+
+    it("POST /announcement/postBranchAnnouncement as a non-admin", async done => {
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const body = loadJSON("test/jsonBody/announcementBody/postBranchAnnouncementNormal.json");
+        body.office_id = officeID;
+        const res2 = await request.post('/announcement/postBranchAnnouncement').send(body).set(userJSON);
+        expect(res2.status).toBe(401);
+        await locationDeleter(res1)
+        done();
+    });
+
+    it("GET /announcement/getCompanyAnnouncements", async done => {
+        const body = loadJSON("test/jsonBody/announcementBody/postCompanyAnnouncementNormal.json");
+        body.user = adminOID;
+        const res1 = await request.post('/announcement/postCompanyAnnouncement').send(body).set(adminJSON);
+        expect(res1.status).toBe(200);
+        const res2 = await request.get('/announcement/getCompanyAnnouncements').set(userJSON);
+        expect(res2.status).toBe(200);
+        expect(res2.body.length).toBeGreaterThanOrEqual(1);
+        await announcementDeleter(res1, true);
+        done();
+    });
+
+    it("GET /announcement/getBranchAnnouncements with 0 announcements", async done => {
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const officeLocation = JSON.parse(res1.text).code.split("-")[0];
+        const res2 = await request.get(`/announcement/getBranchAnnouncements/${officeLocation}/${officeID}`).set(userJSON);
+        expect(res2.status).toBe(200);
+        expect(res2.body.length).toBe(0);
+        await locationDeleter(res1)
+        done();
+    });
+
+    it("GET /announcement/getBranchAnnouncements with 1 announcement", async done => {
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const officeLocation = JSON.parse(res1.text).code.split("-")[0];
+        const body = loadJSON("test/jsonBody/announcementBody/postBranchAnnouncementNormal.json");
+        body.office_id = officeID;
+        const res2 = await request.post('/announcement/postBranchAnnouncement').send(body).set(adminJSON);
+        expect(res2.status).toBe(200);
+        const res3 = await request.get(`/announcement/getBranchAnnouncements/${officeLocation}/${officeID}`).set(userJSON);
+        expect(res3.status).toBe(200);
+        expect(res3.body.length).toBe(1);
+        await announcementDeleter(res2, false);
+        await locationDeleter(res1)
+        done();
+    });
+
+    it("GET /office/getAllOffices", async done => {
+        const res1 = await locationCreator();
+        const res2 = await request.get('/office/getAllOffices').set(userJSON);
+        expect(res2.status).toBe(200);
+        expect(res2.body.length).toBeGreaterThanOrEqual(1);
+        let officeCodes = [];
+        for (let i = 0; i < res2.body.length; i++){
+            officeCodes.push(res2.body[i].office_location + "-" + res2.body[i].office_id);
+        }
+        expect(officeCodes).toContain(JSON.parse(res1.text).code);
+        await locationDeleter(res1)
+        done();
+    });
+})
+
+const announcementDeleter = async (res: any, isCompanyAnnouncement: boolean) => {
+    const id = res.body.announcement_id;
+    const body = {"announcement_id" : id};
+    if (isCompanyAnnouncement){
+        await request.delete(`/announcement/deleteCompanyAnnouncement`).send(body).set(adminJSON);
+    } else {
+        await request.delete(`/announcement/deleteBranchAnnouncement`).send(body).set(adminJSON);
+    }
+}
+
+describe("Channel endpoints tests", () => {
+    it("POST /channel/ normal", async done => {
+        const body = { user : adminOID, channel_name : "jest channel" };
+        const res = await request.post('/channel/').field("body", JSON.stringify(body)).set(adminJSON);
+        expect(res.status).toBe(200);
+        await channelDeleter(res);
+        done();
+    });
+
+    it("POST /channel/ as a non-admin user", async done => {
+        const body = { user : testUserOID, channel_name : "jest channel" };
+        const res = await request.post('/channel/').field("body", JSON.stringify(body)).set(userJSON);
+        expect(res.status).toBe(401);
+        await channelDeleter(res);
+        done();
+    });
+
+    it("DELETE /channel/ normal", async done => {
+        const body = { user : testUserOID, channel_name : "jest channel" };
+        const res1 = await request.post('/channel/').field("body", JSON.stringify(body)).set(adminJSON);
+        expect(res1.status).toBe(200);
+        const res2 = await request.delete('/channel/').send(res1.body).set(adminJSON);
+        expect(res2.status).toBe(200);
+        done();
+    });
+
+    it("DELETE /channel/ as a non-admin user", async done => {
+        const body = { user : testUserOID, channel_name : "jest channel" };
+        const res1 = await request.post('/channel/').field("body", JSON.stringify(body)).set(adminJSON);
+        expect(res1.status).toBe(200);
+        const res2 = await request.delete('/channel/').send(res1.body).set(userJSON);
+        expect(res2.status).toBe(401);
+        await channelDeleter(res1);
+        done();
+    });
+
+    it("GET /channel/ as an admin", async done => {
+        const body = { user : testUserOID, channel_name : "jest channel" };
+        const res1 = await request.post('/channel/').field("body", JSON.stringify(body)).set(adminJSON);
+        expect(res1.status).toBe(200);
+        const res2 = await request.get('/channel/').set(adminJSON);
+        expect(res2.body.length).toBeGreaterThanOrEqual(2);
+        let channelIDs = [];
+        for (let i = 0; i < res2.body.length; i++){
+            channelIDs.push(res2.body[i].channel_id);
+        }
+        expect(channelIDs).toContain(0); // check for admin channel
+        expect(channelIDs).toContain(res1.body.channel_id); // check for added channel
+        await channelDeleter(res1);
+        done();
+    });
+
+    it("GET /channel/ as a user", async done => {
+        const body = { user : testUserOID, channel_name : "jest channel" };
+        const res1 = await request.post('/channel/').field("body", JSON.stringify(body)).set(adminJSON);
+        expect(res1.status).toBe(200);
+        const res2 = await request.get('/channel/').set(userJSON);
+        expect(res2.body.length).toBeGreaterThanOrEqual(2);
+        let channelIDs = [];
+        for (let i = 0; i < res2.body.length; i++){
+            channelIDs.push(res2.body[i].channel_id);
+        }
+        expect(channelIDs).not.toContain(0); // check for no admin channel
+        expect(channelIDs).toContain(res1.body.channel_id); // check for added channel
+        await channelDeleter(res1);
+        done();
+    });
+})
+
+const channelDeleter = async (res: any) => {
+    const id = res.body.channel_id;
+    const body = {"channel_id" : id};
+    await request.delete(`/channel/`).send(body).set(adminJSON);
+}
+
 describe("Social feed endpoints tests", () => {
     it("POST /createPost with empty body", async done => {
         const body = {};
@@ -203,11 +383,14 @@ describe("Social feed endpoints tests", () => {
     });
 
     it("POST /createPost normal", async done => {
-        const body = loadJSON("test/jsonBody/postBody/postPostNormal.json");
-        body.employee_id = testUserOID;
-        const res = await request.post('/post/createPost').send(body).set(userJSON);
-        expect(res.status).toBe(200);
-        await postDeleter(res);
+        const res1 = await channelCreator()
+        const body2 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        body2.employee_id = testUserOID;
+        body2.channel_id = res1.body.channel_id;
+        const res2 = await request.post('/post/createPost').send(body2).set(userJSON);
+        expect(res2.status).toBe(200);
+        await postDeleter(res2);
+        await channelDeleter(res1);
         done();
     });
 
@@ -219,16 +402,19 @@ describe("Social feed endpoints tests", () => {
     });
 
     it("POST /flagPost normal", async done => {
-        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
-        body1.employee_id = testUserOID;
-        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
-        expect(res1.status).toBe(200);
-        const body2 = {
-            post_id: res1.body.post_id
-        };
-        const res2 = await request.post('/post/flagPost').send(body2).set(userJSON);
+        const res1 = await channelCreator()
+        const body2 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        body2.employee_id = testUserOID;
+        body2.channel_id = res1.body.channel_id;
+        const res2 = await request.post('/post/createPost').send(body2).set(userJSON);
         expect(res2.status).toBe(200);
-        await postDeleter(res1);
+        const body3 = {
+            post_id: res2.body.post_id
+        };
+        const res3 = await request.post('/post/flagPost').send(body3).set(userJSON);
+        expect(res3.status).toBe(200);
+        await postDeleter(res2);
+        await channelDeleter(res1);
         done();
     });
 
@@ -240,34 +426,40 @@ describe("Social feed endpoints tests", () => {
     });
 
     it("POST /unreportPost as non-admin", async done => {
-        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
-        body1.employee_id = testUserOID;
-        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
-        expect(res1.status).toBe(200);
-        const body2 = {
-            post_id: res1.body.post_id
-        };
-        const res2 = await request.post('/post/flagPost').send(body2).set(userJSON);
+        const res1 = await channelCreator()
+        const body2 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        body2.employee_id = testUserOID;
+        body2.channel_id = res1.body.channel_id;
+        const res2 = await request.post('/post/createPost').send(body2).set(userJSON);
         expect(res2.status).toBe(200);
-        const res3 = await request.post('/post/unreportPost').send(body2).set(userJSON);
-        expect(res3.status).toBe(401);
-        await postDeleter(res1);
+        const body3 = {
+            post_id: res2.body.post_id
+        };
+        const res3 = await request.post('/post/flagPost').send(body3).set(userJSON);
+        expect(res3.status).toBe(200);
+        const res4 = await request.post('/post/unreportPost').send(body3).set(userJSON);
+        expect(res4.status).toBe(401);
+        await postDeleter(res2);
+        await channelDeleter(res1);
         done();
     });
 
     it("POST /unreportPost normal", async done => {
-        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
-        body1.employee_id = testUserOID;
-        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
-        expect(res1.status).toBe(200);
-        const body2 = {
-            post_id: res1.body.post_id
-        };
-        const res2 = await request.post('/post/flagPost').send(body2).set(userJSON);
+        const res1 = await channelCreator()
+        const body2 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        body2.employee_id = testUserOID;
+        body2.channel_id = res1.body.channel_id;
+        const res2 = await request.post('/post/createPost').send(body2).set(userJSON);
         expect(res2.status).toBe(200);
-        const res3 = await request.post('/post/unreportPost').send(body2).set(adminJSON);
+        const body3 = {
+            post_id: res2.body.post_id
+        };
+        const res3 = await request.post('/post/flagPost').send(body3).set(userJSON);
         expect(res3.status).toBe(200);
-        await postDeleter(res1);
+        const res4 = await request.post('/post/unreportPost').send(body3).set(adminJSON);
+        expect(res4.status).toBe(200);
+        await postDeleter(res2);
+        await channelDeleter(res1);
         done();
     });
 
@@ -279,45 +471,81 @@ describe("Social feed endpoints tests", () => {
     });
 
     it("DELETE /deletePost as user for same user's post", async done => {
-        const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
-        body1.employee_id = testUserOID;
-        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
-        expect(res1.status).toBe(200);
-        const body2 = {
-            post_id: res1.body.post_id
-        };
-        const res2 = await request.delete('/post/deletePost').send(body2).set(userJSON);
+        const res1 = await channelCreator()
+        const body2 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        body2.employee_id = testUserOID;
+        body2.channel_id = res1.body.channel_id;
+        const res2 = await request.post('/post/createPost').send(body2).set(userJSON);
         expect(res2.status).toBe(200);
+        const body3 = {
+            post_id: res2.body.post_id
+        };
+        const res3 = await request.delete('/post/deletePost').send(body3).set(userJSON);
+        expect(res3.status).toBe(200);
+        await channelDeleter(res1);
         done();
     });
 
     it("DELETE /deletePost as user for different user's post", async done => {
+        const res1 = await channelCreator()
         const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
         body1.employee_id = adminOID;
-        const res1 = await request.post('/post/createPost').send(body1).set(adminJSON);
+        body1.channel_id = res1.body.channel_id;
+        const res2 = await request.post('/post/createPost').send(body1).set(adminJSON);
         expect(res1.status).toBe(200);
         const body2 = {
-            post_id: res1.body.post_id
+            post_id: res2.body.post_id
         };
-        const res2 = await request.delete('/post/deletePost').send(body2).set(userJSON);
-        expect(res2.status).toBe(404);
-        await postDeleter(res1);
+        const res3 = await request.delete('/post/deletePost').send(body2).set(userJSON);
+        expect(res3.status).toBe(404);
+        await postDeleter(res2);
+        await channelDeleter(res1);
         done();
     });
 
     it("DELETE /deletePost as admin for different user's post", async done => {
+        const res1 = await channelCreator()
         const body1 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
         body1.employee_id = testUserOID;
-        const res1 = await request.post('/post/createPost').send(body1).set(userJSON);
-        expect(res1.status).toBe(200);
-        const body2 = {
-            post_id: res1.body.post_id
-        };
-        const res2 = await request.delete('/post/deletePost').send(body2).set(adminJSON);
+        body1.channel_id = res1.body.channel_id;
+        const res2 = await request.post('/post/createPost').send(body1).set(userJSON);
         expect(res2.status).toBe(200);
+        const body2 = {
+            post_id: res2.body.post_id
+        };
+        const res3 = await request.delete('/post/deletePost').send(body2).set(adminJSON);
+        expect(res3.status).toBe(200);
+        await channelDeleter(res1);
+        done();
+    });
+
+    it("GET /post/getFeedByCategory with 1 post", async done => {
+        const res1 = await channelCreator()
+        const body2 = loadJSON("test/jsonBody/postBody/postPostNormal.json");
+        body2.employee_id = testUserOID;
+        body2.channel_id = res1.body.channel_id;
+        const res2 = await request.post('/post/createPost').send(body2).set(userJSON);
+        expect(res2.status).toBe(200);
+        const res3 = await request.get(`/post/getFeedByCategory/${res1.body.channel_id}`).set(userJSON);
+        expect(res3.status).toBe(200);
+        expect(res3.body.length).toBe(1);
+        await postDeleter(res2);
+        await channelDeleter(res1);
+        done();
+    });
+
+    it("GET /post/getFeedByCategory admin channel as a non-admin", async done => {
+        const res = await request.get(`/post/getFeedByCategory/0`).set(userJSON);
+        expect(res.status).toBe(401);
+        await postDeleter(res);
         done();
     });
 });
+
+const channelCreator = async () => {
+    const body = { "user" : testUserOID, "channel_name" : "jest channel" };
+    return await request.post('/channel/').field("body", JSON.stringify(body)).set(adminJSON);
+}
 
 const postDeleter = async (res: any) => {
     const id = res.body.post_id;

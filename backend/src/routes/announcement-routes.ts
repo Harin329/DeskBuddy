@@ -48,9 +48,10 @@ router.post('/postCompanyAnnouncement', (req: Request, res: Response) => {
         });
     } else {
         announcementServer.postCompanyAnnouncement(req)
-            .then((announcement: any) => {
-                res.status(200);
-                res.send();
+            .then((result: any) => {
+                res.status(200).send({
+                    announcement_id : result
+                })
             })
             .catch((err: any) => {
                 res.status(401).send({
@@ -73,8 +74,9 @@ router.post('/postBranchAnnouncement', (req: Request, res: Response) => {
     } else {
         announcementServer.postBranchAnnouncement(req)
             .then((result: any) => {
-                res.status(200);
-                res.send();
+                res.status(200).send({
+                    announcement_id : result
+                })
             })
             .catch((err: any) => {
                 res.status(401).send({
@@ -83,5 +85,41 @@ router.post('/postBranchAnnouncement', (req: Request, res: Response) => {
             });
     }
 });
+
+router.delete('/deleteCompanyAnnouncement', (req: Request, res: Response) => {
+    if (!requestIsAdmin(req.authInfo)) {
+        res.status(401).send({
+            message: 'Unauthorized'
+        });
+    } else {
+        announcementServer.deleteCompanyAnnouncement(req)
+            .then((announcement: any) => {
+                res.status(200).send();
+            })
+            .catch((err: any) => {
+                res.status(401).send({
+                    message: err
+                });
+            })
+    }
+})
+
+router.delete('/deleteBranchAnnouncement', (req: Request, res: Response) => {
+    if (!requestIsAdmin(req.authInfo)) {
+        res.status(401).send({
+            message: 'Unauthorized'
+        });
+    } else {
+        announcementServer.deleteBranchAnnouncement(req)
+            .then((announcement: any) => {
+                res.status(200).send();
+            })
+            .catch((err: any) => {
+                res.status(401).send({
+                    message: err
+                });
+            })
+    }
+})
 
 export default router;

@@ -126,7 +126,12 @@ function DashboardUpdates() {
         };
 
         safeFetch(Endpoint + "/announcement/getCompanyAnnouncements", requestOptions)
-            .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
             .then(result => {
                 const announcements = JSON.parse(result);
                 console.log(announcements);

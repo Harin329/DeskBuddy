@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {makeStyles} from "@material-ui/core/styles";
-import {Button, MenuItem, TextField, Typography} from "@material-ui/core";
+import React, { useEffect, useState } from 'react';
+import { makeStyles } from "@material-ui/core/styles";
+import { Button, MenuItem, TextField, Typography } from "@material-ui/core";
 import Endpoint from "../../config/Constants";
 import safeFetch from "../../util/Util"
-import {useMsal} from "@azure/msal-react";
-import {isMobile} from "react-device-detect";
-import {fetchOffices} from "../../actions/reservationActions";
-import {useDispatch, useSelector} from "react-redux";
+import { useMsal } from "@azure/msal-react";
+import { isMobile } from "react-device-detect";
+import { fetchOffices } from "../../actions/reservationActions";
+import { useDispatch, useSelector } from "react-redux";
 import { setError } from '../../actions/globalActions';
 
 
@@ -48,15 +48,15 @@ const useStyles = makeStyles((theme) => ({
     addAnnouncement: {
         position: 'fixed',
         top: '20%',
-        left: isMobile? '5%' : '25%',
-        width: isMobile? '75%' : '45%',
+        left: isMobile ? '5%' : '25%',
+        width: isMobile ? '75%' : '45%',
         height: '400',
         background: '#FFFCF7',
         padding: '30px',
         overflow: 'auto'
     },
     officeSelector: {
-        marginLeft : 8,
+        marginLeft: 8,
         width: '80%'
     },
     branchTitle: {
@@ -93,7 +93,7 @@ function AddUpdateForm(props) {
     }
 
     const handleSubtitleInput = (input) => {
-       setSubtitle(input.target.value);
+        setSubtitle(input.target.value);
     }
 
     const handleContentInput = (input) => {
@@ -118,7 +118,7 @@ function AddUpdateForm(props) {
         let jsonBody;
         let requestOptions;
 
-        if (selectedOfficeLocation === "" || selectedOfficeLocation === "All"){
+        if (selectedOfficeLocation === "" || selectedOfficeLocation === "All") {
             jsonBody = {
                 user: userOID,
                 title: title,
@@ -132,7 +132,12 @@ function AddUpdateForm(props) {
                 body: JSON.stringify(jsonBody)
             };
             safeFetch(Endpoint + "/announcement/postCompanyAnnouncement", requestOptions)
-                .then((response) => response.text())
+                .then(response => {
+                    if (!response.ok) {
+                        dispatch(setError(true));
+                    }
+                    return response.text();
+                })
                 .then(result => {
                     props.closeModal();
                 })
@@ -156,7 +161,12 @@ function AddUpdateForm(props) {
                 body: JSON.stringify(jsonBody)
             };
             safeFetch(Endpoint + "/announcement/postBranchAnnouncement", requestOptions)
-                .then((response) => response.text())
+                .then(response => {
+                    if (!response.ok) {
+                        dispatch(setError(true));
+                    }
+                    return response.text();
+                })
                 .then(result => {
                     props.closeModal();
                 })

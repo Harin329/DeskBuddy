@@ -58,7 +58,7 @@ Channel.addChannel = (channel: IChannel, result: any) => {
                 console.log("Error: ", err);
                 result(err, null);
             } else {
-                result(null, res);
+                result(null, res.insertId);
             }
     })
 }

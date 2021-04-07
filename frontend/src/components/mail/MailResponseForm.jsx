@@ -109,7 +109,12 @@ function MailResponseForm(props){
             redirect: 'follow'
         };
         safeFetch(Endpoint + "/request/admin", adminOptions)
-            .then((response) => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
             .then(result => {
             })
             .catch(error => {
@@ -140,7 +145,12 @@ function MailResponseForm(props){
         };
 
         safeFetch(Endpoint + "/request/employee", employeeOptions)
-            .then((response) => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
             .then(result => {
             })
             .catch(error => {

@@ -54,8 +54,8 @@ const useStyles = makeStyles((theme) => ({
     makeRequest: {
         position: 'fixed',
         top: '20%',
-        left: isMobile? '5%' : '25%',
-        width: isMobile? '75%' : '45%',
+        left: isMobile ? '5%' : '25%',
+        width: isMobile ? '75%' : '45%',
         height: '400',
         background: '#FFFCF7',
         padding: '30px',
@@ -98,6 +98,7 @@ function MailRequestForm(props) {
 
     const handleInstructionsInput = (input) => {
         setInstructions(input.target.value);
+        console.log(requestedDate);
     }
 
     const handleRequestFormClose = () => {
@@ -119,11 +120,16 @@ function MailRequestForm(props) {
         }
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(jsonBody)
         };
         safeFetch(Endpoint + "/request", requestOptions)
-            .then((response) => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
             .then(result => {
                 props.closeModal();
             })
@@ -177,7 +183,7 @@ function MailRequestForm(props) {
                     <Typography style={{ marginTop: 20, fontFamily: 'Lato'}}>
                         Requested Completion Date
                     </Typography>
-                    <TextField id="calendar" variant="outlined" type="date" InputProps={{inputProps: { min: today} }} className={classes.inputBoxes} onChange={handleDateInput}/>
+                <TextField id="calendar" variant="outlined" type="date" InputProps={{inputProps: { min: today} }} className={classes.inputBoxes} onChange={handleDateInput}/>
                 <div>
                     <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
                         Send
