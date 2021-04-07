@@ -1,0 +1,13 @@
+{
+    "officeID": 1,
+    "officeLocation": "NV",
+    "recipient_first": "Test",
+    "recipient_last": "User",
+    "recipient_email": "test@deskbuddy.onmicrosoft.com",
+    "type": "Parcel",
+    "approx_date": "2021-03-18",
+    "sender": "Amazon",
+    "dimensions": "15 x 15 x 15",
+    "comments": "Smells like rubber",
+    "adminID": "99b9a9cf-1cb0-40c3-87c0-aa98d6ce68d1"
+}

@@ -13,7 +13,7 @@ export interface IMail {
 }
 
 export interface IMailResponse {
-    mailID: string,
+    mailID: number,
     officeID: number,
     officeLocation: string,
     recipient_first: string,
@@ -30,7 +30,7 @@ export interface IMailResponse {
 }
 
 export interface IRequestTypesForward {
-    mailID: string,
+    mailID: number,
     request_type: string,
     forward_location: string
 }

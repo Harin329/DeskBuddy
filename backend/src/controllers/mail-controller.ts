@@ -24,7 +24,7 @@ export default class MailController {
                 const employeeInfo = JSON.parse(JSON.stringify(nameRes))[0];
                 const result = JSON.parse(JSON.stringify(res));
                 const output: IMailResponse[] = [];
-                const mailIDs: string[] = [];
+                const mailIDs: number[] = [];
                 for (const mail of result) {
                   mailIDs.push(mail.mail_id);
                   let date = mail.date_arrived;
@@ -52,13 +52,13 @@ export default class MailController {
                 const typesAndLocations: IRequestTypesForward[] = await this.getRequestTypeAndForwardLocation(mailIDs);
                 const requestMap: Map<string, IRequestTypesForwardPair> = new Map();
                 for (const element of typesAndLocations) {
-                  requestMap.set(element.mailID, {
+                  requestMap.set(element.mailID.toString(), {
                     request_type: element.request_type,
                     forward_location: element.forward_location
                   });
                 }
                 for (const mail of output) {
-                  const mapping = requestMap.get(mail.mailID)
+                  const mapping = requestMap.get(mail.mailID.toString())
                   if (mapping != null) {
                     mail.request_type = mapping.request_type,
                     mail.forward_location = mapping.forward_location
@@ -125,13 +125,13 @@ export default class MailController {
                   const typesAndLocations: IRequestTypesForward[] = await this.getRequestTypeAndForwardLocation(mailIDs);
                   const requestMap: Map<string, IRequestTypesForwardPair> = new Map();
                   for (const element of typesAndLocations) {
-                    requestMap.set(element.mailID, {
+                    requestMap.set(element.mailID.toString(), {
                       request_type: element.request_type,
                       forward_location: element.forward_location
                     });
                   }
                   for (const mail of output) {
-                    const mapping = requestMap.get(mail.mailID)
+                    const mapping = requestMap.get(mail.mailID.toString())
                     if (mapping != null) {
                       mail.request_type = mapping.request_type,
                       mail.forward_location = mapping.forward_location
