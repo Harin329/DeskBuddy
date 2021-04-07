@@ -145,7 +145,7 @@ const DatePostedContainer = styled.div`
 
 const Icon = styled.img`
   width: 25px;
-  margin: 15px;
+  margin: 15px 0px 15px 15px;
   cursor: pointer;
 
   @media (min-width: 1000px) {

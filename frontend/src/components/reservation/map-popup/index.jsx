@@ -107,7 +107,7 @@ class MapPopup extends React.Component {
     let body = null;
 
     if (!this.state.loaded && !this.state.error)
-      body = <Spinner />
+      body = Spinner(true);
     else if (this.state.loaded && !this.state.error) {
       if (this.props.mobile) {
         body = (

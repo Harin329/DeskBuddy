@@ -1,5 +1,6 @@
 import React from 'react';
 import ReportIcon from './assets/report.svg';
+import UnreportIcon from './assets/unreport.svg'
 import Thrash from './assets/delete.svg';
 import Endpoint from '../../../config/Constants';
 import Spinner from '../../reservation/map-popup/spinner/spinner';
@@ -29,6 +30,21 @@ import {
   PostingPopup,
   ReportPopup
 } from './styles';
+
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
 
 class Feed extends React.Component {
   static contextType = MsalContext;
@@ -234,7 +250,7 @@ class Feed extends React.Component {
     const isAdmin = accountIsAdmin(this.context.accounts[0]);
     const oid = this.context.accounts[0].idTokenClaims.oid;
 
-    let list_of_feed = <Spinner />;
+    let list_of_feed = Spinner();
 
     if (this.state.loaded && !this.state.error && Array.isArray(this.feed)) {
       list_of_feed = this.feed.map((el) => {
@@ -250,13 +266,13 @@ class Feed extends React.Component {
               />
               {`${el.first_name} ${el.last_name} | `}
               <DatePostedContainer>
-                {el.date_posted.slice(0, 10)}
+                {`${MONTHS[Number(el.date_posted.slice(5, 7)) - 1]} ${el.date_posted.slice(8,10)}, ${el.date_posted.slice(0,4)}`}
               </DatePostedContainer>
             </UserContainer>
             <TextContainer>{el.post_content}</TextContainer>
             <ButtonContainers>
               <Icon
-                src={ReportIcon}
+                src={this.channel_id !== 0 ? ReportIcon : UnreportIcon}
                 onClick={() => {
                   if (this.channel_id !== 0)
                     this.handleOpenReport(el.post_id);
