@@ -6,6 +6,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import { fetchOffices } from '../../actions/reservationActions';
 import MailResponseForm from "./MailResponseForm";
 import MailRequestForm from "./MailRequestForm";
+import {isMobile} from "react-device-detect";
 
 const useStyles = makeStyles({
     sectionText: {
@@ -74,7 +75,17 @@ const useStyles = makeStyles({
       fontWeight: 'bolder',
       fontSize: 12,
       margin: 'auto'
-  }
+  },
+    popup: {
+        position: 'fixed',
+        top: '30%',
+        left: isMobile ? '3%' : '35%',
+        width: isMobile ? '80%' : '20%',
+        height: 'auto',
+        backgroundColor: 'white',
+        padding: '30px',
+        alignItems: 'center'
+    }
 });
 
 
@@ -87,6 +98,7 @@ function RequestMailNotification(props) {
     const [responseOpen, setResponseOpen] = useState(false);
     const [requestOpen, setRequestOpen] = useState(false);
     const [officeName, setOfficeName] = useState('');
+    const [reportOpen, setReportOpen] = useState(false);
 
     const dispatch = useDispatch();
     const officeList = useSelector(state => state.reservations.offices);
@@ -131,6 +143,35 @@ function RequestMailNotification(props) {
         return isExpanded ? classes.reservationCardExpanded : classes.reservationCardTruncated;
     };
 
+    const handleReportOpen = () => {
+        setReportOpen(true);
+    }
+
+    const handleReportClose = () => {
+        setReportOpen(false);
+    }
+
+    const reportPopup = () => {
+        return (
+            <div className={classes.popup} style={{
+                width: '40%',
+                height: '140px',
+                justifyContent: 'center',
+                display: 'flex',
+                flexDirection: 'column'
+            }}>
+                <Typography className={classes.officeText}>Mail ID: {JSON.parse(data).mailID}</Typography>
+                <Typography className={classes.deskSectionText}>LOCATION: <Typography className={classes.deskText}>
+                    {officeName}
+                </Typography></Typography>
+                <Typography className={classes.deskSectionText}>STATUS: <Typography className={classes.deskText}>
+                    {JSON.parse(data).status}
+                </Typography>
+                </Typography>
+            </div>
+        )
+    };
+
     let expandedNotifText;
     let expandedNotifButtons;
     if (isExpanded) {
@@ -158,7 +199,7 @@ function RequestMailNotification(props) {
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, marginBottom: '-20px', width: '80%'}}>
             <Button className={classes.actionButton}>Close</Button>
             <Button className={classes.requestActionButton} onClick={handleMailRequest}>Request Assistance</Button>
-            <Button className={classes.actionButton}>See Report</Button>            
+            <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>
         </div> : JSON.parse(data).status === 'Admin Has Responded' ? 
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
         <Button className={classes.actionButton}>Close</Button>
@@ -171,7 +212,10 @@ function RequestMailNotification(props) {
     }
 
     return (
-      <ListItem className={getNotifClass()} onClick={() => {setIsExpanded(!isExpanded)}}>
+      <ListItem className={getNotifClass()} onClick={() => {
+          if (!responseOpen && !requestOpen && !reportOpen){
+              setIsExpanded(!isExpanded)
+          }}}>
       <div style={{ width: '25%', height: '100px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
           <Typography className={classes.officeText}>
               {JSON.parse(data).type}
@@ -205,6 +249,12 @@ function RequestMailNotification(props) {
               onClose={closeMailRequest}
           >
               {mailRequestPopup()}
+          </Modal>
+          <Modal
+              open={reportOpen}
+              onClose={handleReportClose}
+          >
+              {reportPopup()}
           </Modal>
   </ListItem>
     );

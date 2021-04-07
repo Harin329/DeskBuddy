@@ -102,7 +102,7 @@ function MailResponseForm(props){
             admin_eid: userOID,
             response: response
         }
-        const requestOptions = {
+        const adminOptions = {
             method: 'PUT',
             headers: myHeaders,
             body: JSON.stringify(adminBody),
@@ -193,9 +193,6 @@ function MailResponseForm(props){
                 Admin Response:
             </Typography>}
             <form>
-                <Typography className={classes.subheading}>
-                    Status: {data.status}
-                </Typography>
                 <div><TextField
                     id="location"
                     style={{ marginTop: 20 }}
@@ -207,17 +204,7 @@ function MailResponseForm(props){
                         shrink: true,
                     }}
                     onChange={handleResponseInput}
-                /></div>}
-                <Typography className={classes.subheading}>
-                    Status: {data.status}
-                </Typography>
-                {isAdmin && <TextField className={classes.inputBoxes} id="outlined-basic" variant="outlined" select onChange={handleStatusInput} value={status}>
-                    {statusList.map((option) => (
-                        <MenuItem key={option} value={option}>
-                            {option}
-                        </MenuItem>
-                    ))}
-                </TextField>}
+                /></div>
                 <div>
                     {isAdmin && <Button className={classes.actionButtonCenter} onClick={handleAdminResponse}>
                         Update

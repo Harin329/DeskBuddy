@@ -92,6 +92,8 @@ function NewMailForm(props) {
     const officeList = useSelector(state => state.reservations.offices);
     const employeeList = useSelector(state => state.authentication.users);
 
+    const today = new Date().toISOString().substring(0,10);
+
     useEffect(() => {
         dispatch(fetchOffices());
         dispatch(fetchEmployees());
@@ -123,12 +125,10 @@ function NewMailForm(props) {
 
     const handleDateChange = (event) => {
         setArrivalDate(new Date(event.target.value));
-        console.log(arrivalDate);
     }
 
     const handleSenderInput = (input) => {
         setSender(input.target.value);
-        console.log(sender);
     }
 
     const handleCommentInput = (input) => {
@@ -211,7 +211,7 @@ function NewMailForm(props) {
                 <Typography className={classes.titles}>
                     Arrival Date
                 </Typography>
-                <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleDateChange}/>
+                <TextField id="outlined-basic" variant="outlined" type="date" InputProps={{inputProps: { max: today} }} className={classes.inputBoxes} onChange={handleDateChange}/>
                 <div><TextField
                     id="sender"
                     style={{ margin: 8, width: '90%' }}

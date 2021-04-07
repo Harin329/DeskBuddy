@@ -131,6 +131,7 @@ function MailNotification(props) {
     }
 
     const closeMailRequest = () => {
+        setIsExpanded(false);
         setRequestOpen(false);
     }
 
@@ -187,7 +188,6 @@ function MailNotification(props) {
     let expandedNotifText;
     let expandedNotifButtons;
     if (isExpanded) {
-        console.log('`````````` data: ' + data);
         let officeName = officeList.find(existingOffice => existingOffice.office_location == data.officeLocation && existingOffice.office_id == data.officeID).name;
         expandedNotifText = 
         <div>
@@ -215,7 +215,10 @@ function MailNotification(props) {
     }
 
     return (
-      <ListItem className={getNotifClass()} onClick={() => {setIsExpanded(!isExpanded)}}>
+      <ListItem className={getNotifClass()} onClick={() => {
+          if (!requestOpen && !deleteOpen){
+              setIsExpanded(!isExpanded)
+          }}}>
       <div style={{ width: '20%', height: '100px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
           <Typography className={classes.officeText}>
               {data.type}

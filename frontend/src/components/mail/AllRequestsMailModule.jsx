@@ -52,6 +52,20 @@ const useStyles = makeStyles({
     marginTop: '20px',
     marginLeft: '20px',
     marginBottom: '10px'
+  },
+  outlineBox: {
+    width: '40%',
+    height: '15%',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    marginTop: '20px',
+    marginLeft: '20px',
+    marginBottom: '10px'
+  },
+  selector: {
+    marginTop: 10,
+    marginLeft: 10,
+    width: '90%'
   }
 });
 
@@ -173,17 +187,18 @@ function AllRequestsMailModule(size, text) {
       <RequestMailNotification isAdminModule={false} data={JSON.stringify(update)}></RequestMailNotification>
     );
   });
-
   return (
     <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null }}>
       <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: '20%', height: 30, textAlign: 'center', marginTop: -10, fontSize: 20, position: 'absolute' }}>{text}</h1>
       <Grid container direction='row' justify='flex-start' alignItems='baseline'>
-        <TextField id="outlined-basic" label="Status" variant="outlined" select onChange={handleStatusChoiceChange} value={statusChoice} className={classes.inputBoxes}>
-          {statusChoices.map((option) => {
-            return <MenuItem key={option} value={option}>{option}</MenuItem>
-          })
-          }
-        </TextField>
+        <div className={classes.outlineBox}>
+          <TextField id="outlined-basic" label="Status" variant="outlined" select onChange={handleStatusChoiceChange} value={statusChoice} className={classes.selector}>
+            {statusChoices.map((option) => {
+              return <MenuItem key={option} value={option}>{option}</MenuItem>
+            })
+            }
+          </TextField>
+        </div>
         <Grid item xs={12} style={{ height: 400, border: 3, borderRadius: 20, display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll' }}>
           <InfiniteScroll
             style={{ padding: 30, width: '90%' }}

@@ -77,11 +77,12 @@ function MailRequestForm(props) {
     const [instructions, setInstructions] = useState("");
     const [requestedDate, setRequestedDate] = useState(new Date());
     const dispatch = useDispatch();
-    console.log(data);
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
     const classes = useStyles();
+
+    const today = new Date().toISOString().substring(0,10);
 
     const handleTypeInput = (input) => {
         setType(input.target.value);
@@ -97,7 +98,6 @@ function MailRequestForm(props) {
 
     const handleInstructionsInput = (input) => {
         setInstructions(input.target.value);
-        console.log(requestedDate);
     }
 
     const handleRequestFormClose = () => {
@@ -177,7 +177,7 @@ function MailRequestForm(props) {
                     <Typography style={{ marginTop: 20, fontFamily: 'Lato'}}>
                         Requested Completion Date
                     </Typography>
-                    <TextField id="outlined-basic" variant="outlined" type="date" className={classes.inputBoxes} onChange={handleDateInput}/>
+                    <TextField id="calendar" variant="outlined" type="date" InputProps={{inputProps: { min: today} }} className={classes.inputBoxes} onChange={handleDateInput}/>
                 <div>
                     <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
                         Send
