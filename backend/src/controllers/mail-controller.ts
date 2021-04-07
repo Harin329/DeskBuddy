@@ -1,6 +1,6 @@
 import { Mail } from '../models/mail'
 import { User } from '../models/user'
-import { IMail, IMailResponse } from '../interfaces/mail.interface';
+import { IMail, IMailResponse, IRequestTypesForward, IRequestTypesForwardPair } from '../interfaces/mail.interface';
 
 export default class MailController {
   // tslint:disable-next-line:no-empty
@@ -16,7 +16,7 @@ export default class MailController {
         if (nameErr) {
           reject (nameErr);
         } else {
-          Mail.getMailByEmployee(employeeID ,filter, sort, loc, id, (err: any, res: any) => {
+          Mail.getMailByEmployee(employeeID ,filter, sort, loc, id, async (err: any, res: any) => {
             if (err) {
               reject(err);
             } else {
@@ -24,7 +24,9 @@ export default class MailController {
                 const employeeInfo = JSON.parse(JSON.stringify(nameRes))[0];
                 const result = JSON.parse(JSON.stringify(res));
                 const output: IMailResponse[] = [];
+                const mailIDs: string[] = [];
                 for (const mail of result) {
+                  mailIDs.push(mail.mail_id);
                   let date = mail.date_arrived;
                   if (date !== null) {
                     date = date.substring(0, 10); // truncates time
@@ -41,9 +43,26 @@ export default class MailController {
                     sender: mail.sender_info,
                     dimensions: mail.dimensions,
                     comments: mail.additional_notes,
-                    adminID: mail.fk_admin_eid
+                    adminID: mail.fk_admin_eid,
+                    request_type: null as any,
+                    forward_location: null as any
                   }
                   output.push(parsedMail);
+                }
+                const typesAndLocations: IRequestTypesForward[] = await this.getRequestTypeAndForwardLocation(mailIDs);
+                const requestMap: Map<string, IRequestTypesForwardPair> = new Map();
+                for (const element of typesAndLocations) {
+                  requestMap.set(element.mailID, {
+                    request_type: element.request_type,
+                    forward_location: element.forward_location
+                  });
+                }
+                for (const mail of output) {
+                  const mapping = requestMap.get(mail.mailID)
+                  if (mapping != null) {
+                    mail.request_type = mapping.request_type,
+                    mail.forward_location = mapping.forward_location
+                  }
                 }
                 resolve(output);
               } catch (err) {
@@ -56,19 +75,31 @@ export default class MailController {
     });
   }
 
-  getMail(filter: string | undefined,
+  public async getMail(filter: string | undefined,
     sort: string | undefined,
     loc: string | undefined,
     id: string | undefined): Promise<IMailResponse[]> {
     return new Promise((resolve, reject) => {
-      Mail.getMailWithEmployeeInfo(filter, sort, loc, id, (err: any, res: any) => {
+      Mail.getMailWithEmployeeInfo(filter, sort, loc, id, async (err: any, res: any) => {
               if (err) {
                 reject(err);
               } else {
+                /*
+                  Here is a hack. we take the array of mailIDs, and for each we check if there exists a request
+                  for it, and if there exists one, then we grab its request_type and forward-location.
+
+                  We get an array of responses, and for each mail, if there does not exist a request, we return
+                  null. Else we populate IMailResponse.
+
+                  This hack's safety is predicated on the fact that mailIDs are, in fact, safe to use. Should an attacker be
+                  able to modify the mailID field, we might have a problem.
+                */
                 try {
                   const result = JSON.parse(JSON.stringify(res));
                   const output: IMailResponse[] = [];
+                  const mailIDs: string[] = [];
                   for (const mail of result) {
+                    mailIDs.push(mail.mail_id);
                     let date = mail.date_arrived;
                     if (date !== null) {
                       date = date.substring(0, 10); // truncates time
@@ -85,9 +116,26 @@ export default class MailController {
                       sender: mail.sender_info,
                       dimensions: mail.dimensions,
                       comments: mail.additional_notes,
-                      adminID: mail.fk_admin_eid
+                      adminID: mail.fk_admin_eid,
+                      request_type: null as any,
+                      forward_location: null as any
                     }
                     output.push(parsedMail);
+                  }
+                  const typesAndLocations: IRequestTypesForward[] = await this.getRequestTypeAndForwardLocation(mailIDs);
+                  const requestMap: Map<string, IRequestTypesForwardPair> = new Map();
+                  for (const element of typesAndLocations) {
+                    requestMap.set(element.mailID, {
+                      request_type: element.request_type,
+                      forward_location: element.forward_location
+                    });
+                  }
+                  for (const mail of output) {
+                    const mapping = requestMap.get(mail.mailID)
+                    if (mapping != null) {
+                      mail.request_type = mapping.request_type,
+                      mail.forward_location = mapping.forward_location
+                    }
                   }
                   resolve(output);
                 } catch (err) {
@@ -97,6 +145,24 @@ export default class MailController {
             }
       );
     });
+  }
+
+  getRequestTypeAndForwardLocation(mailIDs: string[]): Promise<IRequestTypesForward[]> {
+    const allIDs = "('" + mailIDs.join("','") + "')";
+    return new Promise((resolve, reject) => {
+      Mail.getMailRequestTypeAndForwardLocation(allIDs, (err: any, res: any) => {
+        if (err) {
+          reject(err);
+        } else {
+          try {
+            const result: IRequestTypesForward[] = JSON.parse(JSON.stringify(res));
+            resolve(result);
+          } catch (newerr) {
+            reject(newerr)
+          }
+        }
+      });
+    })
   }
 
 

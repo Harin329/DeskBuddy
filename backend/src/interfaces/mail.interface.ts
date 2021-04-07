@@ -13,7 +13,7 @@ export interface IMail {
 }
 
 export interface IMailResponse {
-    mailID: number,
+    mailID: string,
     officeID: number,
     officeLocation: string,
     recipient_first: string,
@@ -24,5 +24,18 @@ export interface IMailResponse {
     sender: string,
     dimensions: string,
     comments: string,
-    adminID: string
+    adminID: string,
+    request_type: string,
+    forward_location: string
+}
+
+export interface IRequestTypesForward {
+    mailID: string,
+    request_type: string,
+    forward_location: string
+}
+
+export interface IRequestTypesForwardPair {
+    request_type: string,
+    forward_location: string
 }
