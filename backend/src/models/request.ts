@@ -31,7 +31,7 @@ Request.createRequest = (req: any, result: any) => {
             } else {
                 result(null, res);
             }
-        })
+        });
 };
 // gets all of the requests for a given employee. Can change this to get all open requests if needed?
 Request.getAllRequests = (employeeID: any, result: any) => {

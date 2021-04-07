@@ -30,7 +30,7 @@ export interface IMailResponse {
 }
 
 export interface IRequestTypesForward {
-    mailID: number,
+    mail_id: number,
     request_type: string,
     forward_location: string
 }
@@ -38,4 +38,21 @@ export interface IRequestTypesForward {
 export interface IRequestTypesForwardPair {
     request_type: string,
     forward_location: string
+}
+
+export interface IRequest {
+    employee_phone: number,
+    request_type: string,
+    forward_location: string,
+    additional_instructions: string,
+    req_completion_date: string
+}
+
+export interface IRequestComplete {
+    mailID: number,
+    employee_phone: number,
+    request_type: string,
+    forward_location: string,
+    additional_instructions: string,
+    req_completion_date: string
 }

@@ -14,9 +14,9 @@ export default class MailController {
     return new Promise((resolve, reject) => {
       User.getUserNameAndEmailByOID(employeeID, (nameErr: any, nameRes: any) => {
         if (nameErr) {
-          reject (nameErr);
+          reject(nameErr);
         } else {
-          Mail.getMailByEmployee(employeeID ,filter, sort, loc, id, async (err: any, res: any) => {
+          Mail.getMailByEmployee(employeeID, filter, sort, loc, id, async (err: any, res: any) => {
             if (err) {
               reject(err);
             } else {
@@ -24,9 +24,9 @@ export default class MailController {
                 const employeeInfo = JSON.parse(JSON.stringify(nameRes))[0];
                 const result = JSON.parse(JSON.stringify(res));
                 const output: IMailResponse[] = [];
-                const mailIDs: number[] = [];
+                const mailIDs: string[] = [];
                 for (const mail of result) {
-                  mailIDs.push(mail.mail_id);
+                  mailIDs.push(mail.mail_id.toString());
                   let date = mail.date_arrived;
                   if (date !== null) {
                     date = date.substring(0, 10); // truncates time
@@ -50,17 +50,17 @@ export default class MailController {
                   output.push(parsedMail);
                 }
                 const typesAndLocations: IRequestTypesForward[] = await this.getRequestTypeAndForwardLocation(mailIDs);
-                const requestMap: Map<string, IRequestTypesForwardPair> = new Map();
+                const requestMap: Map<number, IRequestTypesForwardPair> = new Map();
                 for (const element of typesAndLocations) {
-                  requestMap.set(element.mailID.toString(), {
+                  requestMap.set(element.mail_id, {
                     request_type: element.request_type,
                     forward_location: element.forward_location
                   });
                 }
                 for (const mail of output) {
-                  const mapping = requestMap.get(mail.mailID.toString())
-                  if (mapping != null) {
-                    mail.request_type = mapping.request_type,
+                  const mapping = requestMap.get(mail.mailID)
+                  if (mapping !== undefined) {
+                    mail.request_type = mapping.request_type;
                     mail.forward_location = mapping.forward_location
                   }
                 }
@@ -81,68 +81,68 @@ export default class MailController {
     id: string | undefined): Promise<IMailResponse[]> {
     return new Promise((resolve, reject) => {
       Mail.getMailWithEmployeeInfo(filter, sort, loc, id, async (err: any, res: any) => {
-              if (err) {
-                reject(err);
-              } else {
-                /*
-                  Here is a hack. we take the array of mailIDs, and for each we check if there exists a request
-                  for it, and if there exists one, then we grab its request_type and forward-location.
+        if (err) {
+          reject(err);
+        } else {
+          /*
+            Here is a hack. we take the array of mailIDs, and for each we check if there exists a request
+            for it, and if there exists one, then we grab its request_type and forward-location.
 
-                  We get an array of responses, and for each mail, if there does not exist a request, we return
-                  null. Else we populate IMailResponse.
+            We get an array of responses, and for each mail, if there does not exist a request, we return
+            null. Else we populate IMailResponse.
 
-                  This hack's safety is predicated on the fact that mailIDs are, in fact, safe to use. Should an attacker be
-                  able to modify the mailID field, we might have a problem.
-                */
-                try {
-                  const result = JSON.parse(JSON.stringify(res));
-                  const output: IMailResponse[] = [];
-                  const mailIDs: string[] = [];
-                  for (const mail of result) {
-                    mailIDs.push(mail.mail_id);
-                    let date = mail.date_arrived;
-                    if (date !== null) {
-                      date = date.substring(0, 10); // truncates time
-                    }
-                    const parsedMail: IMailResponse = {
-                      mailID: mail.mail_id,
-                      officeID: mail.fk_office_id,
-                      officeLocation: mail.fk_office_location,
-                      recipient_first: mail.first_name,
-                      recipient_last: mail.last_name,
-                      recipient_email: mail.email,
-                      type: mail.type,
-                      approx_date: date,
-                      sender: mail.sender_info,
-                      dimensions: mail.dimensions,
-                      comments: mail.additional_notes,
-                      adminID: mail.fk_admin_eid,
-                      request_type: null as any,
-                      forward_location: null as any
-                    }
-                    output.push(parsedMail);
-                  }
-                  const typesAndLocations: IRequestTypesForward[] = await this.getRequestTypeAndForwardLocation(mailIDs);
-                  const requestMap: Map<string, IRequestTypesForwardPair> = new Map();
-                  for (const element of typesAndLocations) {
-                    requestMap.set(element.mailID.toString(), {
-                      request_type: element.request_type,
-                      forward_location: element.forward_location
-                    });
-                  }
-                  for (const mail of output) {
-                    const mapping = requestMap.get(mail.mailID.toString())
-                    if (mapping != null) {
-                      mail.request_type = mapping.request_type,
-                      mail.forward_location = mapping.forward_location
-                    }
-                  }
-                  resolve(output);
-                } catch (err) {
-                  reject(err);
-                }
+            This hack's safety is predicated on the fact that mailIDs are, in fact, safe to use. Should an attacker be
+            able to modify the mailID field, we might have a problem.
+          */
+          try {
+            const result = JSON.parse(JSON.stringify(res));
+            const output: IMailResponse[] = [];
+            const mailIDs: string[] = [];
+            for (const mail of result) {
+              mailIDs.push(mail.mail_id.toString());
+              let date = mail.date_arrived;
+              if (date !== null) {
+                date = date.substring(0, 10); // truncates time
+              }
+              const parsedMail: IMailResponse = {
+                mailID: mail.mail_id,
+                officeID: mail.fk_office_id,
+                officeLocation: mail.fk_office_location,
+                recipient_first: mail.first_name,
+                recipient_last: mail.last_name,
+                recipient_email: mail.email,
+                type: mail.type,
+                approx_date: date,
+                sender: mail.sender_info,
+                dimensions: mail.dimensions,
+                comments: mail.additional_notes,
+                adminID: mail.fk_admin_eid,
+                request_type: null as any,
+                forward_location: null as any
+              }
+              output.push(parsedMail);
+            }
+            const typesAndLocations: IRequestTypesForward[] = await this.getRequestTypeAndForwardLocation(mailIDs);
+            const requestMap: Map<number, IRequestTypesForwardPair> = new Map();
+            for (const element of typesAndLocations) {
+              requestMap.set(element.mail_id, {
+                request_type: element.request_type,
+                forward_location: element.forward_location
+              });
+            }
+            for (const mail of output) {
+              const mapping = requestMap.get(mail.mailID)
+              if (mapping !== undefined) {
+                mail.request_type = mapping.request_type;
+                mail.forward_location = mapping.forward_location
               }
             }
+            resolve(output);
+          } catch (err) {
+            reject(err);
+          }
+        }
+      }
       );
     });
   }
