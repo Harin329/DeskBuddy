@@ -249,7 +249,7 @@ function Reservation() {
                                             <div style={{ width: '25%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                                                 <img src={'data:image/png;base64,' + new Buffer(option.office_photo, 'binary').toString('base64')} alt="OfficePicture" style={{ height: '100px', width: '100px', borderRadius: 100 }} />
                                                 <Typography className={classes.officeText}>
-                                                    {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.desk_id}
+                                                {option.fk_office_location + option.fk_office_id + ": " + option.fk_floor_num + "-" + option.desk_id}
                                                 </Typography>
                                             </div>
                                             <Divider orientation='vertical' style={{ backgroundColor: 'white', height: '129px', width: '3px' }} />
@@ -294,7 +294,7 @@ function Reservation() {
                                             <div style={{ width: isMobile ? '100%' : '25%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
                                                 <img src={'data:image/png;base64,' + new Buffer(option.office_photo, 'binary').toString('base64')} alt="OfficePicture" style={{ height: '100px', width: '100px', borderRadius: 100 }} />
                                                 <Typography className={classes.officeText}>
-                                                    {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.desk_id}
+                                                {option.fk_office_location + option.fk_office_id + ": " + option.fk_floor_num + "-" + option.desk_id}
                                                 </Typography>
                                             </div>
                                             <div style={{ width: isMobile ? '100%' : '55%', height: '140px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>

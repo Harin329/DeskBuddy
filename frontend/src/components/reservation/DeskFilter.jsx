@@ -108,7 +108,7 @@ function DeskFilter() {
 
     const handleOfficeChange = (event) => {
         var newFilter = {
-            desk: filter.desk,
+            desk: 'All',
             office: event.target.value,
             from: filter.from,
             to: filter.to,
@@ -269,7 +269,18 @@ function DeskFilter() {
                 </Grid>}
                 <Grid item xs={isMobile ? 'auto' : 2} style={{ width: '90%', marginTop: isMobile ? 10 : 0 }}>
                     <button onClick={() => {
-                        dispatch(fetchDesks(filter, false, 0, deskResults));
+                        if (singleDate) {
+                            var newFilter = {
+                                desk: filter.desk,
+                                office: filter.office,
+                                from: filter.from,
+                                to: filter.from,
+                            };
+                            dispatch({ type: SET_FILTER, payload: newFilter });
+                            dispatch(fetchDesks(newFilter, false, 0, deskResults));
+                        } else {
+                            dispatch(fetchDesks(filter, false, 0, deskResults));
+                        }
                     }} style={{ backgroundColor: 'transparent', border: 'none' }}><img src={Search} alt="Search" style={{ height: '50px' }} /></button>
                 </Grid>
             </Grid>

@@ -91,7 +91,12 @@ function MailModule(size, text) {
         };
 
         safeFetch(Endpoint + "/mail/" + userOID + "?filter=new", requestOptions)
-            .then((response) => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
             .then(result => {
                 const mail = JSON.parse(result).mails;
                 const sortedMail = mail.sort((a, b) => { return new Date(b.approx_date) - new Date(a.approx_date) });

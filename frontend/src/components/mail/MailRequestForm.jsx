@@ -122,7 +122,12 @@ function MailRequestForm(props) {
             body: JSON.stringify(jsonBody)
         };
         safeFetch(Endpoint + "/request", requestOptions)
-            .then((response) => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
             .then(result => {
                 props.closeModal();
             })

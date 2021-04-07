@@ -238,7 +238,7 @@ function UpcomingReservations() {
                                             </Typography>
                                             <Typography className={classes.deskSectionText}>
                                                 DESK ID: <Typography className={classes.deskText}>
-                                                    {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.fk_desk_id}
+                                                    {option.fk_office_location + option.fk_office_id + ": " + option.fk_floor_num + "-" + option.fk_desk_id}
                                                 </Typography>
                                             </Typography>
                                         </div>
@@ -270,7 +270,7 @@ function UpcomingReservations() {
                                             </Typography>
                                             <Typography className={classes.deskSectionText}>
                                                 DESK ID: <Typography className={classes.deskText}>
-                                                    {option.fk_office_location + option.fk_office_id + "-" + option.fk_floor_num + option.fk_desk_id}
+                                                {option.fk_office_location + option.fk_office_id + ": " + option.fk_floor_num + "-" + option.fk_desk_id}
                                                 </Typography>
                                             </Typography>
                                         </div>

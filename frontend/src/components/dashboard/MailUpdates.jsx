@@ -116,7 +116,12 @@ function MailUpdates() {
         };
 
         safeFetch(Endpoint + "/mail/" + userOID, requestOptions)
-            .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
             .then(result => {
                 const mail = JSON.parse(result).mails;
                 console.log(mail);

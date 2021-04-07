@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {Typography, Grid, ListItem, Divider, Button, Modal} from '@material-ui/core';
+import { Typography, Grid, ListItem, Divider, Button, Modal } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InfiniteScroll from "react-infinite-scroller";
 import MailNotification from './MailNotification';
 import MailRequestForm from "./MailRequestForm";
 import safeFetch from "../../util/Util";
 import Endpoint from "../../config/Constants";
-import {useMsal} from "@azure/msal-react";
-import {isMobile} from "react-device-detect";
+import { useMsal } from "@azure/msal-react";
+import { isMobile } from "react-device-detect";
 import { setError } from '../../actions/globalActions';
 import { useDispatch } from 'react-redux';
 
@@ -47,7 +47,7 @@ const useStyles = makeStyles({
         height: '110px',
         marginBottom: '10px',
         '&:hover': {
-          backgroundColor: '#FFFCF7'
+            backgroundColor: '#FFFCF7'
         }
     },
     reservationCardExpanded: {
@@ -55,7 +55,7 @@ const useStyles = makeStyles({
         height: '180px',
         marginBottom: '10px',
         '&:hover': {
-          backgroundColor: '#FFFCF7'
+            backgroundColor: '#FFFCF7'
         }
     },
     actionButton: {
@@ -101,17 +101,22 @@ function NewlyCreatedRequestsMailModule(size, text, newMailRefresh, office) {
         const fullEndpoint = officeLocation && officeId ? `${Endpoint}/mail?filter=new&locname=${officeLocation}$locid=${officeId}` : `${Endpoint}/mail?filter=new`;
 
         safeFetch(fullEndpoint, requestOptions)
-          .then((response) => response.text())
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'New');
-            const sortedMail = mail.sort((a, b) => { return new Date(b.approx_date) - new Date(a.approx_date) });
-            setMailList([...mailList, ...sortedMail]);
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-        });
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
+            .then(result => {
+                const mail = JSON.parse(result).mails;
+                mail.map((mailObj) => mailObj.status = 'New');
+                const sortedMail = mail.sort((a, b) => { return new Date(b.approx_date) - new Date(a.approx_date) });
+                setMailList([...mailList, ...sortedMail]);
+            })
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
 
         setHasMore(false);
     };
