@@ -61,4 +61,26 @@ export default class AnnouncementController {
             })
         })
     }
+
+    deleteCompanyAnnouncement(req: any) {
+        return new Promise((resolve, reject) => {
+            Announcement.deleteCompanyAnnouncement(req, (err: any, result: any) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(result);
+            })
+        })
+    }
+
+    deleteBranchAnnouncement(req: any) {
+        return new Promise((resolve, reject) => {
+            Announcement.deleteBranchAnnouncement(req, (err: any, result: any) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(result);
+            })
+        })
+    }
 }

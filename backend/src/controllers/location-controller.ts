@@ -83,30 +83,6 @@ export default class LocationController {
         });
     }
 
-    /*
-        private async addOffice(id: number, office: IOffice) {
-            return new Promise((resolve, reject) => {
-                Jimp.read(Buffer.from(office.image, 'base64'))
-                    .then(image => {
-                        image.resize(75,75);
-                        image.getBufferAsync(image.getMIME())
-                            .then(buffer => {
-                                office.image = buffer.toString('base64');
-                                Office.addOffice(id, office, (err: any, res: any) => {
-                                    if (err) {
-                                        reject(err);
-                                    } else {
-                                        resolve(true);
-                                    }
-                                });
-                            })
-                    })
-                    .catch(err => {
-                        reject(err);
-                    });
-            })
-        }*/
-
     private async addFloors(id: number, office: IOffice) {
         const promises = [];
         for (const floor of office.floors) {
