@@ -24,5 +24,35 @@ export interface IMailResponse {
     sender: string,
     dimensions: string,
     comments: string,
-    adminID: string
+    adminID: string,
+    request_type: string,
+    forward_location: string
+}
+
+export interface IRequestTypesForward {
+    mail_id: number,
+    request_type: string,
+    forward_location: string
+}
+
+export interface IRequestTypesForwardPair {
+    request_type: string,
+    forward_location: string
+}
+
+export interface IRequest {
+    employee_phone: number,
+    request_type: string,
+    forward_location: string,
+    additional_instructions: string,
+    req_completion_date: string
+}
+
+export interface IRequestComplete {
+    mailID: number,
+    employee_phone: number,
+    request_type: string,
+    forward_location: string,
+    additional_instructions: string,
+    req_completion_date: string
 }

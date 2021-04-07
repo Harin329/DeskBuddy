@@ -2,7 +2,8 @@ import { DeskbuddyServer } from "../src/server";
 import supertest from "supertest";
 import fs from 'fs';
 import { IOffice } from "../src/interfaces/location.interface";
-import { IMail } from "../src/interfaces/mail.interface";
+import { IMail, IRequest, IRequestComplete } from "../src/interfaces/mail.interface";
+import { parse } from "dotenv/types";
 
 let server: DeskbuddyServer;
 let request: any;
@@ -326,10 +327,12 @@ const postDeleter = async (res: any) => {
 
 describe("Mail manager endpoints tests", () => {
     // these tests assume the existence of a test user 'Test User', who has no mails to begin with
+
     it("POST /mail", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
+        expect(res.text).toBe(1);
         await mailDeleter(res);
         done();
     });
@@ -353,6 +356,18 @@ describe("Mail manager endpoints tests", () => {
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         await mailDeleter(res);
+        done();
+    });
+
+    it("POST /request", async done => {
+        const postBody: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        const requestBody: IRequestComplete = loadJSON("test/jsonBody/mailRequestBody/postMailRequestNormal.json");
+        const res = await request.post('/mail').send(postBody).set(adminJSON);
+        expect(res.status).toBe(200);
+        const resID = getID(res);
+        requestBody.mailID = resID;
+        const reqRes = await request.post('/request').send(requestBody).set(userJSON);
+        expect(reqRes.status).toBe(200);
         done();
     });
 
@@ -432,7 +447,7 @@ describe("Mail manager endpoints tests", () => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
-        const getRes = await request.get(`/mail/${testUserOID}?filter=await_admin`).set(userJSON);
+        const getRes = await request.get(`/mail/${testUserOID}?filter=awaiting_admin_action`).set(userJSON);
         try {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
@@ -454,6 +469,7 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
+            expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
             await mailDeleter(res);
@@ -488,6 +504,7 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
+            expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
             await mailDeleter(res);
@@ -607,6 +624,11 @@ describe("Mail manager endpoints tests", () => {
 const mailDeleter = async (res: any) => {
     const id = JSON.parse(res.text).id;
     await request.delete(`/mail/${id}`).set(adminJSON);
+}
+
+const getID = (res: any) => {
+    const parsedJSON = JSON.parse(res.text);
+    return parsedJSON.id;
 }
 
 describe("Miscellaneous tests", () => {
