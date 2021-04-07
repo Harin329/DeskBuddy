@@ -489,7 +489,7 @@ Mail.getAllRequests = (employeeID: any, result: any) => {
 };
 
 Mail.getMailRequestTypeAndForwardLocation = (mailIDs: string, result: any) => {
-  con.query(`SELECT mail_id, request_type, forward_location FROM mail_request WHERE mail_id IN ${mailIDs}`, (err: any, res: any) => {
+  con.query(`SELECT mail_id, request_type, forward_location, response FROM mail_request WHERE mail_id IN ${mailIDs}`, (err: any, res: any) => {
     if (err) {
       result(err, null);
     } else {

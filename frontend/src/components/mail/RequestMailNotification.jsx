@@ -7,6 +7,10 @@ import { fetchOffices } from '../../actions/reservationActions';
 import MailResponseForm from "./MailResponseForm";
 import MailRequestForm from "./MailRequestForm";
 import {isMobile} from "react-device-detect";
+import safeFetch, {accountIsAdmin} from "../../util/Util";
+import Endpoint from "../../config/Constants";
+import {setError} from "../../actions/globalActions";
+import {useMsal} from "@azure/msal-react";
 
 const useStyles = makeStyles({
     sectionText: {
@@ -103,6 +107,9 @@ function RequestMailNotification(props) {
     const dispatch = useDispatch();
     const officeList = useSelector(state => state.reservations.offices);
 
+    const { accounts } = useMsal();
+    const userOID = accounts[0].idTokenClaims.oid;
+
     useEffect(() => {
         dispatch(fetchOffices());
     }, []);
@@ -124,7 +131,31 @@ function RequestMailNotification(props) {
       const mailRequestPopup = () => {
         return <MailResponseForm closeModal={closeMailResponse} whatToDoWhenClosed={(bool) => {setRequestOpen(bool)}}>{props}</MailResponseForm>
       };
-    
+
+      const closeRequest = () => {
+          let jsonBody = {
+              mail_id: JSON.parse(data).mailID,
+              employee_id: userOID
+          }
+
+          let headers = new Headers();
+          headers.append("Content-Type", "application/json");
+          const requestOptions = {
+              method: 'PUT',
+              headers: headers,
+              redirect: 'follow',
+              body: JSON.stringify(jsonBody)
+          };
+
+          safeFetch(Endpoint + "/request/close", requestOptions)
+              .then((response) => response.text())
+              .then(result => {
+              })
+              .catch(error => {
+                  console.log('error', error);
+                  dispatch(setError(true));
+              });
+      }
     
     const handleMailResponse = () => {
       setIsExpanded(true);
@@ -168,6 +199,18 @@ function RequestMailNotification(props) {
                     {JSON.parse(data).status}
                 </Typography>
                 </Typography>
+                <Typography className={classes.deskSectionText}>REQUEST TYPE: <Typography className={classes.deskText}>
+                    {JSON.parse(data).request_type}
+                </Typography>
+                </Typography>
+                <Typography className={classes.deskSectionText}>FORWARDING LOCATION: <Typography className={classes.deskText}>
+                    {JSON.parse(data).forward_location || "N/A"}
+                </Typography>
+                </Typography>
+                <Typography className={classes.deskSectionText}>ADMIN RESPONSE: <Typography className={classes.deskText}>
+                    {JSON.parse(data).response || "None"}
+                </Typography>
+                </Typography>
             </div>
         )
     };
@@ -197,7 +240,7 @@ function RequestMailNotification(props) {
         </div>
         expandedNotifButtons = !isAdminModule ?
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, marginBottom: '-20px', width: '80%'}}>
-            <Button className={classes.actionButton}>Close</Button>
+            <Button className={classes.actionButton} onClick={closeRequest}>Close</Button>
             <Button className={classes.requestActionButton} onClick={handleMailRequest}>Request Assistance</Button>
             <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>
         </div> : JSON.parse(data).status === 'Admin Has Responded' ? 
@@ -205,9 +248,9 @@ function RequestMailNotification(props) {
         <Button className={classes.actionButton}>Close</Button>
         <Button className={classes.actionButton}>See Report</Button>            
     </div> :  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
-        <Button className={classes.actionButton}>Close</Button>
+        <Button className={classes.actionButton} onClick={closeRequest}>Close</Button>
         <Button className={classes.requestActionButton} onClick={handleMailResponse}>Respond</Button>
-        <Button className={classes.actionButton}>See Report</Button>            
+        <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>
     </div>
     }
 

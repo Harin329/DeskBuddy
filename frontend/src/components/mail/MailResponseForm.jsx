@@ -150,28 +150,6 @@ function MailResponseForm(props){
 
     }
 
-    const deleteRequest = () => {
-        let jsonBody = {
-            mail_id: data.mailID,
-            employee_id: userOID,
-        }
-        const requestOptions = {
-            method: 'PUT',
-            redirect: 'follow',
-            body: JSON.stringify(jsonBody)
-        };
-
-        safeFetch(Endpoint + "/request/close", requestOptions)
-            .then((response) => response.text())
-            .then(result => {
-            })
-            .catch(error => {
-                console.log('error', error);
-                dispatch(setError(true));
-            });
-
-    }
-
     return (
         <div className={classes.makeRequest}>
             <Typography className={classes.sectionTextModal}>
@@ -181,10 +159,10 @@ function MailResponseForm(props){
                 Employee Name: {data.recipient_first + " " + data.recipient_last}
             </Typography>}
             <Typography className={classes.subheading}>
-                Request Type:
+                Request Type: {data.request_type}
             </Typography>
             <Typography className={classes.subheading}>
-                Forwarding Location:
+                Forwarding Location: {data.forward_location || "N/A"}
             </Typography>
             <Typography className={classes.subheading}>
                 Additional Instructions: {data.comments}
@@ -214,11 +192,6 @@ function MailResponseForm(props){
                     {!isAdmin && <Button className={classes.actionButtonCenter} onClick={handleUserResponse}>
                         Request More Assistance
                     </Button>}
-                </div>
-                <div>
-                    <Button className={classes.actionButtonCenter} onClick={deleteRequest}>
-                        Close Request
-                    </Button>
                 </div>
             </form>
         </div>
