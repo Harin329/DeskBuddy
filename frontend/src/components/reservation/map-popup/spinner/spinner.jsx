@@ -1,6 +1,8 @@
 import React from 'react';
 import './spinner.css';
 
-const spinner = () => <div className="loader">Loading...</div>;
+const spinner = (props) => {
+  return (<div className={`loader ${props ? 'white' : ''}`}>Loading...</div>);
+};
 
 export default spinner;

@@ -241,7 +241,7 @@ function Reservation() {
                 <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
                     <Grid item xs={10}>
                         <List>
-                            {loading && <Spinner />}
+                            {loading && Spinner(false)}
                             {deskResults.map((option) => {
                                 if (!isMobile) {
                                     return (

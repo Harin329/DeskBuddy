@@ -8,15 +8,15 @@ export const Mail = function (this: any, post: any) {
 }
 // truth table is the way it is because non-parameterized queries are vulnerable to SQL injection
 Mail.getMailByEmployee = (employeeID: string,
-  filter: string | undefined,
+  filter: string | undefined, // user controlled, need to use parameter
   sort: string | undefined,
-  loc: string | undefined,
-  id: string | undefined,
+  loc: string | undefined, // user controlled, need to use parameter
+  id: string | undefined, // user controlled, need to use parameter
   result: any) => {
-  let processed_sort = sort;
+  let processed_sort = sort; // user controlled, need to use parameter
   let query: string;
   let parameters: (string|number)[];
-  let direction: string | undefined;
+  let direction: string | undefined; // enumeration, safe to use in template string
   if (typeof sort === "string") {
     if (sort.charAt(0) === "+") {
       processed_sort = sort.substr(1);
@@ -29,6 +29,7 @@ Mail.getMailByEmployee = (employeeID: string,
       direction = "DESC";
     }
   }
+
   // params: filter, sort, direction, loc, id
   switch (getCode(filter, processed_sort, direction, loc, id)) {
     case "getMail":
@@ -486,6 +487,16 @@ Mail.getAllRequests = (employeeID: any, result: any) => {
     }
   })
 };
+
+Mail.getMailRequestTypeAndForwardLocation = (mailIDs: string, result: any) => {
+  con.query(`SELECT mail_id, request_type, forward_location FROM mail_request WHERE mail_id IN ${mailIDs}`, (err: any, res: any) => {
+    if (err) {
+      result(err, null);
+    } else {
+      result(null, res);
+    }
+  });
+}
 
 Mail.updateRequest = (req: any, result: any) => {
   const date = new Date();

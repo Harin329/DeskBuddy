@@ -120,10 +120,7 @@ function AllRequestsMailModule(size, text) {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => {
               mailObj.status = 'Admin has Responded';
-              // mailObj.officeName = officeList ? officeList.find(existingOffice => existingOffice.office_location == mailObj.officeLocation && existingOffice.office_id == mailObj.officeID).name : officeName;
-              // console.log('--------- office list: ' + officeList);
-              // console.log('--------- office list filter: ' + officeList.find(existingOffice => existingOffice.office_location == mailObj.officeLocation && existingOffice.office_id == mailObj.officeID).name);
-            });
+              });
             setMailList([...mail]);
           })
           .catch(error => {

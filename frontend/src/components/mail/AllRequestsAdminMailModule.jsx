@@ -104,7 +104,7 @@ function AllRequestsAdminMailModule(size, text) {
 
             const mail = JSON.parse(result).mails;
               mail.map((mailObj) => mailObj.status = 'Admin Has Responded');
-              setMailList((prevMailList) => [, ...prevMailList, ...mail]);
+              setMailList((prevMailList) => [...prevMailList, ...mail]);
           })
           .catch(error => {
             console.log('error', error);
