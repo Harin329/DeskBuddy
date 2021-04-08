@@ -260,7 +260,7 @@ class Feed extends React.Component {
             <UserContainer>
               <UserPic
                 src={
-                  el.profle_photo != null ? 'data:image/png;base64,' + new Buffer(el.profile_photo, 'binary').toString('base64') : ICBC
+                  el.profile_photo != null ? 'data:image/png;base64,' + new Buffer(el.profile_photo, 'binary').toString('base64') : ICBC
                 }
                 alt="profie pic"
               />
