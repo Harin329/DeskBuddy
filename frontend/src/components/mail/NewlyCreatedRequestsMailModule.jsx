@@ -9,7 +9,8 @@ import Endpoint from "../../config/Constants";
 import { useMsal } from "@azure/msal-react";
 import { isMobile } from "react-device-detect";
 import { setError } from '../../actions/globalActions';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getNewMailReq } from '../../actions/mailActions';
 
 
 const useStyles = makeStyles({
@@ -74,9 +75,7 @@ const useStyles = makeStyles({
 
 
 function NewlyCreatedRequestsMailModule(size, text, newMailRefresh, office) {
-    const [officeLocation, officeId] = office ? office.split(/-(?=[^-]+$)/) : [];
-
-    const [mailList, setMailList] = useState([]);
+    const mailList = useSelector(state => state.mail.newMailRequests);
     const [hasMore, setHasMore] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
     const [shouldRefresh, setShouldRefresh] = useState(newMailRefresh);
@@ -93,31 +92,7 @@ function NewlyCreatedRequestsMailModule(size, text, newMailRefresh, office) {
     // }, [shouldRefresh]);
 
     const getMail = () => {
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        const fullEndpoint = officeLocation && officeId ? `${Endpoint}/mail?filter=awaiting_admin_action&locname=${officeLocation}$locid=${officeId}` : `${Endpoint}/mail?filter=awaiting_admin_action`;
-
-        safeFetch(fullEndpoint, requestOptions)
-            .then(response => {
-                if (!response.ok) {
-                    dispatch(setError(true));
-                }
-                return response.text();
-            })
-            .then(result => {
-                const mail = JSON.parse(result).mails;
-                mail.map((mailObj) => mailObj.status = 'Needs Attention from Admin');
-                const sortedMail = mail.sort((a, b) => { return new Date(b.approx_date) - new Date(a.approx_date) });
-                setMailList([...sortedMail, ...mailList]);
-            })
-            .catch(error => {
-                console.log('error', error);
-                dispatch(setError(true));
-            });
-
+        dispatch(getNewMailReq(userOID, mailList, office));
         setHasMore(false);
     };
 
