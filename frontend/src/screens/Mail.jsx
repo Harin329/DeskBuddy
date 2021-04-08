@@ -17,7 +17,7 @@ import RequestModule from "../components/mail/RequestModule";
 import { useDispatch, useSelector } from 'react-redux';
 import { setError } from '../actions/globalActions';
 import ErrorPopup from '../components/global/error-popup';
-import { getNewMailAdmin, getNewMailClosed } from '../actions/mailActions';
+import { getNewMailAdmin, getNewMailAll, getNewMailClosed } from '../actions/mailActions';
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -82,6 +82,7 @@ function Mail() {
 
   const handleOfficeChange = (event) => {
     setOffice(event.target.value);
+    const filter = '';
     dispatch(getNewMailAll(userOID, filter));
     dispatch(getNewMailAdmin(filter, allMail));
     dispatch(getNewMailClosed(closedMailList));
