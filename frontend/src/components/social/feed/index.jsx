@@ -8,6 +8,7 @@ import { Modal } from '@material-ui/core';
 import safeFetch, { accountIsAdmin } from "../../../util/Util";
 import { MsalContext } from "@azure/msal-react";
 import ErrorPopup from '../../global/error-popup/index'
+import ICBC from "../../../assets/ICBC.png";
 
 // styles
 import {
@@ -259,8 +260,7 @@ class Feed extends React.Component {
             <UserContainer>
               <UserPic
                 src={
-                  'data:image/png;base64,' +
-                  new Buffer(el.profile_photo, 'binary').toString('base64')
+                  el.profle_photo != null ? 'data:image/png;base64,' + new Buffer(el.profile_photo, 'binary').toString('base64') : ICBC
                 }
                 alt="profie pic"
               />

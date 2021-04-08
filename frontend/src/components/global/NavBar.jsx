@@ -60,7 +60,7 @@ function NavBar() {
                     {displayName}
                 </div>
                 <div style={{ flex: 1 }} />
-                <img src={profilePic} style={{ width: 50, borderRadius: 50, backgroundColor: 'black', flex: 1, objectFit: 'contain' }} />
+                <img src={profilePic} style={{ width: 50, height: 50, borderRadius: 50, backgroundColor: 'black', flex: 1, objectFit: 'contain' }} />
                 <div style={{ flex: 1 }} />
                 <button style={{ height: '25px', alignSelf: 'center', fontFamily: 'Lato' }} onClick={() => instance.logout()} > LOGOUT </button>
                 <div style={{ flex: 1 }} />
