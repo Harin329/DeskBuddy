@@ -84,8 +84,7 @@ function AllRequestsMailModule(size, text) {
 
   const userOID = accounts[0].idTokenClaims.oid;
 
-  const mockData = ["ABC", "DEFG", "HIJ", "KLM", "NOP", "QRS", "TUV"];
-  const statusChoices = ['Admin has Responded', 'Waiting for Admin', 'Cannot Complete', 'Closed']
+  const statusChoices = ['Admin has Responded', 'Waiting for Admin', 'Closed']
 
   useEffect(async () => {
     // TODO: use get all mail request endpoint
