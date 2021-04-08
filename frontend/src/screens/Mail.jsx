@@ -115,7 +115,7 @@ function Mail() {
         {isAdmin && <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
         {/* TODO: Use the newMailRefresh prop to trigger a refresh after the admin submits a new mail notification via the NewMailForm.jsx */}
         {/* TODO: Use the office prop to filter which mail notifications to show */}
-          {NewlyCreatedRequestsMailModule(3, "NEWLY SUBMITTED MAIL", newMailRefresh, office)}
+          {NewlyCreatedRequestsMailModule(3, "NEWLY SUBMITTED REQUESTS", newMailRefresh, office)}
           <Grid item xs={'auto'}>
           {/* <NewlyCreatedRequestsMailModule size={3} text={"NEWLY SUBMITTED MAIL"} newMailRefresh={newMailRefresh}></NewlyCreatedRequestsMailModule> */}
           </Grid>
