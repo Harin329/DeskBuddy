@@ -281,8 +281,8 @@ function RequestMailNotification(props) {
             <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>
         </div> : JSON.parse(data).status === 'Admin Has Responded' ? 
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
-        <Button className={classes.actionButton}>Close</Button>
-        <Button className={classes.actionButton}>See Report</Button>            
+        <Button className={classes.actionButton} onClick={handleClosePopup}>Close</Button>
+        <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>
     </div> :  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
         <Button className={classes.actionButton} onClick={handleClosePopup}>Close</Button>
         <Button className={classes.requestActionButton} onClick={handleMailResponse}>Respond</Button>
