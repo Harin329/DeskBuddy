@@ -101,8 +101,8 @@ function Mail() {
           {AllRequestsMailModule(4, "ALL REQUESTS")}
         </Grid>
 
-        {window.innerWidth > 1500 && Subheader('MANAGE REQUESTS', 4, 2, 4)}
-        {window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
+        {isAdmin && window.innerWidth > 1500 && Subheader('MANAGE REQUESTS', 4, 2, 4)}
+        {isAdmin && window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
 
 
         {isAdmin && <Grid container justify='flex-start' alignItems='center' style={{width: '80%'}}><TextField id="outlined-basic" label="Location" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
