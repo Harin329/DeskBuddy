@@ -74,7 +74,7 @@ const useStyles = makeStyles({
 
 
 function NewlyCreatedRequestsMailModule(size, text, newMailRefresh, office) {
-    const [officeLocation, officeId] = office ? office.split('-') : [];
+    const [officeLocation, officeId] = office ? office.split(/-(?=[^-]+$)/) : [];
 
     const [mailList, setMailList] = useState([]);
     const [hasMore, setHasMore] = useState(true);
