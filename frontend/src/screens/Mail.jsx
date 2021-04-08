@@ -17,6 +17,7 @@ import RequestModule from "../components/mail/RequestModule";
 import { useDispatch, useSelector } from 'react-redux';
 import { setError } from '../actions/globalActions';
 import ErrorPopup from '../components/global/error-popup';
+import { getNewMailAdmin, getNewMailAll, getNewMailClosed } from '../actions/mailActions';
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -70,10 +71,15 @@ function Mail() {
   const [newMailRefresh, setNewMailRefresh] = useState(0);
   const [office, setOffice] = useState();
 
+  const allMail = useSelector(state => state.mail.allAdminMail);
+  const closedMailList = useSelector(state => state.mail.allClosedMail);
+
   const { accounts } = useMsal();
   const isAdmin = accountIsAdmin(accounts[0]);
 
   const classes = useStyles();
+
+  const userOID = accounts[0].idTokenClaims.oid;
 
   const handleNewMail = () => {
     setOpen(true);
@@ -89,6 +95,10 @@ function Mail() {
 
   const handleOfficeChange = (event) => {
     setOffice(event.target.value);
+    const filter = '';
+    dispatch(getNewMailAll(userOID, filter));
+    dispatch(getNewMailAdmin(filter, allMail));
+    dispatch(getNewMailClosed(closedMailList));
   };
 
   const newMailPopup = () => {
@@ -114,8 +124,8 @@ function Mail() {
           {AllRequestsMailModule(4, "ALL REQUESTS")}
         </Grid>
 
-        {window.innerWidth > 1500 && Subheader('MANAGE REQUESTS', 4, 2, 4)}
-        {window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
+        {isAdmin && window.innerWidth > 1500 && Subheader('MANAGE REQUESTS', 4, 2, 4)}
+        {isAdmin && window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
 
 
         {isAdmin && <Grid container justify='flex-start' alignItems='center' style={{width: '80%'}}><div className={classes.outlineBox}><TextField id="outlined-basic" label="Location" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>

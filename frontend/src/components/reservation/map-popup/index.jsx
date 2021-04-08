@@ -25,7 +25,7 @@ class MapPopup extends React.Component {
   }
 
   getFloors = (id) => {
-    const params = id.split('-');
+    const params = id.split(/-(?=[^-]+$)/);
 
     let requestOptions = {
       method: 'GET',

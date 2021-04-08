@@ -103,7 +103,7 @@ export const fetchDesks = (filter, append, pageStart, deskResults) => dispatch =
         deskParam = filter.desk.split(['-']);
     }
     if (filter.office.includes('-')) {
-        officeParam = filter.office.split(['-']);
+        officeParam = filter.office.split(/-(?=[^-]+$)/);
     }
 
     const myHeaders = new Headers();

@@ -23,5 +23,7 @@ export const SET_LOADING = "SET_LOADING";
 export const SET_ERROR = "SET_ERROR";
 
 export const SET_NEW_MAIL = "SET_NEW_MAIL";
-
-
+export const SET_NEW_MAIL_REQ = "SET_NEW_MAIL_REQ";
+export const SET_NEW_MAIL_ALL = "SET_NEW_MAIL_ALL";
+export const SET_NEW_MAIL_ADMIN = "SET_NEW_MAIL_ADMIN";
+export const SET_NEW_MAIL_CLOSED = "SET_NEW_MAIL_CLOSED";

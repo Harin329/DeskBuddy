@@ -23,7 +23,7 @@ Request.createRequest = (req: any, result: any) => {
             req.forward_location,
             req.additional_instructions,
             req.req_completion_date,
-            "awaiting admin action",
+            "awaiting_admin_action",
             currTime
         ], (err: any, res: any) => {
             if (err) {
@@ -57,7 +57,7 @@ Request.updateRequestEmployee = (req: any, result: any) => {
         req.forward_location,
         req.additional_instruction,
         req.req_completion_date,
-        "awaiting admin action", // placeholder
+        "awaiting_admin_action", // placeholder
         currDate
     ], (err: any, res: any) => {
         if (err) {
@@ -73,7 +73,7 @@ Request.updateRequestAdmin = (req: any, result: any) => {
     const currDate = getFormattedDate();
     con.query(`CALL updateRequestAdmin(?,?,?,?,?)`, [
         req.mail_id,
-        "awaiting employee confirmation", // placeholder, will likely be an enum?
+        "awaiting_employee_confirmation", // placeholder, will likely be an enum?
         req.admin_eid,
         req.response,
         currDate

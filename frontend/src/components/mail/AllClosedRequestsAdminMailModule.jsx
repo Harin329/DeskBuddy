@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { fetchOffices } from '../../actions/reservationActions';
 import { ConsoleView } from 'react-device-detect';
 import { setError } from '../../actions/globalActions';
+import { getNewMailClosed } from '../../actions/mailActions';
 
 
 const useStyles = makeStyles({
@@ -63,7 +64,7 @@ function AllClosedRequestsAdminMailModule(size, text) {
 
   const [statusChoice, setStatusChoice] = useState('Admin has Responded');
   const [open, setOpen] = useState(false);
-  const [mailList, setMailList] = useState([]);
+  const mailList = useSelector(state => state.mail.allClosedMail);
   const [officeName, setOfficeName] = useState('');
 
   const dispatch = useDispatch();
@@ -96,26 +97,7 @@ function AllClosedRequestsAdminMailModule(size, text) {
   }
 
   const fetchFilteredMail = async (filter, isReplacingRetrievedMail) => {
-    const requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
-    safeFetch(Endpoint + "/mail" + "?filter=closed&sort=-modified_at", requestOptions)
-    .then(response => {
-      if (!response.ok) {
-          dispatch(setError(true));
-      }
-      return response.text();
-  })
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Closed');
-            setMailList([...mailList, ...mail]);
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-          });
+    dispatch(getNewMailClosed(mailList));
   }
 
   const handleStatusChoiceChange = (event) => {
