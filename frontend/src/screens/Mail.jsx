@@ -17,6 +17,7 @@ import RequestModule from "../components/mail/RequestModule";
 import { useDispatch, useSelector } from 'react-redux';
 import { setError } from '../actions/globalActions';
 import ErrorPopup from '../components/global/error-popup';
+import { isMobile } from 'react-device-detect';
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -31,6 +32,8 @@ const useStyles = makeStyles((theme) => ({
   },
   sectionSpacing: {
     marginBottom: '29px',
+    display: isMobile ? 'flex' : '',
+    flexDirection: isMobile ? 'column' : '',
   },
   actionButtonCenter: {
     background: '#00ADEF',

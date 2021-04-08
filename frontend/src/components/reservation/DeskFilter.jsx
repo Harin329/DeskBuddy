@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '10px',
         fontFamily: 'Lato',
         fontWeight: 'bolder',
-        fontSize: 18
+        fontSize: !isMobile ? 18 : 15,
     },
     sectionText: {
         color: 'white',
@@ -99,11 +99,22 @@ function DeskFilter() {
     }
 
     const addLocationBody = () => {
-        return <AddLocationForm closeModal={handleAddLocationClose} />
+        return (
+          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <AddLocationForm closeModal={handleAddLocationClose} />
+          </div>
+        );
     }
 
     const updateLocationBody = () => {
-        return <UpdateLocationPopup isOpen={isUpdateLocationOpen} whatToDoWhenClosed={handleUpdateLocationClosed}></UpdateLocationPopup>
+        return (
+          <div style={{display: 'flex', justifyContent: 'center', alignItems:'center'}}>
+            <UpdateLocationPopup
+              isOpen={isUpdateLocationOpen}
+              whatToDoWhenClosed={handleUpdateLocationClosed}
+            ></UpdateLocationPopup>
+          </div>
+        );
     }
 
     const handleOfficeChange = (event) => {
