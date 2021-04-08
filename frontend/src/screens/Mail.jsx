@@ -24,10 +24,23 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   inputBoxes: {
-    width: '20%',
+    width: '90%',
+    height: '10%',
     backgroundColor: 'white',
     borderRadius: 20,
-    marginTop: '10px',
+    marginTop: '20px',
+    marginLeft: '10px',
+    marginRight: '10px',
+    marginBottom: '10px'
+  },
+  outlineBox: {
+    width: '20%',
+    height: '15%',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    marginTop: '20px',
+    marginLeft: '20px',
+    marginBottom: '10px'
   },
   sectionSpacing: {
     marginBottom: '29px',
@@ -105,13 +118,13 @@ function Mail() {
         {window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
 
 
-        {isAdmin && <Grid container justify='flex-start' alignItems='center' style={{width: '80%'}}><TextField id="outlined-basic" label="Location" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
+        {isAdmin && <Grid container justify='flex-start' alignItems='center' style={{width: '80%'}}><div className={classes.outlineBox}><TextField id="outlined-basic" label="Location" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
                         {officeList.map((option) => (
                           <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
                             {option.name}
                           </MenuItem>
                         ))}
-        </TextField></Grid>}
+        </TextField></div></Grid>}
         {isAdmin && <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
         {/* TODO: Use the newMailRefresh prop to trigger a refresh after the admin submits a new mail notification via the NewMailForm.jsx */}
         {/* TODO: Use the office prop to filter which mail notifications to show */}
