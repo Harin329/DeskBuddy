@@ -17,6 +17,7 @@ import RequestModule from "../components/mail/RequestModule";
 import { useDispatch, useSelector } from 'react-redux';
 import { setError } from '../actions/globalActions';
 import ErrorPopup from '../components/global/error-popup';
+import { getNewMailAdmin, getNewMailClosed } from '../actions/mailActions';
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -57,10 +58,15 @@ function Mail() {
   const [newMailRefresh, setNewMailRefresh] = useState(0);
   const [office, setOffice] = useState();
 
+  const allMail = useSelector(state => state.mail.allAdminMail);
+  const closedMailList = useSelector(state => state.mail.allClosedMail);
+
   const { accounts } = useMsal();
   const isAdmin = accountIsAdmin(accounts[0]);
 
   const classes = useStyles();
+
+  const userOID = accounts[0].idTokenClaims.oid;
 
   const handleNewMail = () => {
     setOpen(true);
@@ -76,6 +82,9 @@ function Mail() {
 
   const handleOfficeChange = (event) => {
     setOffice(event.target.value);
+    dispatch(getNewMailAll(userOID, filter));
+    dispatch(getNewMailAdmin(filter, allMail));
+    dispatch(getNewMailClosed(closedMailList));
   };
 
   const newMailPopup = () => {

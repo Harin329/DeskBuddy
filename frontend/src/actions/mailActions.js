@@ -231,7 +231,7 @@ export const getNewMailAdmin = (filter, prevMailList) => dispatch => {
 }
 
 
-export const getNewMailClosed = (filter, mailList) => dispatch => {
+export const getNewMailClosed = (mailList) => dispatch => {
     const requestOptions = {
         method: 'GET',
         redirect: 'follow'

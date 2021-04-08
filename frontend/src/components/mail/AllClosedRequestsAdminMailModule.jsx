@@ -97,7 +97,7 @@ function AllClosedRequestsAdminMailModule(size, text) {
   }
 
   const fetchFilteredMail = async (filter, isReplacingRetrievedMail) => {
-    dispatch(getNewMailClosed(filter, mailList));
+    dispatch(getNewMailClosed(mailList));
   }
 
   const handleStatusChoiceChange = (event) => {
