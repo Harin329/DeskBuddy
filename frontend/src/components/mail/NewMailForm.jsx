@@ -103,7 +103,7 @@ function NewMailForm(props) {
 
     const handleOfficeChange = (event) => {
         setOffice(event.target.value);
-        const params = event.target.value.split(['-']);
+        const params = event.target.value.split(/-(?=[^-]+$)/);
         setOfficeLocation(params[0]);
         setOfficeID(params[1]);
     };

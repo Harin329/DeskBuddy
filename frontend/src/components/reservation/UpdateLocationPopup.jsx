@@ -205,8 +205,8 @@ function UpdateLocationPopup (props) {
         if (!office) {
             alert("No city identifier has been provided");
         } else {
-            const originalCity = office.split('-')[0];
-            const id = office.split('-')[1];
+            const originalCity = office.split(/-(?=[^-]+$)/)[0];
+            const id = office.split(/-(?=[^-]+$)/)[1];
             const originalOffice = officeList.find(existingOffice => existingOffice.office_location == originalCity && existingOffice.office_id == id);
             const originalOfficePhoto = originalOffice.office_photo;
             originalOffice.office_photo = null;
@@ -284,7 +284,7 @@ function UpdateLocationPopup (props) {
   const handleOfficeChange = (event) => {
     setOffice(event.target.value);
     if (event.target.value !== 'All') {
-        const params = event.target.value.split(['-']);
+        const params = event.target.value.split(/-(?=[^-]+$)/);
         dispatch(fetchFloorsByOffice(params));
     }
   };
