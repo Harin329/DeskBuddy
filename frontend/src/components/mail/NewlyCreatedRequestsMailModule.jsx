@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Typography, Grid, ListItem, Divider, Button, Modal } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InfiniteScroll from "react-infinite-scroller";
-import MailNotification from './MailNotification';
+import RequestMailNotification from './RequestMailNotification';
 import MailRequestForm from "./MailRequestForm";
 import safeFetch from "../../util/Util";
 import Endpoint from "../../config/Constants";
@@ -98,7 +98,7 @@ function NewlyCreatedRequestsMailModule(size, text, newMailRefresh, office) {
             redirect: 'follow'
         };
 
-        const fullEndpoint = officeLocation && officeId ? `${Endpoint}/mail?filter=new&locname=${officeLocation}$locid=${officeId}` : `${Endpoint}/mail?filter=new`;
+        const fullEndpoint = officeLocation && officeId ? `${Endpoint}/mail?filter=awaiting_admin_action&locname=${officeLocation}$locid=${officeId}` : `${Endpoint}/mail?filter=awaiting_admin_action`;
 
         safeFetch(fullEndpoint, requestOptions)
             .then(response => {
@@ -109,9 +109,9 @@ function NewlyCreatedRequestsMailModule(size, text, newMailRefresh, office) {
             })
             .then(result => {
                 const mail = JSON.parse(result).mails;
-                mail.map((mailObj) => mailObj.status = 'New');
+                mail.map((mailObj) => mailObj.status = 'Needs Attention from Admin');
                 const sortedMail = mail.sort((a, b) => { return new Date(b.approx_date) - new Date(a.approx_date) });
-                setMailList([...mailList, ...sortedMail]);
+                setMailList([...sortedMail, ...mailList]);
             })
             .catch(error => {
                 console.log('error', error);
@@ -132,7 +132,7 @@ function NewlyCreatedRequestsMailModule(size, text, newMailRefresh, office) {
             >
                 {mailList.map((update, i) => {
                     return (
-                        <MailNotification isAdminModule={true}>{JSON.stringify(update)}</MailNotification>
+                        <RequestMailNotification isAdminModule={true} data={JSON.stringify(update)}></RequestMailNotification>
                     )
                 })}
             </InfiniteScroll>

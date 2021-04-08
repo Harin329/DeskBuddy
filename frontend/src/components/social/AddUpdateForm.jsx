@@ -224,7 +224,7 @@ function AddUpdateForm(props) {
                     }}
                     onChange={handleContentInput}
                 /></div>
-                {!props.global && <h1 className={classes.branchTitle}>Branch (Optional)</h1>}
+                {!props.global && <h1 className={classes.branchTitle}>Branch</h1>}
                 {!props.global && <TextField className={classes.officeSelector} id="outlined-basic" variant="outlined" select onChange={(e) => handleOfficeChange(e)}>
                     {officeList.map((option) => (
                         <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
@@ -232,11 +232,15 @@ function AddUpdateForm(props) {
                         </MenuItem>
                     ))}
                 </TextField>}
-                <div>
+                {selectedOfficeID === 0 && selectedOfficeLocation === "" ? <div>
+                    <Button disabled className={classes.actionButtonCenter}>
+                        Post
+                    </Button>
+                </div> : <div>
                     <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
                         Post
                     </Button>
-                </div>
+                </div>}
             </form>
         </div>
     )

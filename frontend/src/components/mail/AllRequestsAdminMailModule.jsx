@@ -73,7 +73,7 @@ function AllRequestsAdminMailModule(size, text) {
   const userOID = accounts[0].idTokenClaims.oid;
 
   useEffect(() => {
-    fetchFilteredMail('Waiting for Admin', false);
+    // fetchFilteredMail('Waiting for Admin', false);
     fetchFilteredMail('Admin has Responded', false);
     fetchFilteredMail('Cannot Complete', false);
     // await fetchFilteredMail('Closed', false);
