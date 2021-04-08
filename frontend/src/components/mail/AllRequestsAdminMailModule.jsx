@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { fetchOffices } from '../../actions/reservationActions';
 import { ConsoleView } from 'react-device-detect';
 import { setError } from '../../actions/globalActions';
+import { getNewMailAdmin } from '../../actions/mailActions';
 
 
 const useStyles = makeStyles({
@@ -63,7 +64,7 @@ function AllRequestsAdminMailModule(size, text) {
 
   const [statusChoice, setStatusChoice] = useState('Admin has Responded');
   const [open, setOpen] = useState(false);
-  const [mailList, setMailList] = useState([]);
+  const mailList = useSelector(state => state.mail.allAdminMail);
   const [officeName, setOfficeName] = useState('');
 
   const dispatch = useDispatch();
@@ -73,7 +74,7 @@ function AllRequestsAdminMailModule(size, text) {
   const userOID = accounts[0].idTokenClaims.oid;
 
   useEffect(() => {
-    fetchFilteredMail('Waiting for Admin', false);
+    // fetchFilteredMail('Waiting for Admin', false);
     fetchFilteredMail('Admin has Responded', false);
     fetchFilteredMail('Cannot Complete', false);
     // await fetchFilteredMail('Closed', false);
@@ -92,89 +93,7 @@ function AllRequestsAdminMailModule(size, text) {
   }
 
   const fetchFilteredMail = async (filter, isReplacingRetrievedMail) => {
-    const requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
-    switch (filter) {
-      case 'Admin has Responded':
-        safeFetch(Endpoint + "/mail" + "?filter=awaiting_employee_confirmation&sort=-modified_at", requestOptions)
-        .then(response => {
-          if (!response.ok) {
-              dispatch(setError(true));
-          }
-          return response.text();
-      })
-          .then(result => {
-
-            const mail = JSON.parse(result).mails;
-              mail.map((mailObj) => mailObj.status = 'Admin Has Responded');
-              setMailList((prevMailList) => [...prevMailList, ...mail]);
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-          });
-        break;
-      case 'Waiting for Admin':
-        safeFetch(Endpoint + "/mail" + "?filter=awaiting_admin_action&sort=-modified_at", requestOptions)
-        .then(response => {
-          if (!response.ok) {
-              dispatch(setError(true));
-          }
-          return response.text();
-      })
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Waiting for Admin');
-            setMailList((prevMailList) => [...mail, ...prevMailList]);
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-          });
-        break;
-      case 'Cannot Complete':
-        safeFetch(Endpoint + "/mail" + "?filter=cannot_complete&sort=-modified_at", requestOptions)
-        .then(response => {
-          if (!response.ok) {
-              dispatch(setError(true));
-          }
-          return response.text();
-      })
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Cannot Complete');
-            if (mail.length > 0) {
-              setMailList((prevMailList) => [...prevMailList, ...mail]);
-            }
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-          });
-        break;
-      case 'Closed':
-        safeFetch(Endpoint + "/mail" + "?filter=closed&sort=-modified_at", requestOptions)
-        .then(response => {
-          if (!response.ok) {
-              dispatch(setError(true));
-          }
-          return response.text();
-      })
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Closed');
-            setMailList((prevMailList) => [...prevMailList, ...mail]);
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-          });
-        break;
-      default:
-        break;
-    }
+      dispatch(getNewMailAdmin(filter, mailList));
   }
 
   const handleStatusChoiceChange = (event) => {

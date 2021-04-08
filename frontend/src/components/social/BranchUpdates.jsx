@@ -115,7 +115,7 @@ class BranchUpdates extends React.Component {
     handleOfficeChange(event) {
 
         if (event.target.value !== 'All') {
-            const params = event.target.value.split(['-']);
+            const params = event.target.value.split(/-(?=[^-]+$)/);
 
             console.log(params[0])
             console.log(params[1])
