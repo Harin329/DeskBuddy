@@ -155,7 +155,7 @@ export default class MailController {
   getRequestTypeAndForwardLocation(mailIDs: string[]): Promise<IRequestTypesForward[]> {
     for (const id in mailIDs) {
       if (isNaN(Number(id))) {
-        return Promise.reject("mailIDs are not good")
+        return Promise.reject("mailIDs are not good"); // sanitizes IDs
       }
     }
     const allIDs = "('" + mailIDs.join("','") + "')";

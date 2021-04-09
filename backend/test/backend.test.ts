@@ -560,7 +560,7 @@ const postDeleter = async (res: any) => {
     await request.delete(`/post/deletePost`).send(body).set(adminJSON);
 }
 
-describe.only("Mail manager endpoints tests", () => {
+describe("Mail manager endpoints tests", () => {
     // these tests assume the existence of a test user 'Test User', who has no mails to begin with
 
     it("POST /mail", async done => {
