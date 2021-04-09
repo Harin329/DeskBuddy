@@ -259,7 +259,8 @@ function RequestMailNotification(props) {
     let expandedNotifText;
     let expandedNotifButtons;
     if (isExpanded) {
-      let officeName = officeList.find(existingOffice => existingOffice.office_location == JSON.parse(data).officeLocation && existingOffice.office_id == JSON.parse(data).officeID).name;
+        let matchingOffice = officeList.find(existingOffice => existingOffice.office_location == JSON.parse(data).officeLocation && existingOffice.office_id == JSON.parse(data).officeID);
+      let officeName = matchingOffice ? matchingOffice.name : 'Retrieving...';
         expandedNotifText = 
         <div style={{ width: '80%', height: '100px', alignItems: 'flex-start', display: 'flex', flexDirection: 'column', }}>
             <Typography className={classes.deskSectionText}>LOCATION: <Typography className={classes.deskText}>
