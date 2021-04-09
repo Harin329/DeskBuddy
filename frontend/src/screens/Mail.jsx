@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setError } from '../actions/globalActions';
 import ErrorPopup from '../components/global/error-popup';
 import { isMobile } from 'react-device-detect';
-import { getNewMailAdmin, getNewMailAll, getNewMailClosed } from '../actions/mailActions';
+import { getNewMailAdmin, getNewMailReq, getNewMailClosed } from '../actions/mailActions';
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
   outlineBox: {
     width: isMobile ? '200px' : '20%',
-    height: '15%',
+    height: '20%',
     backgroundColor: 'white',
     borderRadius: 20,
     marginTop: '20px',
