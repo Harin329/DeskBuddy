@@ -39,37 +39,11 @@ function App() {
             userInfo.family_name = accounts[0].idTokenClaims.family_name;
             userInfo.given_name = accounts[0].idTokenClaims.given_name;
             userInfo.oid = accounts[0].idTokenClaims.oid;
-            // console.log(JSON.stringify(accounts[0].idTokenClaims, null, 2))
-            fetchUserInfo()
+            addUserToDeskBuddyDB(userInfo);
         }
     }, [inProgress, accounts, instance]);
 
-    // graph fetch to get user phone from DeskBuddy azure directory
-    const fetchUserInfo = () => {
-        const options = {
-            method: "GET",
-        };
-
-        graphFetch(graphConfig.graphMeEndpoint, options)
-            .then(response => {
-                if (response != null && response.ok) {
-                    response.json()
-                        .then(responseJson => {
-                            userInfo.mobilePhone = responseJson.mobilePhone;
-                            userInfo.displayName = responseJson.displayName;
-                            addUserToDeskBuddyDB(userInfo);
-                        })
-                } else {
-                    throw Error("Bad response from /me");
-                }
-            })
-            .catch(error => {
-                console.log(error);
-                alert("error loading profile, please try again");
-            });
-    }
-
-    // create or update logged in user in the DeskBuddy database using information from DeskBuddy azure directory (currently oid, firstname, lastname, phone, email)
+    // create or update logged in user in the DeskBuddy database using information from DeskBuddy azure directory (oid, firstname, lastname, email)
     const addUserToDeskBuddyDB = (userInfo) => {
         let myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -87,10 +61,11 @@ function App() {
                         .then(responseJson => {
                             dispatch({type: SET_OID, payload: userInfo.oid});
                             dispatch({type: SET_IS_ADMIN, payload: accountIsAdmin(accounts[0])});
-                            dispatch({type: SET_USER_DISPLAY_NAME, payload: userInfo.displayName});
+                            dispatch({type: SET_USER_DISPLAY_NAME, payload: userInfo.given_name + " " + userInfo.family_name});
                             dispatch({type: SET_USER_ADDED_TO_DB, payload: true});
                         })
-                } else {throw Error("Bad response from /user");
+                } else {
+                    throw Error("Bad response from /user");
                 }
             })
             .catch(error => {

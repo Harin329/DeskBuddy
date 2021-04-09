@@ -23,20 +23,20 @@ router.post('/', (req: Request, res: Response) => {
     }
     userServer.insertUser(req)
         .then((user: any) => {
-            res.json(user);
+            res.status(200).json(user);
         })
         .catch((err: any) => {
-            res.json(err);
+            res.status(404).json(err);
         });
 })
 
 router.get('/', (req, res: Response) => {
    userServer.getAllUsers()
         .then((users: any) => {
-            res.json(users);
+            res.status(200).json(users);
         })
         .catch((err: any) => {
-            res.json(err);
+            res.status(404).json(err);
         })
 })
 
@@ -45,10 +45,10 @@ router.post('/photo', upload.single("image"), (req: Request, res: Response) => {
     // @ts-ignore
     userServer.updatePhoto(req.authInfo.oid, req.file.buffer)
         .then((user: any) => {
-            res.json(user);
+            res.status(200).json(user);
         })
         .catch((err: any) => {
-            res.json(err);
+            res.status(404).json(err);
         });
 
 })
