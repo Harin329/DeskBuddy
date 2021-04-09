@@ -87,16 +87,6 @@ export default class MailController {
         if (err) {
           reject(err);
         } else {
-          /*
-            Here is a hack. we take the array of mailIDs, and for each we check if there exists a request
-            for it, and if there exists one, then we grab its request_type and forward-location.
-
-            We get an array of responses, and for each mail, if there does not exist a request, we return
-            null. Else we populate IMailResponse.
-
-            This hack's safety is predicated on the fact that mailIDs are, in fact, safe to use. Should an attacker be
-            able to modify the mailID field, we might have a problem.
-          */
           try {
             const result = JSON.parse(JSON.stringify(res));
             const output: IMailResponse[] = [];
