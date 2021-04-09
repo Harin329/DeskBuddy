@@ -45,7 +45,11 @@ Office.deleteOffice = (city: string, id: number, result: any) => {
 }
 
 Office.getAllOfficeIDs = (city: string, result: any) => {
-    con.query(`SELECT office_id FROM office WHERE office_location = "${city}"`, (err: any, res: any) => {
+    con.query(`SELECT office_id FROM office WHERE office_location = ?`,
+    [
+        city
+    ]
+    , (err: any, res: any) => {
         if (err) {
             result(err, null);
         } else {
