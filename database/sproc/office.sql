@@ -21,3 +21,12 @@ UPDATE `office`
 	WHERE `office_id` = `originalId` AND `office_location` = `originalCity`;
 
 END
+
+CREATE PROCEDURE `deleteDesksFloorsOffice`(IN `id` INT(8), IN `location` VARCHAR(50))
+BEGIN
+
+DELETE from desk where desk.fk_office_id = `id` AND desk.fk_office_location = `location`;
+DELETE from floor where floor.fk_office_id = `id` AND floor.fk_office_location = `location`;
+DELETE from office where office.office_id = `id` AND office.office_location = `location`;
+
+END

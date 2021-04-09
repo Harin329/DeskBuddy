@@ -1,18 +1,18 @@
 CREATE PROCEDURE `createRequest` (IN `mailID` INT, IN `employeeID` VARCHAR(50), IN `employeeName` VARCHAR(50), IN `employeeEmail` VARCHAR(50), IN `employeePhone` VARCHAR(50),
-IN `requestType` VARCHAR(50), IN `forwardLocation` VARCHAR(50), IN `additionalInstructions` VARCHAR(500), IN `reqCompletionDate` DATE, IN `in_status` VARCHAR(50), IN `modifiedAt` DATE)
+                                     IN `requestType` VARCHAR(50), IN `forwardLocation` VARCHAR(50), IN `additionalInstructions` VARCHAR(500), IN `reqCompletionDate` DATE, IN `in_status` VARCHAR(50), IN `modified_at` DATE)
 BEGIN
-    INSERT INTO `mail_request` (`mail_id`, `employee_id`, `employee_name`, `employee_email`, `employee_phone`,
-                                `request_type`, `forward_location`, `additional_instructions`, `req_completion_date`,
-                                `completion_date`, `status`, `admin_eid`, 'response', 'modified_at')
-    VALUES (`mailID`, `employeeID`, `employeeName`, `employeeEmail`, `employeePhone`, `requestType`, `forwardLocation`,
-            `additionalInstructions`, `reqCompletionDate`, null, `in_status`, null, null, `modifiedAt`);
+INSERT INTO `mail_request` (`mail_id`, `employee_id`, `employee_name`, `employee_email`,
+                    `request_type`, `forward_location`, `additional_instructions`, `req_completion_date`,
+                    `completion_date`, `status`, `admin_eid`, `response`, `modified_at`)
+VALUES (`mailID`, `employeeID`, `employeeName`, `employeeEmail`, `requestType`, `forwardLocation`,
+                            `additionalInstructions`, `reqCompletionDate`, null, `in_status`, null, null, `modified_at`);
 END;
 
 CREATE PROCEDURE `updateRequestEmployee` (IN `mailID` INT, IN `employeeID` VARCHAR(50), IN `employeePhone` VARCHAR(50),
 IN `requestType` VARCHAR(50), IN `forwardLocation` VARCHAR(50), IN `additionalInstructions` VARCHAR(500), IN `reqCompletionDate` DATE, IN `in_status` VARCHAR(50), IN `modifiedAt` DATE)
 BEGIN
 UPDATE `mail_request`
-SET `employee_phone` = employeePhone,`request_type` = `requestType`, `forward_location` = `forwardLocation`, `additional_instructions` = `additionalInstructions`,
+SET `request_type` = `requestType`, `forward_location` = `forwardLocation`, `additional_instructions` = `additionalInstructions`,
     `req_completion_date` = `reqCompletionDate`, `status` = `in_status`, `modified_at` = `modifiedAt`
 WHERE `mail_id` = `mailID` AND `employee_id` = `employeeID`;
 END;

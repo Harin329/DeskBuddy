@@ -173,6 +173,22 @@ describe("Reservation endpoints tests", () => {
     });
 });
 
+describe("Desk endpoints tests", () => {
+    it("POST /desk/getOpenDesks normal", async done => {
+        const res1 = await locationCreator();
+        const officeID = JSON.parse(res1.text).code.split("-")[1];
+        const officeLocation = JSON.parse(res1.text).code.split("-")[0];
+        const body = loadJSON("test/jsonBody/deskBody/postOpenDesks.json");
+        body.office_id = officeID;
+        body.office_location = officeLocation;
+        const res2 = await request.post('/desk/getOpenDesks').send(body).set(userJSON);
+        expect(res2.status).toBe(200);
+        expect(res2.body.length).toBe(4);
+        await locationDeleter(res1);
+        done();
+    });
+});
+
 const reservationDeleter = async (res: any) => {
     const id = res.body.reservation_id;
     const body = {"reservation_id" : id};
