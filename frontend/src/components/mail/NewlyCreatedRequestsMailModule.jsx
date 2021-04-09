@@ -3,12 +3,8 @@ import { Typography, Grid, ListItem, Divider, Button, Modal } from '@material-ui
 import { makeStyles } from '@material-ui/core/styles';
 import InfiniteScroll from "react-infinite-scroller";
 import RequestMailNotification from './RequestMailNotification';
-import MailRequestForm from "./MailRequestForm";
-import safeFetch from "../../util/Util";
-import Endpoint from "../../config/Constants";
 import { useMsal } from "@azure/msal-react";
 import { isMobile } from "react-device-detect";
-import { setError } from '../../actions/globalActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNewMailReq } from '../../actions/mailActions';
 
@@ -77,22 +73,14 @@ const useStyles = makeStyles({
 function NewlyCreatedRequestsMailModule(size, text, newMailRefresh, office) {
     const mailList = useSelector(state => state.mail.newMailRequests);
     const [hasMore, setHasMore] = useState(true);
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [shouldRefresh, setShouldRefresh] = useState(newMailRefresh);
 
     const classes = useStyles();
     const dispatch = useDispatch();
 
     const { accounts } = useMsal();
-    const userOID = accounts[0].idTokenClaims.oid;
-
-    // TODO: My attempt at making use of the refresh trigger to retrieve the updated list of mail and re-render the component
-    // useEffect(() => {
-    //     getMail();
-    // }, [shouldRefresh]);
 
     const getMail = () => {
-        dispatch(getNewMailReq(userOID, mailList, office));
+        dispatch(getNewMailReq(office));
         setHasMore(false);
     };
 

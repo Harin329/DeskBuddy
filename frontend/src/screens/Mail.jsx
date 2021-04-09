@@ -8,17 +8,15 @@ import AllRequestsMailModule from '../components/mail/AllRequestsMailModule';
 import NewlyCreatedRequestsMailModule from '../components/mail/NewlyCreatedRequestsMailModule';
 import AllRequestsAdminMailModule from '../components/mail/AllRequestsAdminMailModule';
 import AllClosedRequestsAdminMailModule from '../components/mail/AllClosedRequestsAdminMailModule';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NewMailForm from "../components/mail/NewMailForm";
 import { useMsal } from "@azure/msal-react";
 import { accountIsAdmin } from "../util/Util";
-import MailRequestForm from "../components/mail/MailRequestForm";
-import RequestModule from "../components/mail/RequestModule";
 import { useDispatch, useSelector } from 'react-redux';
 import { setError } from '../actions/globalActions';
 import ErrorPopup from '../components/global/error-popup';
 import { isMobile } from 'react-device-detect';
-import { getNewMailAdmin, getNewMailAll, getNewMailClosed } from '../actions/mailActions';
+import { getNewMailAdmin, getNewMailReq, getNewMailClosed } from '../actions/mailActions';
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -27,10 +25,22 @@ const useStyles = makeStyles((theme) => ({
   },
   inputBoxes: {
     width: isMobile ? '200px' : '20%',
+    height: '10%',
     backgroundColor: 'white',
     borderRadius: 20,
-    marginTop: '10px',
-    marginBottom: isMobile ? '20px' : '0px',
+    marginTop: '20px',
+    marginLeft: '10px',
+    marginRight: '10px',
+    marginBottom: isMobile ? '20px' : '10px',
+  },
+  outlineBox: {
+    width: isMobile ? '200px' : '20%',
+    height: '20%',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    marginTop: '20px',
+    marginLeft: '20px',
+    marginBottom: isMobile ? '20px' : '10px'
   },
   sectionSpacing: {
     marginBottom: !isMobile ? '80px' : '100px',
@@ -85,11 +95,13 @@ function Mail() {
 
   const handleOfficeChange = (event) => {
     setOffice(event.target.value);
-    const filter = '';
-    dispatch(getNewMailAll(userOID, filter));
-    dispatch(getNewMailAdmin(filter, allMail));
-    dispatch(getNewMailClosed(closedMailList));
   };
+
+  useEffect(() => {
+    dispatch(getNewMailReq(office));
+    dispatch(getNewMailAdmin(office));
+    dispatch(getNewMailClosed(office));
+  }, [office]);
 
   const newMailPopup = () => {
     return <NewMailForm closeModal={closeNewMail} whatToDoWhenClosed={(bool) => { setOpen(bool) }} handleNewMailRefresh={handleNewMailRefresh}/>
@@ -126,15 +138,12 @@ function Mail() {
                         ))}
         </TextField></Grid>}
         {isAdmin && <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-        {/* TODO: Use the newMailRefresh prop to trigger a refresh after the admin submits a new mail notification via the NewMailForm.jsx */}
-        {/* TODO: Use the office prop to filter which mail notifications to show */}
           {NewlyCreatedRequestsMailModule(!isMobile ? 3 : 11, "NEWLY SUBMITTED REQUESTS", newMailRefresh, office)}
           <Grid item xs={'auto'}>
-          {/* <NewlyCreatedRequestsMailModule size={3} text={"NEWLY SUBMITTED MAIL"} newMailRefresh={newMailRefresh}></NewlyCreatedRequestsMailModule> */}
           </Grid>
-          {AllRequestsAdminMailModule(!isMobile ? 3 : 11, "ALL ACTIVE REQUESTS", newMailRefresh, office)}
+          {AllRequestsAdminMailModule(!isMobile ? 3 : 11, "ALL ACTIVE REQUESTS", office)}
           <Grid item xs={'auto'}></Grid>
-          {AllClosedRequestsAdminMailModule(!isMobile ? 3 : 11, "ALL CLOSED REQUESTS", newMailRefresh, office)}
+          {AllClosedRequestsAdminMailModule(!isMobile ? 3 : 11, "ALL CLOSED REQUESTS", office)}
         </Grid>}
         {isAdmin && <Button className={classes.actionButtonCenter} onClick={handleNewMail}>
           Submit New Mail
