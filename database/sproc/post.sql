@@ -30,7 +30,7 @@ END
 
 CREATE PROCEDURE `getReportedPosts`()
 BEGIN
-SELECT post.post_id, post.employee_id, post.channel_id, post.date_posted, post.post_title, post.post_content, post.post_image, post.report_count, employee.first_name, employee.last_name, employee.profile_photo  FROM `post`
+SELECT post.post_id, post.employee_id, post.channel_id, post.date_posted, post.post_content, post.report_count, employee.first_name, employee.last_name, employee.profile_photo  FROM `post`
 INNER JOIN `employee` ON employee.employee_id=post.employee_id
 WHERE post.report_count > 0
 ORDER BY post.date_posted DESC LIMIT 30;
