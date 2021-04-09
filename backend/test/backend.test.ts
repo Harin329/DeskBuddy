@@ -227,8 +227,12 @@ describe("Announcement endpoints tests", () => {
         expect(res1.status).toBe(200);
         const res2 = await request.get('/announcement/getCompanyAnnouncements').set(userJSON);
         expect(res2.status).toBe(200);
-        expect(res2.body.length).toBeGreaterThanOrEqual(1);
-        await announcementDeleter(res1, true);
+        try {
+            expect(res2.body.length).toBeGreaterThanOrEqual(1);
+            await announcementDeleter(res1, true);
+        } catch (err) {
+            await announcementDeleter(res1, true);
+        }
         done();
     });
 
@@ -264,7 +268,8 @@ describe("Announcement endpoints tests", () => {
         const res2 = await request.get('/office/getAllOffices').set(userJSON);
         expect(res2.status).toBe(200);
         expect(res2.body.length).toBeGreaterThanOrEqual(1);
-        let officeCodes = [];
+        const officeCodes = [];
+        // tslint:disable-next-line:prefer-for-of
         for (let i = 0; i < res2.body.length; i++){
             officeCodes.push(res2.body[i].office_location + "-" + res2.body[i].office_id);
         }
@@ -326,7 +331,8 @@ describe("Channel endpoints tests", () => {
         expect(res1.status).toBe(200);
         const res2 = await request.get('/channel/').set(adminJSON);
         expect(res2.body.length).toBeGreaterThanOrEqual(2);
-        let channelIDs = [];
+        const channelIDs = [];
+        // tslint:disable-next-line:prefer-for-of
         for (let i = 0; i < res2.body.length; i++){
             channelIDs.push(res2.body[i].channel_id);
         }
@@ -342,7 +348,8 @@ describe("Channel endpoints tests", () => {
         expect(res1.status).toBe(200);
         const res2 = await request.get('/channel/').set(userJSON);
         expect(res2.body.length).toBeGreaterThanOrEqual(2);
-        let channelIDs = [];
+        const channelIDs = [];
+        // tslint:disable-next-line:prefer-for-of
         for (let i = 0; i < res2.body.length; i++){
             channelIDs.push(res2.body[i].channel_id);
         }
@@ -553,15 +560,23 @@ const postDeleter = async (res: any) => {
     await request.delete(`/post/deletePost`).send(body).set(adminJSON);
 }
 
-describe("Mail manager endpoints tests", () => {
+describe.only("Mail manager endpoints tests", () => {
     // these tests assume the existence of a test user 'Test User', who has no mails to begin with
 
     it("POST /mail", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
-        expect(res.text).toBe(1);
-        await mailDeleter(res);
+        const getRes = await request.get(`/mail/${testUserOID}`).set(userJSON);
+        try {
+            expect(getRes.status).toBe(200);
+            const result = JSON.parse(getRes.text);
+            expect(result.mails.length).toBe(1);
+            await mailDeleter(res);
+        } catch (err) {
+            await mailDeleter(res);
+            throw new Error("test failed: " + err);
+        }
         done();
     });
 
@@ -591,11 +606,17 @@ describe("Mail manager endpoints tests", () => {
         const postBody: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         const requestBody: IRequestComplete = loadJSON("test/jsonBody/mailRequestBody/postMailRequestNormal.json");
         const res = await request.post('/mail').send(postBody).set(adminJSON);
-        expect(res.status).toBe(200);
-        const resID = getID(res);
-        requestBody.mailID = resID;
-        const reqRes = await request.post('/request').send(requestBody).set(userJSON);
-        expect(reqRes.status).toBe(200);
+        try {
+            expect(res.status).toBe(200);
+            const resID = getID(res);
+            requestBody.mailID = resID;
+            const reqRes = await request.post('/request').send(requestBody).set(userJSON);
+            expect(reqRes.status).toBe(200);
+            await mailDeleter(res);
+        } catch (err) {
+            await mailDeleter(res);
+            throw new Error("test failed: " + err);
+        }
         done();
     });
 

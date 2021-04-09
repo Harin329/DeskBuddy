@@ -153,6 +153,11 @@ export default class MailController {
   }
 
   getRequestTypeAndForwardLocation(mailIDs: string[]): Promise<IRequestTypesForward[]> {
+    for (const id in mailIDs) {
+      if (isNaN(Number(id))) {
+        return Promise.reject("mailIDs are not good")
+      }
+    }
     const allIDs = "('" + mailIDs.join("','") + "')";
     return new Promise((resolve, reject) => {
       Mail.getMailRequestTypeAndForwardLocation(allIDs, (err: any, res: any) => {
