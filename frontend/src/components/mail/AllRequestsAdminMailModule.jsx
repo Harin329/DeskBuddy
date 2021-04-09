@@ -8,6 +8,7 @@ import { useMsal } from "@azure/msal-react";
 import { useSelector, useDispatch } from 'react-redux';
 import { setError } from '../../actions/globalActions';
 import { getNewMailAdmin } from '../../actions/mailActions';
+import { isMobile } from 'react-device-detect';
 
 
 const useStyles = makeStyles({
@@ -88,8 +89,8 @@ function AllRequestsAdminMailModule(size, text, office) {
   });
 
   return (
-    <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll' }}>
-      <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: '20%', height: 30, textAlign: 'center', marginTop: -10, fontSize: 20, position: 'absolute' }}>{text}</h1>
+    <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll', marginBottom: !isMobile ? '0px' : '60px', width: '100%'}}>
+      <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: !isMobile ? '20%' : '60%', height: 30, textAlign: 'center', marginTop: -10, fontSize: !isMobile ? 20 : 15, position: 'absolute' }}>{text}</h1>
       <InfiniteScroll
         style={{ padding: 30, width: '90%' }}
         useWindow={false}

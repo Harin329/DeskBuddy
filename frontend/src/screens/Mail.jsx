@@ -15,7 +15,8 @@ import { accountIsAdmin } from "../util/Util";
 import { useDispatch, useSelector } from 'react-redux';
 import { setError } from '../actions/globalActions';
 import ErrorPopup from '../components/global/error-popup';
-import { getNewMailAdmin, getNewMailReq, getNewMailClosed } from '../actions/mailActions';
+import { isMobile } from 'react-device-detect';
+import { getNewMailAdmin, getNewMailAll, getNewMailClosed } from '../actions/mailActions';
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -23,26 +24,28 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   inputBoxes: {
-    width: '90%',
+    width: isMobile ? '200px' : '20%',
     height: '10%',
     backgroundColor: 'white',
     borderRadius: 20,
     marginTop: '20px',
     marginLeft: '10px',
     marginRight: '10px',
-    marginBottom: '10px'
+    marginBottom: isMobile ? '20px' : '10px',
   },
   outlineBox: {
-    width: '20%',
+    width: isMobile ? '200px' : '20%',
     height: '15%',
     backgroundColor: 'white',
     borderRadius: 20,
     marginTop: '20px',
     marginLeft: '20px',
-    marginBottom: '10px'
+    marginBottom: isMobile ? '20px' : '10px'
   },
   sectionSpacing: {
-    marginBottom: '29px',
+    marginBottom: !isMobile ? '80px' : '100px',
+    display: isMobile ? 'flex' : '',
+    flexDirection: isMobile ? 'column' : '',
   },
   actionButtonCenter: {
     background: '#00ADEF',
@@ -55,10 +58,9 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: 'Lato',
     fontWeight: 'bolder',
     fontSize: 18,
-    justifyContent: "center",
-    alignItems: "center"
-  }
-
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 }));
 
 function Mail() {
@@ -119,29 +121,29 @@ function Mail() {
       <Grid container direction='column' justify='center' alignItems='center'>
         {Title('MAIL MANAGER', 1, 8, 1)}
         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-          {MailModule(4, "NEW MAIL")}
+          {MailModule(!isMobile ? 4 : 11, "NEW MAIL")}
           <Grid item xs={2}></Grid>
-          {AllRequestsMailModule(4, "ALL REQUESTS")}
+          {AllRequestsMailModule(!isMobile ? 4 : 11, "ALL REQUESTS")}
         </Grid>
 
         {isAdmin && window.innerWidth > 1500 && Subheader('MANAGE REQUESTS', 4, 2, 4)}
         {isAdmin && window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
 
 
-        {isAdmin && <Grid container justify='flex-start' alignItems='center' style={{width: '80%'}}><div className={classes.outlineBox}><TextField id="outlined-basic" label="Location" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
+        {isAdmin && <Grid container justify={isMobile ? 'center' : 'flex-start'} alignItems='center' style={{width: isMobile ? '100%' : '80%'}}><TextField id="outlined-basic" label="Location" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
                         {officeList.map((option) => (
                           <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
                             {option.name}
                           </MenuItem>
                         ))}
-        </TextField></div></Grid>}
+        </TextField></Grid>}
         {isAdmin && <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-          {NewlyCreatedRequestsMailModule(3, "NEWLY SUBMITTED REQUESTS", newMailRefresh, office)}
+          {NewlyCreatedRequestsMailModule(!isMobile ? 3 : 11, "NEWLY SUBMITTED REQUESTS", newMailRefresh, office)}
           <Grid item xs={'auto'}>
           </Grid>
-          {AllRequestsAdminMailModule(3, "ALL ACTIVE REQUESTS", office)}
+          {AllRequestsAdminMailModule(!isMobile ? 3 : 11, "ALL ACTIVE REQUESTS", office)}
           <Grid item xs={'auto'}></Grid>
-          {AllClosedRequestsAdminMailModule(3, "ALL CLOSED REQUESTS", office)}
+          {AllClosedRequestsAdminMailModule(!isMobile ? 3 : 11, "ALL CLOSED REQUESTS", office)}
         </Grid>}
         {isAdmin && <Button className={classes.actionButtonCenter} onClick={handleNewMail}>
           Submit New Mail

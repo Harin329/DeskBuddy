@@ -85,8 +85,8 @@ function NewlyCreatedRequestsMailModule(size, text, newMailRefresh, office) {
     };
 
     return (
-        <Grid item xs={size} style={{ height: '500px', borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll' }}>
-            <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: '20%', height: 30, textAlign: 'center', marginTop: -10, fontSize: 20, position: 'absolute' }}>{text}</h1>
+        <Grid item xs={size} style={{ height: '500px', borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll', marginBottom: !isMobile ? '0px' : '60px' }}>
+            <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: !isMobile ? '20%' : '70%', height: 30, textAlign: 'center', marginTop: -10, fontSize: !isMobile ? 20 : 15, position: 'absolute' }}>{text}</h1>
             <InfiniteScroll
                 loadMore={getMail}
                 hasMore={hasMore}

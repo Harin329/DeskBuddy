@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ImageUploader from 'react-images-upload';
 import { Grid, Typography, TextField, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { isMobile } from 'react-device-detect';
 
 const useStyles = makeStyles({
   background: {
@@ -90,7 +91,7 @@ const useStyles = makeStyles({
       marginBottom: '29px'
   },
   inputBoxes: {
-      width: '30%',
+      width: !isMobile ? '30%' : '150px',
       backgroundColor: 'white',
       borderRadius: 20,
       marginTop: '10px',
@@ -115,8 +116,9 @@ const useStyles = makeStyles({
   },
   dialogLineContainer: {
       flex: 1,
-      flexDirection: 'row',
-      alignItems: 'stretch'
+      flexDirection: !isMobile ? 'row' : 'column',
+      alignItems: !isMobile ? 'stretch' : 'center',
+      marginTop: isMobile ? '20px' : '',
   },
   dialogLineLabel: {
       paddingTop: '20px'
@@ -152,8 +154,8 @@ function UpdateLocationFloor (props) {
     }, [pictures]);
 
     return (<Grid container justify='center' className={classes.dialogLineContainer}>
-    
-    <Grid item xs={4}>
+        
+    <Grid item xs={!isMobile ? 5 : 12}>
         <TextField id="outlined-basic" data-testid='update-location-floor-dropdown' label="Floor Number" variant="outlined" select onChange={handleUpdateLocationFloorChange} value={updateLocationFloor} className={classes.inputBoxes}>
             {floors.map((floor) => {
                 return <MenuItem key={floor.floor_num} value={floor.floor_num}>
@@ -191,7 +193,7 @@ function UpdateLocationFloor (props) {
     <Grid item xs={12}>
         <TextField
             id="desks_id"
-            label="Semicolon-separated desk ID's with capacities (Ex. Single person desk with ID 032: 032-1)"
+            label={!isMobile ? "Semicolon-separated desk ID's with capacities (Ex. Single person desk with ID 032: 032-1)" : "DeskID-Capacity;"}
             style={{ margin: 8, height: '250px' }}
             placeholder="01-1;02-4;03-11"
             variant="outlined"
