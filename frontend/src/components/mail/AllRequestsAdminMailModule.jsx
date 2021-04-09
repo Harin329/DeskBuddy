@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Grid, Button, Modal, TextField, MenuItem } from '@material-ui/core';
+import { Grid, Modal } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InfiniteScroll from "react-infinite-scroller";
 import MailRequestForm from "./MailRequestForm";
-import safeFetch from "../../util/Util";
-import Endpoint from "../../config/Constants";
 import RequestMailNotification from './RequestMailNotification';
 import { useMsal } from "@azure/msal-react";
-import { useSelector, useDispatch } from 'react-redux'
-import { fetchOffices } from '../../actions/reservationActions';
-import { ConsoleView } from 'react-device-detect';
+import { useSelector, useDispatch } from 'react-redux';
 import { setError } from '../../actions/globalActions';
 import { getNewMailAdmin } from '../../actions/mailActions';
 
@@ -59,30 +55,18 @@ const useStyles = makeStyles({
 });
 
 
-function AllRequestsAdminMailModule(size, text) {
+function AllRequestsAdminMailModule(size, text, office) {
   const classes = useStyles();
 
-  const [statusChoice, setStatusChoice] = useState('Admin has Responded');
   const [open, setOpen] = useState(false);
   const mailList = useSelector(state => state.mail.allAdminMail);
-  const [officeName, setOfficeName] = useState('');
 
   const dispatch = useDispatch();
-  const officeList = useSelector(state => state.reservations.offices);
   const { accounts } = useMsal();
 
-  const userOID = accounts[0].idTokenClaims.oid;
-
   useEffect(() => {
-    // fetchFilteredMail('Waiting for Admin', false);
-    fetchFilteredMail('Admin has Responded', false);
-    fetchFilteredMail('Cannot Complete', false);
-    // await fetchFilteredMail('Closed', false);
+    fetchFilteredMail();
   }, []);
-
-  const handleMailRequest = () => {
-    setOpen(true);
-  }
 
   const closeMailRequest = () => {
     setOpen(false);
@@ -92,15 +76,9 @@ function AllRequestsAdminMailModule(size, text) {
     return <MailRequestForm closeModal={closeMailRequest} whatToDoWhenClosed={(bool) => { setOpen(bool) }} />
   }
 
-  const fetchFilteredMail = async (filter, isReplacingRetrievedMail) => {
-      dispatch(getNewMailAdmin(filter, mailList));
+  const fetchFilteredMail = async () => {
+      dispatch(getNewMailAdmin(office));
   }
-
-  const handleStatusChoiceChange = (event) => {
-    setStatusChoice(event.target.value);
-    // set loading status
-    fetchFilteredMail(event.target.value, true);
-  };
 
   let mail = [];
   mailList.map((update, i) => {

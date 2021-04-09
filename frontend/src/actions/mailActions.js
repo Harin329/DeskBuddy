@@ -28,7 +28,7 @@ export const getNewMail = (userID) => dispatch => {
         });
 }
 
-export const getNewMailReq = (userID, mailList, office) => dispatch => {
+export const getNewMailReq = (office) => dispatch => {
     const [officeLocation, officeId] = office ? office.split(/-(?=[^-]+$)/) : [];
 
     const requestOptions = {
@@ -36,7 +36,7 @@ export const getNewMailReq = (userID, mailList, office) => dispatch => {
         redirect: 'follow'
     };
 
-    const fullEndpoint = officeLocation && officeId ? `${Endpoint}/mail?filter=awaiting_admin_action&locname=${officeLocation}$locid=${officeId}` : `${Endpoint}/mail?filter=awaiting_admin_action`;
+    const fullEndpoint = officeLocation && officeId ? `${Endpoint}/mail?filter=awaiting_admin_action&locname=${officeLocation}&locid=${officeId}` : `${Endpoint}/mail?filter=awaiting_admin_action`;
 
     safeFetch(fullEndpoint, requestOptions)
         .then(response => {
@@ -49,7 +49,7 @@ export const getNewMailReq = (userID, mailList, office) => dispatch => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Needs Attention from Admin');
             const sortedMail = mail.sort((a, b) => { return new Date(b.approx_date) - new Date(a.approx_date) });
-            dispatch({ type: SET_NEW_MAIL_REQ, payload: [...sortedMail, ...mailList] });
+            dispatch({ type: SET_NEW_MAIL_REQ, payload: [...sortedMail] });
         })
         .catch(error => {
             console.log('error', error);
@@ -144,99 +144,43 @@ export const getNewMailAll = (userOID, filter) => dispatch => {
 }
 
 
-export const getNewMailAdmin = (filter, prevMailList) => dispatch => {
+export const getNewMailAdmin = (office) => dispatch => {
+    const [officeLocation, officeId] = office ? office.split(/-(?=[^-]+$)/) : [];
+
     const requestOptions = {
         method: 'GET',
         redirect: 'follow'
     };
-    switch (filter) {
-        case 'Admin has Responded':
-            safeFetch(Endpoint + "/mail" + "?filter=awaiting_employee_confirmation&sort=-modified_at", requestOptions)
-                .then(response => {
-                    if (!response.ok) {
-                        dispatch(setError(true));
-                    }
-                    return response.text();
-                })
-                .then(result => {
+    const fullEndpoint = officeLocation && officeId ? `${Endpoint}/mail?filter=awaiting_employee_confirmation&locname=${officeLocation}&locid=${officeId}` : `${Endpoint}/mail?filter=awaiting_employee_confirmation`;
 
-                    const mail = JSON.parse(result).mails;
-                    mail.map((mailObj) => mailObj.status = 'Admin Has Responded');
-                    dispatch({ type: SET_NEW_MAIL_ADMIN, payload: [...prevMailList, ...mail] });
-                })
-                .catch(error => {
-                    console.log('error', error);
-                    dispatch(setError(true));
-                });
-            break;
-        case 'Waiting for Admin':
-            safeFetch(Endpoint + "/mail" + "?filter=awaiting_admin_action&sort=-modified_at", requestOptions)
-                .then(response => {
-                    if (!response.ok) {
-                        dispatch(setError(true));
-                    }
-                    return response.text();
-                })
-                .then(result => {
-                    const mail = JSON.parse(result).mails;
-                    mail.map((mailObj) => mailObj.status = 'Waiting for Admin');
-                    dispatch({ type: SET_NEW_MAIL_ADMIN, payload: [...prevMailList, ...mail] });
-                })
-                .catch(error => {
-                    console.log('error', error);
-                    dispatch(setError(true));
-                });
-            break;
-        case 'Cannot Complete':
-            safeFetch(Endpoint + "/mail" + "?filter=cannot_complete&sort=-modified_at", requestOptions)
-                .then(response => {
-                    if (!response.ok) {
-                        dispatch(setError(true));
-                    }
-                    return response.text();
-                })
-                .then(result => {
-                    const mail = JSON.parse(result).mails;
-                    mail.map((mailObj) => mailObj.status = 'Cannot Complete');
-                    if (mail.length > 0) {
-                        dispatch({ type: SET_NEW_MAIL_ADMIN, payload: [...prevMailList, ...mail] });
-                    }
-                })
-                .catch(error => {
-                    console.log('error', error);
-                    dispatch(setError(true));
-                });
-            break;
-        case 'Closed':
-            safeFetch(Endpoint + "/mail" + "?filter=closed&sort=-modified_at", requestOptions)
-                .then(response => {
-                    if (!response.ok) {
-                        dispatch(setError(true));
-                    }
-                    return response.text();
-                })
-                .then(result => {
-                    const mail = JSON.parse(result).mails;
-                    mail.map((mailObj) => mailObj.status = 'Closed');
-                    dispatch({ type: SET_NEW_MAIL_ADMIN, payload: [...prevMailList, ...mail] });
-                })
-                .catch(error => {
-                    console.log('error', error);
-                    dispatch(setError(true));
-                });
-            break;
-        default:
-            break;
-    }
+    safeFetch(fullEndpoint, requestOptions)
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
+        .then(result => {
+
+            const mail = JSON.parse(result).mails;
+            mail.map((mailObj) => mailObj.status = 'Admin Has Responded');
+            dispatch({ type: SET_NEW_MAIL_ADMIN, payload: [...mail] });
+        })
+        .catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
 }
 
 
-export const getNewMailClosed = (mailList) => dispatch => {
+export const getNewMailClosed = (office) => dispatch => {
+    const [officeLocation, officeId] = office ? office.split(/-(?=[^-]+$)/) : [];
     const requestOptions = {
         method: 'GET',
         redirect: 'follow'
     };
-    safeFetch(Endpoint + "/mail" + "?filter=closed&sort=-modified_at", requestOptions)
+    const fullEndpoint = officeLocation && officeId ? `${Endpoint}/mail?filter=closed&locname=${officeLocation}&locid=${officeId}` : `${Endpoint}/mail?filter=closed`;
+    safeFetch(fullEndpoint, requestOptions)
         .then(response => {
             if (!response.ok) {
                 dispatch(setError(true));
@@ -246,7 +190,7 @@ export const getNewMailClosed = (mailList) => dispatch => {
         .then(result => {
             const mail = JSON.parse(result).mails;
             mail.map((mailObj) => mailObj.status = 'Closed');
-            dispatch({ type: SET_NEW_MAIL_CLOSED, payload: [...mailList, ...mail] });
+            dispatch({ type: SET_NEW_MAIL_CLOSED, payload: [...mail] });
         })
         .catch(error => {
             console.log('error', error);
