@@ -181,7 +181,7 @@ function NewMailForm(props) {
         handleFormClose();
     }
 
-    const employees = employeeList.map((option) => { return {value: option.first_name + "-" + option.last_name + "-" + option.email, label: option.first_name + " " + option.last_name } })
+    const employees = employeeList.map((option) => { return {value: option.first_name + "-" + option.last_name + "-" + option.email, label: option.first_name + " " + option.last_name + " (" + option.email + ")"} })
 
     return (
         <div className={classes.makeRequest}>
