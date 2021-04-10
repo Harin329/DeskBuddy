@@ -9,6 +9,8 @@ import RequestMailNotification from './RequestMailNotification';
 import { useMsal } from "@azure/msal-react";
 import { useSelector, useDispatch } from 'react-redux'
 import { setError } from '../../actions/globalActions';
+import { getNewMailAll } from '../../actions/mailActions';
+import {isMobile} from 'react-device-detect'
 
 
 const useStyles = makeStyles({
@@ -75,7 +77,7 @@ function AllRequestsMailModule(size, text) {
 
   const [statusChoice, setStatusChoice] = useState('Admin has Responded');
   const [open, setOpen] = useState(false);
-  const [mailList, setMailList] = useState([]);
+  const mailList = useSelector(state => state.mail.allMail);
   const [officeName, setOfficeName] = useState('');
 
   const dispatch = useDispatch();
@@ -107,88 +109,7 @@ function AllRequestsMailModule(size, text) {
   }
 
   const fetchFilteredMail = async (filter, isReplacingRetrievedMail) => {
-    const requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
-    switch (filter) {
-      case 'Admin has Responded':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=awaiting_employee_confirmation&sort=-modified_at", requestOptions)
-        .then(response => {
-          if (!response.ok) {
-              dispatch(setError(true));
-          }
-          return response.text();
-      })
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => {
-              mailObj.status = 'Admin has Responded';
-              });
-            setMailList([...mail]);
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-          });
-        break;
-      case 'Waiting for Admin':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=awaiting_admin_action&sort=-modified_at", requestOptions)
-        .then(response => {
-          if (!response.ok) {
-              dispatch(setError(true));
-          }
-          return response.text();
-      })
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Waiting for Admin');
-            setMailList([...mail]);
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-          });
-        break;
-      case 'Cannot Complete':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=cannot_complete&sort=-modified_at", requestOptions)
-        .then(response => {
-          if (!response.ok) {
-              dispatch(setError(true));
-          }
-          return response.text();
-      })
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Cannot Complete');
-            setMailList([...mail]);
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-          });
-        break;
-      case 'Closed':
-        safeFetch(Endpoint + "/mail/" + userOID + "?filter=closed&sort=-modified_at", requestOptions)
-        .then(response => {
-          if (!response.ok) {
-              dispatch(setError(true));
-          }
-          return response.text();
-      })
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Closed');
-            setMailList([...mail]);
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-          });
-        break;
-      default:
-        break;
-    }
+      dispatch(getNewMailAll(userOID, filter));
   }
 
   const handleStatusChoiceChange = (event) => {
@@ -204,8 +125,8 @@ function AllRequestsMailModule(size, text) {
     );
   });
   return (
-    <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null }}>
-      <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: '20%', height: 30, textAlign: 'center', marginTop: -10, fontSize: 20, position: 'absolute' }}>{text}</h1>
+    <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, width: '100%' }}>
+      <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: !isMobile ? '20%' : '60%', height: 30, textAlign: 'center', marginTop: -10, fontSize: !isMobile ? 20 : 15, position: 'absolute' }}>{text}</h1>
       <Grid container direction='row' justify='flex-start' alignItems='baseline'>
         <div className={classes.outlineBox}>
           <TextField id="outlined-basic" label="Status" variant="outlined" select onChange={handleStatusChoiceChange} value={statusChoice} className={classes.selector}>

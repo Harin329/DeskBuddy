@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Grid, Button, Modal, TextField, MenuItem } from '@material-ui/core';
+import { Grid, Modal } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InfiniteScroll from "react-infinite-scroller";
 import MailRequestForm from "./MailRequestForm";
-import safeFetch from "../../util/Util";
-import Endpoint from "../../config/Constants";
 import RequestMailNotification from './RequestMailNotification';
 import { useMsal } from "@azure/msal-react";
-import { useSelector, useDispatch } from 'react-redux'
-import { fetchOffices } from '../../actions/reservationActions';
-import { ConsoleView } from 'react-device-detect';
+import { useSelector, useDispatch } from 'react-redux';
 import { setError } from '../../actions/globalActions';
+import { getNewMailAdmin } from '../../actions/mailActions';
+import { isMobile } from 'react-device-detect';
 
 
 const useStyles = makeStyles({
@@ -58,30 +56,18 @@ const useStyles = makeStyles({
 });
 
 
-function AllRequestsAdminMailModule(size, text) {
+function AllRequestsAdminMailModule(size, text, office) {
   const classes = useStyles();
 
-  const [statusChoice, setStatusChoice] = useState('Admin has Responded');
   const [open, setOpen] = useState(false);
-  const [mailList, setMailList] = useState([]);
-  const [officeName, setOfficeName] = useState('');
+  const mailList = useSelector(state => state.mail.allAdminMail);
 
   const dispatch = useDispatch();
-  const officeList = useSelector(state => state.reservations.offices);
   const { accounts } = useMsal();
 
-  const userOID = accounts[0].idTokenClaims.oid;
-
   useEffect(() => {
-    // fetchFilteredMail('Waiting for Admin', false);
-    fetchFilteredMail('Admin has Responded', false);
-    fetchFilteredMail('Cannot Complete', false);
-    // await fetchFilteredMail('Closed', false);
+    fetchFilteredMail();
   }, []);
-
-  const handleMailRequest = () => {
-    setOpen(true);
-  }
 
   const closeMailRequest = () => {
     setOpen(false);
@@ -91,97 +77,9 @@ function AllRequestsAdminMailModule(size, text) {
     return <MailRequestForm closeModal={closeMailRequest} whatToDoWhenClosed={(bool) => { setOpen(bool) }} />
   }
 
-  const fetchFilteredMail = async (filter, isReplacingRetrievedMail) => {
-    const requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
-    switch (filter) {
-      case 'Admin has Responded':
-        safeFetch(Endpoint + "/mail" + "?filter=awaiting_employee_confirmation&sort=-modified_at", requestOptions)
-        .then(response => {
-          if (!response.ok) {
-              dispatch(setError(true));
-          }
-          return response.text();
-      })
-          .then(result => {
-
-            const mail = JSON.parse(result).mails;
-              mail.map((mailObj) => mailObj.status = 'Admin Has Responded');
-              setMailList((prevMailList) => [...prevMailList, ...mail]);
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-          });
-        break;
-      case 'Waiting for Admin':
-        safeFetch(Endpoint + "/mail" + "?filter=awaiting_admin_action&sort=-modified_at", requestOptions)
-        .then(response => {
-          if (!response.ok) {
-              dispatch(setError(true));
-          }
-          return response.text();
-      })
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Waiting for Admin');
-            setMailList((prevMailList) => [...mail, ...prevMailList]);
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-          });
-        break;
-      case 'Cannot Complete':
-        safeFetch(Endpoint + "/mail" + "?filter=cannot_complete&sort=-modified_at", requestOptions)
-        .then(response => {
-          if (!response.ok) {
-              dispatch(setError(true));
-          }
-          return response.text();
-      })
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Cannot Complete');
-            if (mail.length > 0) {
-              setMailList((prevMailList) => [...prevMailList, ...mail]);
-            }
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-          });
-        break;
-      case 'Closed':
-        safeFetch(Endpoint + "/mail" + "?filter=closed&sort=-modified_at", requestOptions)
-        .then(response => {
-          if (!response.ok) {
-              dispatch(setError(true));
-          }
-          return response.text();
-      })
-          .then(result => {
-            const mail = JSON.parse(result).mails;
-            mail.map((mailObj) => mailObj.status = 'Closed');
-            setMailList((prevMailList) => [...prevMailList, ...mail]);
-          })
-          .catch(error => {
-            console.log('error', error);
-            dispatch(setError(true));
-          });
-        break;
-      default:
-        break;
-    }
+  const fetchFilteredMail = async () => {
+      dispatch(getNewMailAdmin(office));
   }
-
-  const handleStatusChoiceChange = (event) => {
-    setStatusChoice(event.target.value);
-    // set loading status
-    fetchFilteredMail(event.target.value, true);
-  };
 
   let mail = [];
   mailList.map((update, i) => {
@@ -191,8 +89,8 @@ function AllRequestsAdminMailModule(size, text) {
   });
 
   return (
-    <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll' }}>
-      <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: '20%', height: 30, textAlign: 'center', marginTop: -10, fontSize: 20, position: 'absolute' }}>{text}</h1>
+    <Grid item xs={size} style={{ height: 500, borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll', marginBottom: !isMobile ? '0px' : '60px', width: '100%'}}>
+      <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: !isMobile ? '20%' : '60%', height: 30, textAlign: 'center', marginTop: -10, fontSize: !isMobile ? 20 : 15, position: 'absolute' }}>{text}</h1>
       <InfiniteScroll
         style={{ padding: 30, width: '90%' }}
         useWindow={false}

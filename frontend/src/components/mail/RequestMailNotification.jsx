@@ -22,19 +22,19 @@ const useStyles = makeStyles({
     deskSectionText: {
         color: 'black',
         fontFamily: 'Lato',
-        fontSize: 14,
+        fontSize: !isMobile ? 14 : 11,
         fontWeight: 'bold',
     },
     deskText: {
         color: 'black',
         fontFamily: 'Lato',
-        fontSize: 14,
+        fontSize: !isMobile ? 14 : 11,
         display: 'inline'
     },
     officeText: {
         color: 'black',
         fontFamily: 'Lato',
-        fontSize: 16,
+        fontSize: !isMobile ? 16 : 14,
         textAlign: 'center'
     },
     reservationCardTruncated: {
@@ -58,27 +58,30 @@ const useStyles = makeStyles({
         background: '#00ADEF',
         borderRadius: 20,
         color: 'white',
-        height: '40px',
+        height: !isMobile ? '40px' : '25px',
+        width: !isMobile ? '' : '140px',
         padding: '0 30px',
-        marginTop: '10px',
-        marginBottom: '10px',
+        marginTop: !isMobile ? '10px' : '2px',
+        marginBottom: !isMobile ? '10px' : '2px',
         fontFamily: 'Lato',
         fontWeight: 'bolder',
-        fontSize: 12,
+        fontSize: !isMobile ? 14 : 8,
         margin: 'auto'
     },
     requestActionButton: {
-      background: '#00ADFF',
-      borderRadius: 20,
-      color: 'white',
-      height: '40px',
-      padding: '10px 30px',
-      marginTop: '10px',
-      marginBottom: '10px',
-      fontFamily: 'Lato',
-      fontWeight: 'bolder',
-      fontSize: 12,
-      margin: 'auto'
+        background: '#00ADFF',
+        borderRadius: 20,
+        color: 'white',
+        height: !isMobile ? '40px' : '25px',
+        width: !isMobile ? '' : '140px',
+        lineHeight: !isMobile ? '' : '10px',
+        padding: '10px 30px',
+        marginTop: !isMobile ? '10px' : '2px',
+        marginBottom: !isMobile ? '10px' : '2px',
+        fontFamily: 'Lato',
+        fontWeight: 'bolder',
+        fontSize: !isMobile ? 14 : 8,
+        margin: 'auto'
   },
     popup: {
         position: 'fixed',
@@ -259,7 +262,8 @@ function RequestMailNotification(props) {
     let expandedNotifText;
     let expandedNotifButtons;
     if (isExpanded) {
-      let officeName = officeList.find(existingOffice => existingOffice.office_location == JSON.parse(data).officeLocation && existingOffice.office_id == JSON.parse(data).officeID).name;
+        let matchingOffice = officeList.find(existingOffice => existingOffice.office_location == JSON.parse(data).officeLocation && existingOffice.office_id == JSON.parse(data).officeID);
+      let officeName = matchingOffice ? matchingOffice.name : 'Retrieving...';
         expandedNotifText = 
         <div style={{ width: '80%', height: '100px', alignItems: 'flex-start', display: 'flex', flexDirection: 'column', }}>
             <Typography className={classes.deskSectionText}>LOCATION: <Typography className={classes.deskText}>
@@ -275,15 +279,15 @@ function RequestMailNotification(props) {
           </Typography> 
         </div>
         expandedNotifButtons = !isAdminModule ?
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, marginBottom: '-20px', width: '80%'}}>
+        <div style={{ display: 'flex', flexDirection: !isMobile ? 'row' : 'column', justifyContent: 'space-evenly', marginRight: 30, marginBottom: '-20px', width: '80%'}}>
             <Button className={classes.actionButton} onClick={handleClosePopup}>Close</Button>
             <Button className={classes.requestActionButton} onClick={handleRequestPopup}>Request Assistance</Button>
             <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>
         </div> : JSON.parse(data).status === 'Admin Has Responded' ? 
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
+        <div style={{ display: 'flex', flexDirection: !isMobile ? 'row' : 'column', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
         <Button className={classes.actionButton} onClick={handleClosePopup}>Close</Button>
         <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>
-    </div> :  <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
+    </div> :  <div style={{ display: 'flex', flexDirection: !isMobile ? 'row' : 'column', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
         <Button className={classes.actionButton} onClick={handleClosePopup}>Close</Button>
         <Button className={classes.requestActionButton} onClick={handleMailResponse}>Respond</Button>
         <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>

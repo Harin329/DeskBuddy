@@ -68,12 +68,13 @@ function MobileNavBar() {
                     onOpen={toggleDrawer()}
                 >
                     <List>
-                        {['Dashboard', 'Reserve Desk', 'Mail Room', 'Social Feed'].map((text) => (
+                        {['Dashboard', 'Reserve Desk', 'Mail Room', 'Social Feed', 'Logout'].map((text) => (
                             <div key={text}>
                                 {text === 'Dashboard' && <NavLink exact={true} to="/" onClick={toggleDrawer()} className={classes.linkText} activeStyle={{color: 'black'}}>{text}</NavLink>}
                                 {text === 'Reserve Desk' && <NavLink to="/reservation" onClick={toggleDrawer()} className={classes.linkText} activeStyle={{color: 'black'}}>{text}</NavLink>}
                                 {text === 'Mail Room' && <NavLink to="/mail" onClick={toggleDrawer()} className={classes.linkText} activeStyle={{color: 'black'}}>{text}</NavLink>}
                                 {text === 'Social Feed' && <NavLink to="/social" onClick={toggleDrawer()} className={classes.linkText} activeStyle={{color: 'black'}}>{text}</NavLink>}
+                                {text === 'Logout' && <button className={classes.linkText} style={{ outline: "none", boxSizing: "none", background: "none", border: "none", margin: 0, padding: 0}} onClick={() => instance.logout()} > Logout </button>}
                             </div>
                         ))}
                     </List>

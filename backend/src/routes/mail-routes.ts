@@ -4,6 +4,7 @@ const router = Router();
 
 import MailController from '../controllers/mail-controller';
 import { IMail, IMailResponse } from '../interfaces/mail.interface';
+import { oidMatchesRequest, requestIsAdmin } from '../util';
 const mailServer = new MailController();
 
 const filterTypes = {
@@ -55,6 +56,11 @@ router.get('/:employeeID', (req: Request, res: Response) => {
         res.status(400).json({
             err: "Malformed employeeID body"
         });
+    }
+    else if (!oidMatchesRequest(req.authInfo, employeeID)) {
+        res.status(401).json({
+            err: "Unauthorized"
+        });
     } else {
         mailServer.getMailByEmployee(employeeID,
             filter as string | undefined,
@@ -74,7 +80,12 @@ router.get('/:employeeID', (req: Request, res: Response) => {
 
 router.post('/', (req: Request, res: Response) => {
     const body = req.body;
-    if (body === undefined || body === {}) {
+    if (!requestIsAdmin(req.authInfo)) {
+        res.status(401).json({
+            err: "Unauthorized"
+        });
+    }
+    else if (body === undefined || body === {}) {
         res.status(400).json({
             err: "Malformed request body"
         });
@@ -96,8 +107,13 @@ router.get('/', (req: Request, res: Response) => {
     const sort = req.query.sort;
     const loc = req.query.locname;
     const id = req.query.locid;
+    if (!requestIsAdmin(req.authInfo)) {
+        res.status(401).json({
+            err: "Unauthorized"
+        });
+    }
     // if it is not a string or undefined, or a string
-    if (typeof filter !== "undefined" &&
+    else if (typeof filter !== "undefined" &&
         (typeof filter !== "string" || !Object.values(filterTypes).includes(filter))) {
         res.status(400).json({
             err: "Bad filter"

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Typography, TextField } from '@material-ui/core';
 import { withStyles } from "@material-ui/core/styles";
+import { isMobile } from 'react-device-detect';
 import Endpoint from '../../config/Constants';
 import safeFetch from "../../util/Util";
 import ImageUploader from 'react-images-upload';
@@ -43,8 +44,7 @@ const styles = theme => ({
     addLocation: {
         position: 'fixed',
         top: '20%',
-        left: '25%',
-        width: '45%',
+        width: !isMobile ? '45%' : '230px',
         height: '60%',
         background: '#FFFCF7',
         padding: '30px',

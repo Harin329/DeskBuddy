@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     },
     makeRequest: {
         position: 'fixed',
-        top: '20%',
+        top: isMobile ? '2%' : '20%',
         left: isMobile? '5%' : '25%',
         width: isMobile? '75%' : '45%',
         height: '450',

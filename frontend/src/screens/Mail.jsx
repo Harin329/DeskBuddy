@@ -8,15 +8,15 @@ import AllRequestsMailModule from '../components/mail/AllRequestsMailModule';
 import NewlyCreatedRequestsMailModule from '../components/mail/NewlyCreatedRequestsMailModule';
 import AllRequestsAdminMailModule from '../components/mail/AllRequestsAdminMailModule';
 import AllClosedRequestsAdminMailModule from '../components/mail/AllClosedRequestsAdminMailModule';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NewMailForm from "../components/mail/NewMailForm";
 import { useMsal } from "@azure/msal-react";
 import { accountIsAdmin } from "../util/Util";
-import MailRequestForm from "../components/mail/MailRequestForm";
-import RequestModule from "../components/mail/RequestModule";
 import { useDispatch, useSelector } from 'react-redux';
 import { setError } from '../actions/globalActions';
 import ErrorPopup from '../components/global/error-popup';
+import { isMobile } from 'react-device-detect';
+import { getNewMailAdmin, getNewMailReq, getNewMailClosed } from '../actions/mailActions';
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -24,13 +24,28 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   inputBoxes: {
-    width: '20%',
+    width: isMobile ? '200px' : '20%',
+    height: '10%',
     backgroundColor: 'white',
     borderRadius: 20,
-    marginTop: '10px',
+    marginTop: '20px',
+    marginLeft: '10px',
+    marginRight: '10px',
+    marginBottom: isMobile ? '20px' : '10px',
+  },
+  outlineBox: {
+    width: isMobile ? '200px' : '20%',
+    height: '20%',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    marginTop: '20px',
+    marginLeft: '20px',
+    marginBottom: isMobile ? '20px' : '10px'
   },
   sectionSpacing: {
-    marginBottom: '29px',
+    marginBottom: !isMobile ? '80px' : '100px',
+    display: isMobile ? 'flex' : '',
+    flexDirection: isMobile ? 'column' : '',
   },
   actionButtonCenter: {
     background: '#00ADEF',
@@ -43,10 +58,9 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: 'Lato',
     fontWeight: 'bolder',
     fontSize: 18,
-    justifyContent: "center",
-    alignItems: "center"
-  }
-
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 }));
 
 function Mail() {
@@ -57,10 +71,15 @@ function Mail() {
   const [newMailRefresh, setNewMailRefresh] = useState(0);
   const [office, setOffice] = useState();
 
+  const allMail = useSelector(state => state.mail.allAdminMail);
+  const closedMailList = useSelector(state => state.mail.allClosedMail);
+
   const { accounts } = useMsal();
   const isAdmin = accountIsAdmin(accounts[0]);
 
   const classes = useStyles();
+
+  const userOID = accounts[0].idTokenClaims.oid;
 
   const handleNewMail = () => {
     setOpen(true);
@@ -77,6 +96,12 @@ function Mail() {
   const handleOfficeChange = (event) => {
     setOffice(event.target.value);
   };
+
+  useEffect(() => {
+    dispatch(getNewMailReq(office));
+    dispatch(getNewMailAdmin(office));
+    dispatch(getNewMailClosed(office));
+  }, [office]);
 
   const newMailPopup = () => {
     return <NewMailForm closeModal={closeNewMail} whatToDoWhenClosed={(bool) => { setOpen(bool) }} handleNewMailRefresh={handleNewMailRefresh}/>
@@ -96,16 +121,16 @@ function Mail() {
       <Grid container direction='column' justify='center' alignItems='center'>
         {Title('MAIL MANAGER', 1, 8, 1)}
         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-          {MailModule(4, "NEW MAIL")}
+          {MailModule(!isMobile ? 4 : 11, "NEW MAIL")}
           <Grid item xs={2}></Grid>
-          {AllRequestsMailModule(4, "ALL REQUESTS")}
+          {AllRequestsMailModule(!isMobile ? 4 : 11, "ALL REQUESTS")}
         </Grid>
 
         {isAdmin && window.innerWidth > 1500 && Subheader('MANAGE REQUESTS', 4, 2, 4)}
         {isAdmin && window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
 
 
-        {isAdmin && <Grid container justify='flex-start' alignItems='center' style={{width: '80%'}}><TextField id="outlined-basic" label="Location" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
+        {isAdmin && <Grid container justify={isMobile ? 'center' : 'flex-start'} alignItems='center' style={{width: isMobile ? '100%' : '80%'}}><TextField id="outlined-basic" label="Location" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
                         {officeList.map((option) => (
                           <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
                             {option.name}
@@ -113,15 +138,12 @@ function Mail() {
                         ))}
         </TextField></Grid>}
         {isAdmin && <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
-        {/* TODO: Use the newMailRefresh prop to trigger a refresh after the admin submits a new mail notification via the NewMailForm.jsx */}
-        {/* TODO: Use the office prop to filter which mail notifications to show */}
-          {NewlyCreatedRequestsMailModule(3, "NEWLY SUBMITTED REQUESTS", newMailRefresh, office)}
+          {NewlyCreatedRequestsMailModule(!isMobile ? 3 : 11, "NEWLY SUBMITTED REQUESTS", newMailRefresh, office)}
           <Grid item xs={'auto'}>
-          {/* <NewlyCreatedRequestsMailModule size={3} text={"NEWLY SUBMITTED MAIL"} newMailRefresh={newMailRefresh}></NewlyCreatedRequestsMailModule> */}
           </Grid>
-          {AllRequestsAdminMailModule(3, "ALL ACTIVE REQUESTS", newMailRefresh, office)}
+          {AllRequestsAdminMailModule(!isMobile ? 3 : 11, "ALL ACTIVE REQUESTS", office)}
           <Grid item xs={'auto'}></Grid>
-          {AllClosedRequestsAdminMailModule(3, "ALL CLOSED REQUESTS", newMailRefresh, office)}
+          {AllClosedRequestsAdminMailModule(!isMobile ? 3 : 11, "ALL CLOSED REQUESTS", office)}
         </Grid>}
         {isAdmin && <Button className={classes.actionButtonCenter} onClick={handleNewMail}>
           Submit New Mail

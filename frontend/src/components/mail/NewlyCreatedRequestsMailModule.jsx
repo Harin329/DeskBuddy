@@ -3,13 +3,10 @@ import { Typography, Grid, ListItem, Divider, Button, Modal } from '@material-ui
 import { makeStyles } from '@material-ui/core/styles';
 import InfiniteScroll from "react-infinite-scroller";
 import RequestMailNotification from './RequestMailNotification';
-import MailRequestForm from "./MailRequestForm";
-import safeFetch from "../../util/Util";
-import Endpoint from "../../config/Constants";
 import { useMsal } from "@azure/msal-react";
 import { isMobile } from "react-device-detect";
-import { setError } from '../../actions/globalActions';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getNewMailReq } from '../../actions/mailActions';
 
 
 const useStyles = makeStyles({
@@ -74,56 +71,22 @@ const useStyles = makeStyles({
 
 
 function NewlyCreatedRequestsMailModule(size, text, newMailRefresh, office) {
-    const [officeLocation, officeId] = office ? office.split(/-(?=[^-]+$)/) : [];
-
-    const [mailList, setMailList] = useState([]);
+    const mailList = useSelector(state => state.mail.newMailRequests);
     const [hasMore, setHasMore] = useState(true);
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [shouldRefresh, setShouldRefresh] = useState(newMailRefresh);
 
     const classes = useStyles();
     const dispatch = useDispatch();
 
     const { accounts } = useMsal();
-    const userOID = accounts[0].idTokenClaims.oid;
-
-    // TODO: My attempt at making use of the refresh trigger to retrieve the updated list of mail and re-render the component
-    // useEffect(() => {
-    //     getMail();
-    // }, [shouldRefresh]);
 
     const getMail = () => {
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'follow'
-        };
-
-        const fullEndpoint = officeLocation && officeId ? `${Endpoint}/mail?filter=awaiting_admin_action&locname=${officeLocation}$locid=${officeId}` : `${Endpoint}/mail?filter=awaiting_admin_action`;
-
-        safeFetch(fullEndpoint, requestOptions)
-            .then(response => {
-                if (!response.ok) {
-                    dispatch(setError(true));
-                }
-                return response.text();
-            })
-            .then(result => {
-                const mail = JSON.parse(result).mails;
-                mail.map((mailObj) => mailObj.status = 'Needs Attention from Admin');
-                const sortedMail = mail.sort((a, b) => { return new Date(b.approx_date) - new Date(a.approx_date) });
-                setMailList([...sortedMail, ...mailList]);
-            })
-            .catch(error => {
-                console.log('error', error);
-                dispatch(setError(true));
-            });
-
+        dispatch(getNewMailReq(office));
         setHasMore(false);
     };
 
     return (
-        <Grid item xs={size} style={{ height: '500px', borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll' }}>
-            <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: '20%', height: 30, textAlign: 'center', marginTop: -10, fontSize: 20, position: 'absolute' }}>{text}</h1>
+        <Grid item xs={size} style={{ height: '500px', borderRadius: 20, border: 3, borderStyle: 'solid', borderColor: 'white', display: 'flex', justifyContent: 'center', margin: size === 3 ? 30 : null, overflowY: 'scroll', marginBottom: !isMobile ? '0px' : '60px' }}>
+            <h1 style={{ backgroundColor: '#1E1E24', color: 'white', width: !isMobile ? '20%' : '70%', height: 30, textAlign: 'center', marginTop: -10, fontSize: !isMobile ? 20 : 15, position: 'absolute' }}>{text}</h1>
             <InfiniteScroll
                 loadMore={getMail}
                 hasMore={hasMore}

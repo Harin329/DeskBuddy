@@ -7,6 +7,7 @@ import UpdateLocationFloorContainer from '../../components/reservation/UpdateLoc
 import { fetchOffices, fetchFloorsByOffice } from '../../actions/reservationActions';
 import Endpoint from '../../config/Constants';
 import safeFetch from "../../util/Util";
+import { isMobile } from 'react-device-detect';
 import ICBC from "../../assets/ICBC.png";
 import {SET_PROFILE_PHOTO} from "../../actions/actionTypes";
 
@@ -129,23 +130,23 @@ const useStyles = makeStyles({
   pictureUploadContainer: {
       padding: '0px', margin: '0px', boxShadow: '0px 0px 0px 0px'
     },
-    updateLocation: {
-        position: 'fixed',
-        top: '20%',
-        left: '25%',
-        width: '45%',
-        height: '60%',
-        background: '#FFFCF7',
-        padding: '30px',
-        overflow: 'auto'
-    },
-    sectionTextModal: {
-        color: 'black',
-        fontFamily: 'Lato',
-        fontWeight: 'bolder',
-        fontSize: 20,
-        textAlign: 'center',
-    },
+updateLocation: {
+    position: 'fixed',
+    top: !isMobile ? '20%' : '15%',
+    left: !isMobile ? '25%': '',
+    width: !isMobile ? '45%' : '230px',
+    height: '60%',
+    background: '#FFFCF7',
+    padding: '30px',
+    overflow: 'auto'
+},
+sectionTextModal: {
+    color: 'black',
+    fontFamily: 'Lato',
+    fontWeight: 'bolder',
+    fontSize: 20,
+    textAlign: 'center',
+},
 });
 
 function UpdateLocationPopup (props) {
@@ -289,107 +290,128 @@ function UpdateLocationPopup (props) {
     }
   };
   return (
-      <div className={classes.updateLocation}>
-            <Typography className={classes.sectionTextModal}>
-                Update Location
-            </Typography>
-            <form>
-                <div>
-                    <TextField id="outlined-basic" label="Location" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
-                        {officeList.map((option) => (
-                            <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
-                            {option.name}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                </div>
-                <div>
-                    Please choose one or more of the following to update for the selected location
-                </div>
-                <div>
-                    <TextField
-                        id="name"
-                        label="Name"
-                        style={{ margin: 8 }}
-                        placeholder="Ex. ICBC Surrey 78 Ave"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        onChange={(event) => handleFormChange('name', event)}
-                    />
-                </div>
-                <div>
-                    <TextField
-                        id="address"
-                        label="Address"
-                        style={{ margin: 8 }}
-                        placeholder="Ex. 13426 78 Ave"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        onChange={(event) => handleFormChange('address', event)}
-                    />
-                </div>
-                <div>
-                    <TextField
-                        id="cityOrTown"
-                        label="City or Town"
-                        style={{ margin: 8 }}
-                        placeholder="Ex. Surrey"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        onChange={(event) => handleFormChange('cityOrTown', event)}
-                    />
-                </div>
-                <div>
-                    <Typography>
-                        Photo of Location
-                    </Typography>
-                    <ImageUploader
-                        buttonStyles={{
-                            background: '#00ADEF',
-                            borderRadius: 20,
-                            color: 'white',
-                            height: '50px',
-                            padding: '0 30px',
-                            marginTop: '10px',
-                            marginBottom: '10px',
-                            fontFamily: 'Lato',
-                            fontWeight: 'bolder',
-                            fontSize: 18,
-                            alignSelf: 'flex-start'
-                        }}
-                        withIcon={false}
-                        buttonText='Update Location Photo'
-                        onChange={(event) => handleFormChange('locationPhoto', event)}
-                        imgExtension={['.jpg', '.gif', '.png', '.gif']}
-                        maxFileSize={5242880}
-                        withPreview={true}
-                        withLabel={false}
-                        singleImage={true}
-                        fileContainerStyle={{padding: '0px', margin: '0px', boxShadow: '0px 0px 0px 0px', backgroundColor: '#FFFCF7'}}
-                    />
-                </div>
-                <div>
-                    <UpdateLocationFloorContainer handleFormChange={handleFormChange} floorsRetrieved={floorList}></UpdateLocationFloorContainer>  
-                </div>
-                <div>
-                    <Button className={classes.actionButton} onClick={(event) => handleSubmit(event)}>
-                        Publish
-                    </Button>
-                </div>
-            </form>
-      </div>
+    <div className={classes.updateLocation}>
+      <Typography className={classes.sectionTextModal}>
+        Update Location
+      </Typography>
+      <form>
+        <div style={isMobile ? { marginBottom: '20px' } : null}>
+          <TextField
+            id="outlined-basic"
+            label="Location"
+            variant="outlined"
+            select
+            onChange={handleOfficeChange}
+            value={office}
+            className={classes.inputBoxes}
+          >
+            {officeList.map((option) => (
+              <MenuItem
+                key={option.office_location + '-' + String(option.office_id)}
+                value={option.office_location + '-' + String(option.office_id)}
+              >
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+        </div>
+        <div style={isMobile ? { marginBottom: '20px' } : null}>
+          Please choose one or more of the following to update for the selected
+          location
+        </div>
+        <div>
+          <TextField
+            id="name"
+            label="Name"
+            style={{ margin: 8 }}
+            placeholder="Ex. ICBC Surrey 78 Ave"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={(event) => handleFormChange('name', event)}
+          />
+        </div>
+        <div>
+          <TextField
+            id="address"
+            label="Address"
+            style={{ margin: 8 }}
+            placeholder="Ex. 13426 78 Ave"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={(event) => handleFormChange('address', event)}
+          />
+        </div>
+        <div>
+          <TextField
+            id="cityOrTown"
+            label="City or Town"
+            style={{ margin: 8 }}
+            placeholder="Ex. Surrey"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={(event) => handleFormChange('cityOrTown', event)}
+          />
+        </div>
+        <div>
+          <Typography>Photo of Location</Typography>
+          <ImageUploader
+            buttonStyles={{
+              background: '#00ADEF',
+              borderRadius: 20,
+              color: 'white',
+              height: '50px',
+              padding: '0 30px',
+              marginTop: '10px',
+              marginBottom: '10px',
+              fontFamily: 'Lato',
+              fontWeight: 'bolder',
+              fontSize: 18,
+              alignSelf: 'flex-start',
+            }}
+            withIcon={false}
+            buttonText="Update Location Photo"
+            onChange={(event) => handleFormChange('locationPhoto', event)}
+            imgExtension={['.jpg', '.gif', '.png', '.gif']}
+            maxFileSize={5242880}
+            withPreview={true}
+            withLabel={false}
+            singleImage={true}
+            fileContainerStyle={{
+              padding: '0px',
+              margin: '0px',
+              boxShadow: '0px 0px 0px 0px',
+              backgroundColor: '#FFFCF7',
+            }}
+          />
+        </div>
+        <div>
+          <UpdateLocationFloorContainer
+            handleFormChange={handleFormChange}
+            floorsRetrieved={floorList}
+          ></UpdateLocationFloorContainer>
+        </div>
+        <div>
+          <Button
+            className={classes.actionButton}
+            onClick={(event) => handleSubmit(event)}
+          >
+            Publish
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }
 
