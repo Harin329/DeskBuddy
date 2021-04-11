@@ -98,9 +98,11 @@ function Mail() {
   };
 
   useEffect(() => {
-    dispatch(getNewMailReq(office));
-    dispatch(getNewMailAdmin(office));
-    dispatch(getNewMailClosed(office));
+    if (isAdmin){
+      dispatch(getNewMailReq(office));
+      dispatch(getNewMailAdmin(office));
+      dispatch(getNewMailClosed(office));
+    }
   }, [office]);
 
   const newMailPopup = () => {
