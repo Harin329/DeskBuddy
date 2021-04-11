@@ -7,15 +7,15 @@
 import { LogLevel } from "@azure/msal-browser";
 import Endpoint, {EndpointFE} from "./config/Constants";
 
-/**
- * Configuration object to be passed to MSAL instance on creation.
- * For a full list of MSAL.js configuration parameters, visit:
- * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md
- */
+export const tenantId = "65f40c4a-aa31-4c7c-8e53-5c0ca832c7ed";
+export const clientId = "42a72579-a163-4e8b-b427-aa7eb197eb87";
+export const scopeURI = "api://d111cdab-6637-46bb-86b1-3685db9d744e/access_as_user";
+export const adminGroup = "e30cc8cd-3f89-4a78-80fc-678a1e04a791";
+
 export const msalConfig = {
     auth: {
-        clientId: "42a72579-a163-4e8b-b427-aa7eb197eb87",
-        authority: "https://login.microsoftonline.com/deskbuddy.onmicrosoft.com",
+        clientId: clientId,
+        authority: `https://login.microsoftonline.com/${tenantId}`,
         redirectUri: EndpointFE
     },
     cache: {
@@ -50,7 +50,7 @@ export const msalConfig = {
 // Coordinates and required scopes for your web API
 export const apiConfig = {
     resourceUri: Endpoint,
-    resourceScopes: ["api://d111cdab-6637-46bb-86b1-3685db9d744e/access_as_user"]
+    resourceScopes: [scopeURI]
 }
 
 export const graphScopes = ["User.Read", "openid", "profile"];
@@ -78,5 +78,3 @@ export const graphConfig = {
     graphMeEndpoint: "https://graph.microsoft.com/v1.0/me",
     graphMeEndpointBeta: "https://graph.microsoft.com/beta/me"
 };
-
-export const adminGroup = "e30cc8cd-3f89-4a78-80fc-678a1e04a791";
