@@ -608,7 +608,7 @@ describe("Mail manager endpoints tests", () => {
     it("POST /mail with null recipient", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNullRecipient.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
-        expect(res.status).toBe(404);
+        expect(res.status).toBe(400);
         done();
     });
 
@@ -651,7 +651,8 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
-            // expect(results[0]).toMatchObject(body);
+            results[0].oid = testUserOID; // hack to insert oid because response doesnt have it
+            expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
             await mailDeleter(res);
@@ -707,7 +708,8 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
-            // expect(results[0]).toMatchObject(body);
+            results[0].oid = testUserOID; // hack to insert oid because response doesnt have it
+            expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
             await mailDeleter(res);
@@ -744,7 +746,8 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
-            // expect(results[0]).toMatchObject(body);
+            results[0].oid = testUserOID; // hack to insert oid because response doesnt have it
+            expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
             await mailDeleter(res);
@@ -781,7 +784,8 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
-            // expect(results[0]).toMatchObject(body);
+            results[0].oid = testUserOID; // hack to insert oid because response doesnt have it
+            expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
             await mailDeleter(res);

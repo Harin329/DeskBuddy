@@ -89,6 +89,10 @@ router.post('/', (req: Request, res: Response) => {
         res.status(400).json({
             err: "Malformed request body"
         });
+    } else if (!body.oid) {
+        res.status(400).json({
+            err: "Malformed request body"
+        });
     } else {
         mailServer.createMail(req.body).then((value: number) => {
             res.status(200).json({
