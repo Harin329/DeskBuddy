@@ -113,7 +113,7 @@ function BookingsCalendar(UID) {
         let selectedMonth = newValue.month;
         let selectedDays = newValue.day;
         const selectedDate = selectedYear.toString() + "-" + selectedMonth.toString() + "-" + selectedDays.toString();
-        setSelectedDayFormatted(new Date(selectedDate).toUTCString());
+        setSelectedDayFormatted(new Date(selectedDate).toString());
     }
 
 

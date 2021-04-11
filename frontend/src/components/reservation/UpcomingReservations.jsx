@@ -149,7 +149,7 @@ function UpcomingReservations() {
 
     // Converts MySQL date format to day and month
     const convertStartDate = (sqlStartDate) => {
-        const date = new Date(sqlStartDate);
+        const date = new Date(sqlStartDate + "T00:00:00-07:00");
         const day = date.getDate();
         const month = date.toLocaleString('default', { month: 'short' });
         return (day + " " + month);

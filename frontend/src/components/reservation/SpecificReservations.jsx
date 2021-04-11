@@ -148,9 +148,9 @@ function SpecificReservations(date) {
 
     // Converts MySQL date format to day and month
     const convertStartDate = (sqlStartDate) => {
-        const date = new Date(sqlStartDate);
-        const day = date.getDate();
-        const month = date.toLocaleString('default', { month: 'short' });
+        const Thedate = new Date(sqlStartDate + "T00:00:00-07:00");
+        const day = Thedate.getDate();
+        const month = Thedate.toLocaleString('default', { month: 'short' });
         return (day + " " + month);
     };
 
@@ -215,15 +215,15 @@ function SpecificReservations(date) {
     return (
         <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
             <Grid item xs={12}>
-                {upcomingReservation.filter((item) => new Date(item.start_date).toUTCString() === date).length === 0 &&
+                {upcomingReservation.filter((item) => new Date(item.start_date  + "T00:00:00-07:00").toString() === date).length === 0 &&
                     <Typography style={{ alignSelf: 'center' }}>
                         No Reservations Booked Today</Typography>}
-                {upcomingReservation.filter((item) => new Date(item.start_date).toUTCString() === date).length !== 0 &&
+                {upcomingReservation.filter((item) => new Date(item.start_date  + "T00:00:00-07:00").toString() === date).length !== 0 &&
                     <Typography style={{ alignSelf: 'center' }}>
                         Reservations Booked Today:</Typography>}
                 <List>
                     {upcomingReservation.map((option) => {
-                        if (new Date(option.start_date).toUTCString() === date) {
+                        if (new Date(option.start_date  + "T00:00:00-07:00").toString() === date) {
                             if (!isMobile) {
                                 return (
                                     <ListItem className={classes.upcomingResBox}>
