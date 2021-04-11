@@ -6,7 +6,8 @@ import safeFetch, { accountIsAdmin } from "../../util/Util";
 import Endpoint from "../../config/Constants";
 import { useMsal } from "@azure/msal-react";
 import { setError } from "../../actions/globalActions";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getNewMailAdmin, getNewMailAll, getNewMailClosed, getNewMailReq } from "../../actions/mailActions";
 
 const useStyles = makeStyles((theme) => ({
     actionButton: {
@@ -74,6 +75,8 @@ function MailResponseForm(props){
     const data = JSON.parse(props.children.data);
     console.log(data);
 
+    const filter = useSelector(state => state.mail.allReqFilter);
+
     const [response, setResponse] = useState("");
     const dispatch = useDispatch();
 
@@ -114,6 +117,10 @@ function MailResponseForm(props){
                 return response.text();
             })
             .then(result => {
+                dispatch(getNewMailAll(userOID, filter));
+                dispatch(getNewMailReq());
+                dispatch(getNewMailAdmin());
+                dispatch(getNewMailClosed());
             })
             .catch(error => {
                 console.log('error', error);

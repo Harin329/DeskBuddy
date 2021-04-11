@@ -6,8 +6,8 @@ import safeFetch from "../../util/Util"
 import {useMsal} from "@azure/msal-react";
 import {isMobile} from "react-device-detect";
 import { setError } from '../../actions/globalActions';
-import { useDispatch } from 'react-redux';
-import { getNewMail } from '../../actions/mailActions';
+import { useDispatch, useSelector } from 'react-redux';
+import { getNewMail, getNewMailAdmin, getNewMailAll, getNewMailClosed, getNewMailReq } from '../../actions/mailActions';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -79,6 +79,8 @@ function MailRequestForm(props) {
     const [requestedDate, setRequestedDate] = useState(new Date());
     const dispatch = useDispatch();
 
+    const filter = useSelector(state => state.mail.allReqFilter);
+
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
     const classes = useStyles();
@@ -133,6 +135,10 @@ function MailRequestForm(props) {
             })
             .then(result => {
                 dispatch(getNewMail(userOID));
+                dispatch(getNewMailAll(userOID, filter));
+                dispatch(getNewMailReq());
+                dispatch(getNewMailAdmin());
+                dispatch(getNewMailClosed());
                 props.closeModal();
             })
             .catch(error => {

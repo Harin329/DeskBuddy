@@ -11,6 +11,7 @@ import safeFetch, {accountIsAdmin} from "../../util/Util";
 import Endpoint from "../../config/Constants";
 import {setError} from "../../actions/globalActions";
 import {useMsal} from "@azure/msal-react";
+import { getNewMailAdmin, getNewMailAll, getNewMailClosed, getNewMailReq } from '../../actions/mailActions';
 
 const useStyles = makeStyles({
     sectionText: {
@@ -123,6 +124,7 @@ function RequestMailNotification(props) {
 
     const dispatch = useDispatch();
     const officeList = useSelector(state => state.reservations.offices);
+    const filter = useSelector(state => state.mail.allReqFilter);
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
@@ -167,6 +169,10 @@ function RequestMailNotification(props) {
           safeFetch(Endpoint + "/request/close", requestOptions)
               .then((response) => response.text())
               .then(result => {
+                dispatch(getNewMailAll(userOID, filter));
+                dispatch(getNewMailReq());
+                dispatch(getNewMailAdmin());
+                dispatch(getNewMailClosed());
               })
               .catch(error => {
                   console.log('error', error);

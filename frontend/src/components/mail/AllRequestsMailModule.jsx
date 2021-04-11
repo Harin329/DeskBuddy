@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setError } from '../../actions/globalActions';
 import { getNewMailAll } from '../../actions/mailActions';
 import {isMobile} from 'react-device-detect'
+import { SET_NEW_FILTER } from '../../actions/actionTypes';
 
 
 const useStyles = makeStyles({
@@ -109,6 +110,7 @@ function AllRequestsMailModule(size, text) {
   }
 
   const fetchFilteredMail = async (filter, isReplacingRetrievedMail) => {
+      dispatch({ type: SET_NEW_FILTER, payload: filter });
       dispatch(getNewMailAll(userOID, filter));
   }
 

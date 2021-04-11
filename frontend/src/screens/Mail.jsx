@@ -69,7 +69,7 @@ function Mail() {
   const officeList = useSelector(state => state.reservations.offices);
   const [open, setOpen] = useState(false);
   const [newMailRefresh, setNewMailRefresh] = useState(0);
-  const [office, setOffice] = useState();
+  const [office, setOffice] = useState('All Locations');
 
   const allMail = useSelector(state => state.mail.allAdminMail);
   const closedMailList = useSelector(state => state.mail.allClosedMail);
@@ -98,7 +98,7 @@ function Mail() {
   };
 
   useEffect(() => {
-    if (isAdmin){
+    if (isAdmin) {
       dispatch(getNewMailReq(office));
       dispatch(getNewMailAdmin(office));
       dispatch(getNewMailClosed(office));
@@ -106,7 +106,7 @@ function Mail() {
   }, [office]);
 
   const newMailPopup = () => {
-    return <NewMailForm closeModal={closeNewMail} whatToDoWhenClosed={(bool) => { setOpen(bool) }} handleNewMailRefresh={handleNewMailRefresh}/>
+    return <NewMailForm closeModal={closeNewMail} whatToDoWhenClosed={(bool) => { setOpen(bool) }} handleNewMailRefresh={handleNewMailRefresh} />
   }
 
   return (
@@ -132,12 +132,15 @@ function Mail() {
         {isAdmin && window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
 
 
-        {isAdmin && <Grid container justify={isMobile ? 'center' : 'flex-start'} alignItems='center' style={{width: isMobile ? '100%' : '80%'}}><TextField id="outlined-basic" label="Location" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
-                        {officeList.map((option) => (
-                          <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
-                            {option.name}
-                          </MenuItem>
-                        ))}
+        {isAdmin && <Grid container justify={isMobile ? 'center' : 'flex-start'} alignItems='center' style={{ width: isMobile ? '100%' : '80%' }}><TextField id="outlined-basic" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
+          <MenuItem key={'All Locations'} value={'All Locations'}>
+            All Locations
+                                </MenuItem>
+          {officeList.map((option) => (
+            <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
+              {option.name}
+            </MenuItem>
+          ))}
         </TextField></Grid>}
         {isAdmin && <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
           {NewlyCreatedRequestsMailModule(!isMobile ? 3 : 11, "NEWLY SUBMITTED REQUESTS", newMailRefresh, office)}

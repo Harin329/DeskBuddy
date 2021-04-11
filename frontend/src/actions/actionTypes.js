@@ -27,3 +27,5 @@ export const SET_NEW_MAIL_REQ = "SET_NEW_MAIL_REQ";
 export const SET_NEW_MAIL_ALL = "SET_NEW_MAIL_ALL";
 export const SET_NEW_MAIL_ADMIN = "SET_NEW_MAIL_ADMIN";
 export const SET_NEW_MAIL_CLOSED = "SET_NEW_MAIL_CLOSED";
+
+export const SET_NEW_FILTER = "SET_NEW_FILTER";

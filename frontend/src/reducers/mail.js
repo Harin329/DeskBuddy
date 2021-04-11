@@ -1,7 +1,19 @@
-import { SET_NEW_MAIL, SET_NEW_MAIL_REQ, SET_NEW_MAIL_ALL, SET_NEW_MAIL_ADMIN, SET_NEW_MAIL_CLOSED } from "../actions/actionTypes";
+import { SET_NEW_MAIL, SET_NEW_MAIL_REQ, SET_NEW_MAIL_ALL, SET_NEW_MAIL_ADMIN, SET_NEW_MAIL_CLOSED, SET_NEW_FILTER } from "../actions/actionTypes";
 import { combineReducers } from "redux";
 
 const initialState = [];
+const initialFilterState = "Admin has Responded"
+
+const allReqFilter = (state = initialFilterState, action) => {
+  switch (action.type) {
+    case SET_NEW_FILTER: {
+        return action.payload;
+    }
+    default: {
+      return state;
+    }
+  }
+};
 
 const newMail = (state = initialState, action) => {
   switch (action.type) {
@@ -58,5 +70,5 @@ const allClosedMail = (state = initialState, action) => {
   }
 };
 
-export default combineReducers({ newMail, newMailRequests, allMail, allAdminMail, allClosedMail });
+export default combineReducers({ newMail, newMailRequests, allMail, allAdminMail, allClosedMail, allReqFilter });
 
