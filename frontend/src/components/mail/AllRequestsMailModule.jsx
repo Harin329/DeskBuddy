@@ -57,7 +57,7 @@ const useStyles = makeStyles({
     marginBottom: '10px'
   },
   outlineBox: {
-    width: '40%',
+    width: !isMobile ? '40%' : '90%',
     height: '15%',
     backgroundColor: 'white',
     borderRadius: 20,
@@ -68,7 +68,7 @@ const useStyles = makeStyles({
   selector: {
     marginTop: 10,
     marginLeft: 10,
-    width: '90%'
+    width: !isMobile ? '90%' : '250px',
   }
 });
 
