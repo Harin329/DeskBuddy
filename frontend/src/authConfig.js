@@ -53,7 +53,7 @@ export const apiConfig = {
     resourceScopes: [scopeURI]
 }
 
-export const graphScopes = ["User.Read", "openid", "profile"];
+export const graphScopes = ["User.Read", "openid", "profile", "User.ReadBasic.All"];
 
 /**
  * Scopes you add here will be prompted for user consent during sign-in.

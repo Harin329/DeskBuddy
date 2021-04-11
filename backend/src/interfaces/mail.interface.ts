@@ -9,7 +9,8 @@ export interface IMail {
     sender: string,
     dimensions: string,
     comments: string,
-    adminID: string
+    adminID: string,
+    oid: string
 }
 
 export interface IMailResponse {

@@ -169,31 +169,50 @@ export default class MailController {
   // posts a mail, returns mail_id
   createMail(body: IMail): Promise<number> {
     return new Promise((resolve, reject) => {
-      if (!body.recipient_email || !body.recipient_first || !body.recipient_last) {
+      if (!body.oid || !body.recipient_first || !body.recipient_last) {
         reject("Bad body");
       }
-      User.getUserOIDByNameAndEmail(body.recipient_first, body.recipient_last, body.recipient_email, (errGet: any, resGet: any) => {
+      User.getUserNameAndEmailByOID(body.oid, (errGet: any, resGet: any) => {
         if (errGet) {
           reject(errGet);
         } else {
-          const results = JSON.parse(JSON.stringify(resGet[0]));
+          const results = JSON.parse(JSON.stringify(resGet));
           if (results.length === 0) {
-            reject("No user with these parameters");
-          } else if (results.length > 1) {
-            reject("Too many users with these parameters");
-          }
-          try {
-            const oid = results[0].employee_id;
-            Mail.createMail(body.officeID, body.officeLocation, oid,
-              body.type, body.approx_date, body.sender, body.dimensions, body.comments, body.adminID, (err: any, res: any) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve(JSON.parse(JSON.stringify(res[0][0]))['LAST_INSERT_ID()']);
-                }
-              });
-          } catch (e: any) {
-            reject(e);
+            const newUser = {
+              employee_id: body.oid,
+              first_name: body.recipient_first,
+              last_name: body.recipient_last,
+              phone: "",
+              email: ""
+            }
+            User.insertUser(newUser, (errInsert: any, resInsert: any) => {
+              if (errInsert) {
+                reject(errGet);
+              } else {
+                Mail.createMail(body.officeID, body.officeLocation, body.oid,
+                    body.type, body.approx_date, body.sender, body.dimensions, body.comments, body.adminID, (err: any, res: any) => {
+                      if (err) {
+                        reject(err);
+                      } else {
+                        resolve(JSON.parse(JSON.stringify(res[0][0]))['LAST_INSERT_ID()']);
+                      }
+                    });
+              }
+            })
+          } else {
+            try {
+              const oid = body.oid;
+              Mail.createMail(body.officeID, body.officeLocation, oid,
+                  body.type, body.approx_date, body.sender, body.dimensions, body.comments, body.adminID, (err: any, res: any) => {
+                    if (err) {
+                      reject(err);
+                    } else {
+                      resolve(JSON.parse(JSON.stringify(res[0][0]))['LAST_INSERT_ID()']);
+                    }
+                  });
+            } catch (e: any) {
+              reject(e);
+            }
           }
         }
       });

@@ -13,8 +13,8 @@ let adminToken:any = "";
 let userToken:any = "";
 let adminJSON = {"Authorization": `Bearer ${adminToken}`};
 let userJSON = {"Authorization": `Bearer ${userToken}`};
-const testUserOID = process.env.USER_OID;
-const adminOID = process.env.ADMIN_OID;
+const testUserOID = process.env.USER_OID as string;
+const adminOID = process.env.ADMIN_OID as string;
 
 const requestToken = async (username: any, password: any) => {
     const tokenRequest = require("request");
@@ -581,6 +581,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("POST /mail", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         const getRes = await request.get(`/mail/${testUserOID}`).set(userJSON);
@@ -598,6 +599,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("POST /mail with null office", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNullOffice.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(404);
         done();
@@ -606,12 +608,13 @@ describe("Mail manager endpoints tests", () => {
     it("POST /mail with null recipient", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNullRecipient.json");
         const res = await request.post('/mail').send(body).set(adminJSON);
-        expect(res.status).toBe(404);
+        expect(res.status).toBe(400);
         done();
     });
 
     it("POST /mail with null valid fields", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailValidNulls.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         await mailDeleter(res);
@@ -620,6 +623,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("POST /request", async done => {
         const postBody: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        postBody.oid = testUserOID;
         const requestBody: IRequestComplete = loadJSON("test/jsonBody/mailRequestBody/postMailRequestNormal.json");
         const res = await request.post('/mail').send(postBody).set(adminJSON);
         try {
@@ -638,6 +642,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("GET /mail/:employeeID", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         // User currently has mail stored
@@ -646,6 +651,7 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
+            results[0].oid = testUserOID; // hack to insert oid because response doesnt have it
             expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
@@ -669,7 +675,9 @@ describe("Mail manager endpoints tests", () => {
 
     it("GET /mail/:employeeID where two mails have been added", async done => {
         const body1: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body1.oid = testUserOID;
         const body2: IMail = loadJSON("test/jsonBody/mailBody/postMailValidNulls.json");
+        body2.oid = testUserOID;
         const res1 = await request.post(`/mail`).send(body1).set(adminJSON);
         const res2 = await request.post(`/mail`).send(body2).set(adminJSON);
         expect(res1.status).toBe(200);
@@ -691,6 +699,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("GET new /mail/:employeeID where there is one", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         // User currently has mail stored
@@ -699,6 +708,7 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
+            results[0].oid = testUserOID; // hack to insert oid because response doesnt have it
             expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
@@ -710,6 +720,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("GET /mail/:employeeID filtered on awaiting admin action only", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         const getRes = await request.get(`/mail/${testUserOID}?filter=awaiting_admin_action`).set(userJSON);
@@ -727,6 +738,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("GET /mail/:employeeID from the NV buildings, where there is one", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         const getRes = await request.get(`/mail/${testUserOID}?locname=NV`).set(userJSON);
@@ -734,6 +746,7 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
+            results[0].oid = testUserOID; // hack to insert oid because response doesnt have it
             expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
@@ -745,6 +758,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("GET /mail/:employeeID from the NV buildings, where there is none", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         const getRes = await request.get(`/mail/${testUserOID}?locname=KEK`).set(userJSON);
@@ -762,6 +776,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("GET /mail/:employeeID from NV01, where there is one", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         const getRes = await request.get(`/mail/${testUserOID}?locname=NV&locid=1`).set(userJSON);
@@ -769,6 +784,7 @@ describe("Mail manager endpoints tests", () => {
             const output = JSON.parse(getRes.text);
             const results: IMail[] = output.mails;
             expect(results.length).toBe(1);
+            results[0].oid = testUserOID; // hack to insert oid because response doesnt have it
             expect(results[0]).toMatchObject(body);
             await mailDeleter(res);
         } catch(err) {
@@ -780,6 +796,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("GET /mail/:employeeID from NV01, where there is none", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         const getRes = await request.get(`/mail/${testUserOID}?locname=KEK&locid=1`).set(userJSON);
@@ -797,6 +814,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("GET /mail", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         // at least one mail
@@ -815,6 +833,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("GET /mail while filtering for location NV01", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         // at least one mail
@@ -833,6 +852,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("GET /mail while filtering for location IMPOSSIBLE99", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         // at least one mail
@@ -851,6 +871,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("GET /mail while filtering for new mail", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         // at least one mail
@@ -869,6 +890,7 @@ describe("Mail manager endpoints tests", () => {
 
     it("GET /mail while sorting for modified date descending", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
+        body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
         expect(res.status).toBe(200);
         // at least one mail

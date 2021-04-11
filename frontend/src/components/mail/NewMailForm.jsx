@@ -7,6 +7,7 @@ import {useMsal} from "@azure/msal-react";
 import {isMobile} from "react-device-detect";
 import {fetchOffices} from "../../actions/reservationActions";
 import {useDispatch, useSelector} from "react-redux";
+import {fetchEmployeesFromAD} from "../../actions/authenticationActions";
 import {fetchEmployees} from "../../actions/authenticationActions";
 import { setError } from '../../actions/globalActions';
 import Select from "react-select";
@@ -98,7 +99,7 @@ function NewMailForm(props) {
 
     useEffect(() => {
         dispatch(fetchOffices());
-        dispatch(fetchEmployees());
+        dispatch(fetchEmployeesFromAD());
     }, []);
 
     const handleOfficeChange = (event) => {
@@ -113,11 +114,9 @@ function NewMailForm(props) {
     }
 
     const handleEmployeeChange = (event) => {
-        setEmployee(event.value);
-        const params = event.value.split(['-']);
-        setRecipientFN(params[0]);
-        setRecipientLN(params[1]);
-        setRecipientEmail(params[2]);
+        setEmployee(event.value.oid); //set oid
+        setRecipientFN(event.value.first);
+        setRecipientLN(event.value.last);
     }
 
     const handleTypeChange = (event) => {
@@ -155,7 +154,8 @@ function NewMailForm(props) {
             sender: sender,
             dimensions: dimensions,
             comments: comment,
-            adminID: userOID
+            adminID: userOID,
+            oid: employee
         }
         const requestOptions = {
             method: 'POST',
@@ -181,7 +181,7 @@ function NewMailForm(props) {
         handleFormClose();
     }
 
-    const employees = employeeList.map((option) => { return {value: option.first_name + "-" + option.last_name + "-" + option.email, label: option.first_name + " " + option.last_name + " (" + option.email + ")"} })
+    const employees = employeeList.map((option) => { return {value: {oid: option.id, first: option.givenName, last:option.surname}, label: option.givenName + " " + option.surname + " (" + (option.mail != null ? option.mail : option.userPrincipalName + ")")} })
 
     return (
         <div className={classes.makeRequest}>

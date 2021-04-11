@@ -77,3 +77,25 @@ export const fetchEmployees = () => dispatch => {
             dispatch(setError(true));
         });
 }
+
+export const fetchEmployeesFromAD = () => dispatch => {
+    const options = {
+        method: "GET",
+    };
+
+    return graphFetch("https://graph.microsoft.com/v1.0/users?$top=999", options)
+        .then(response => {
+            if (!response.ok) {
+                dispatch(setError(true));
+            }
+            return response.text();
+        })
+        .then(res => JSON.parse(res))
+            .then(resJSON => {
+                dispatch({ type: SET_EMPLOYEES, payload: resJSON.value });
+        })
+        .catch(error => {
+            console.log('error', error);
+            dispatch(setError(true));
+        });
+}
