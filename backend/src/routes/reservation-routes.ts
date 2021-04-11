@@ -29,6 +29,28 @@ router.post('/', (req: Request, res: Response) => {
     }
 });
 
+router.post('/range', (req: Request, res: Response) => {
+    if (!req.body || Object.keys(req.body).length === 0) {
+        res.status(400).json({
+            err: 'Empty body'
+        });
+    } else if (!oidMatchesRequest(req.authInfo, req.body.employee_id)) {
+        res.status(401).send({
+            message: 'Unauthorized'
+        });
+    } else {
+        reservationServer.createReservationRange(req)
+            .then((reservations: any[]) => {
+                res.status(200).json({
+                    reservation_ids : reservations
+                })
+            })
+            .catch((err: any) => {
+                res.status(404).json(err);
+            });
+    }
+});
+
 // GET all reservations, to test connections & setup
 router.get('/getAllReservations', (req, res: Response) => {
     if (!requestIsAdmin(req.authInfo)) {
