@@ -232,15 +232,11 @@ function AddUpdateForm(props) {
                         </MenuItem>
                     ))}
                 </TextField>}
-                {selectedOfficeID === 0 && selectedOfficeLocation === "" ? <div>
-                    <Button disabled className={classes.actionButtonCenter}>
+                <div>
+                    <Button disabled={selectedOfficeID === 0 && selectedOfficeLocation === "" && !props.global || title === ""} className={classes.actionButtonCenter} onClick={handleSubmit}>
                         Post
                     </Button>
-                </div> : <div>
-                    <Button className={classes.actionButtonCenter} onClick={handleSubmit}>
-                        Post
-                    </Button>
-                </div>}
+                </div>
             </form>
         </div>
     )

@@ -86,6 +86,7 @@ function DeskFilter() {
     }
 
     const handleAddLocationClose = () => {
+        dispatch(fetchOffices());
         setAddLocation(false)
     }
 

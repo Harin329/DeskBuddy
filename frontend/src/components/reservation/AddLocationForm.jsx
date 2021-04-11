@@ -95,9 +95,12 @@ class AddLocationForm extends React.Component {
     }
 
     handleSubmit(event) {
+        let valid = true;
+        const floorList = []
+
         if (this.state.city === "") {
             alert("No city identifier has been provided");
-        } else if (JSON.stringify(this.state.inputFloors) === "[]"){
+        } else if (JSON.stringify(this.state.inputFloors) === "[]") {
             alert("No floors have been added");
         } else {
             const floors = [];
@@ -116,19 +119,42 @@ class AddLocationForm extends React.Component {
             formData.append("image", this.state.image);
             formData.append("body", jsonData);
             for (const floor of this.state.inputFloors) {
+                const deskList = []
+                const floorNum = Number(floor.floor_num)
+                if (floorList.includes(floorNum)) {
+                    valid = "Duplicate Floors"
+                    break;
+                }
                 formData.append("floor_" + floor.floor_num.toString() + "_image", floor.floor_image);
+                floorList.push(floorNum)
+
+
+
+                for (const desk of floor.floor_desks.split(';')) {
+                    const deskID = Number(desk.split('-')[0])
+                    if (deskList.includes(deskID)) {
+                        valid = "Duplicate DeskID " + deskID.toString() + " on floor " + floor.floor_num.toString()
+                        break;
+                    }
+
+                    deskList.push(deskID)
+                }
             }
 
-            const requestOptions = {
-                method: 'POST',
-                body: formData
-            };
-            safeFetch(Endpoint + "/location", requestOptions, formData)
-                .then((response) => response.text())
-                .then(result => {
-                    this.props.closeModal();
-                })
-                .catch(error => alert(error));
+            if (valid === true) {
+                const requestOptions = {
+                    method: 'POST',
+                    body: formData
+                };
+                safeFetch(Endpoint + "/location", requestOptions, formData)
+                    .then((response) => response.text())
+                    .then(result => {
+                        this.props.closeModal();
+                    })
+                    .catch(error => alert(error));
+            } else {
+                alert(valid)
+            }
         }
     }
 
@@ -243,29 +269,29 @@ class AddLocationForm extends React.Component {
                         onChange={this.handleFloorNumberInput.bind(this, floor.floor_id)}
                     />
                     <ImageUploader
-                                buttonStyles={{
-                                    background: '#00ADEF',
-                                    borderRadius: 20,
-                                    color: 'white',
-                                    height: '50px',
-                                    padding: '0 30px',
-                                    marginTop: '10px',
-                                    marginBottom: '10px',
-                                    fontFamily: 'Lato',
-                                    fontWeight: 'bolder',
-                                    fontSize: 18,
-                                    alignSelf: 'flex-start'
-                                }}
-                                withIcon={false}
-                                buttonText='ATTACH IMAGE'
-                                onChange={this.handleFloorImageInput.bind(this, floor.floor_id)}
-                                imgExtension={['.jpg', '.gif', '.png', '.gif']}
-                                maxFileSize={5242880}
-                                withPreview={true}
-                                withLabel={false}
-                                singleImage={true}
-                                fileContainerStyle={{ padding: '0px', margin: '0px', boxShadow: '0px 0px 0px 0px', backgroundColor: '#FFFCF7' }}
-                            />
+                        buttonStyles={{
+                            background: '#00ADEF',
+                            borderRadius: 20,
+                            color: 'white',
+                            height: '50px',
+                            padding: '0 30px',
+                            marginTop: '10px',
+                            marginBottom: '10px',
+                            fontFamily: 'Lato',
+                            fontWeight: 'bolder',
+                            fontSize: 18,
+                            alignSelf: 'flex-start'
+                        }}
+                        withIcon={false}
+                        buttonText='ATTACH IMAGE'
+                        onChange={this.handleFloorImageInput.bind(this, floor.floor_id)}
+                        imgExtension={['.jpg', '.gif', '.png', '.gif']}
+                        maxFileSize={5242880}
+                        withPreview={true}
+                        withLabel={false}
+                        singleImage={true}
+                        fileContainerStyle={{ padding: '0px', margin: '0px', boxShadow: '0px 0px 0px 0px', backgroundColor: '#FFFCF7' }}
+                    />
                     <Button className={classes.actionButton} onClick={this.deleteFloor.bind(this, floor.floor_id)}>
                         Remove Floor
                     </Button>
@@ -273,9 +299,9 @@ class AddLocationForm extends React.Component {
                 <div>
                     <TextField
                         id="desks_id"
-                        label="Semicolon-separated desk ID's with capacities"
+                        label="DESKID-CAPACITY seperated with semicolon"
                         style={{ margin: 8 }}
-                        placeholder="01-1;02-4;03-11"
+                        placeholder="01-1;02-1;03-2"
                         variant="outlined"
                         fullWidth
                         margin="normal"
@@ -339,33 +365,33 @@ class AddLocationForm extends React.Component {
                         onChange={this.handleNameInput.bind(this)}
                     /></div>
                     <div>
+                        <ImageUploader
+                            buttonStyles={{
+                                background: '#00ADEF',
+                                borderRadius: 20,
+                                color: 'white',
+                                height: '50px',
+                                padding: '0 30px',
+                                marginTop: '10px',
+                                marginBottom: '10px',
+                                fontFamily: 'Lato',
+                                fontWeight: 'bolder',
+                                fontSize: 18,
+                                alignSelf: 'flex-start'
+                            }}
+                            withIcon={false}
+                            buttonText='ATTACH IMAGE'
+                            onChange={this.handleOfficeImageInput.bind(this)}
+                            imgExtension={['.jpg', '.gif', '.png', '.gif']}
+                            maxFileSize={5242880}
+                            withPreview={true}
+                            withLabel={false}
+                            singleImage={true}
+                            fileContainerStyle={{ padding: '0px', margin: '0px', boxShadow: '0px 0px 0px 0px', backgroundColor: '#FFFCF7' }}
+                        />
                         <Button className={classes.actionButton} onClick={this.addFloor.bind(this)}>
                             Add Floor
                         </Button>
-                            <ImageUploader
-                                buttonStyles={{
-                                    background: '#00ADEF',
-                                    borderRadius: 20,
-                                    color: 'white',
-                                    height: '50px',
-                                    padding: '0 30px',
-                                    marginTop: '10px',
-                                    marginBottom: '10px',
-                                    fontFamily: 'Lato',
-                                    fontWeight: 'bolder',
-                                    fontSize: 18,
-                                    alignSelf: 'flex-start'
-                                }}
-                                withIcon={false}
-                                buttonText='ATTACH IMAGE'
-                                onChange={this.handleOfficeImageInput.bind(this)}
-                                imgExtension={['.jpg', '.gif', '.png', '.gif']}
-                                maxFileSize={5242880}
-                                withPreview={true}
-                                withLabel={false}
-                                singleImage={true}
-                                fileContainerStyle={{ padding: '0px', margin: '0px', boxShadow: '0px 0px 0px 0px', backgroundColor: '#FFFCF7' }}
-                            />
                     </div>
                     {this.renderFloors.bind(this)()}
                     <div>
