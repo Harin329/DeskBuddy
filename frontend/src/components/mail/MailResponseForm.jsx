@@ -75,8 +75,6 @@ function MailResponseForm(props){
     console.log(data);
 
     const [response, setResponse] = useState("");
-    const [statusList, setStatusList] = useState(["Waiting for assistance", "Closed", "Cannot perform action", "Completed"]);
-    const [status, setStatus] = useState("");
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -89,8 +87,8 @@ function MailResponseForm(props){
         setResponse(event.target.value);
     }
 
-    const handleStatusInput = (event) => {
-        setStatus(event.target.value);
+    const handleResponseFormClose = () => {
+        props.whatToDoWhenClosed();
     }
 
     const handleAdminResponse = () => {
@@ -121,6 +119,8 @@ function MailResponseForm(props){
                 console.log('error', error);
                 dispatch(setError(true));
             });
+
+        handleResponseFormClose();
 
     }
 
@@ -157,6 +157,8 @@ function MailResponseForm(props){
                 console.log('error', error);
                 dispatch(setError(true));
             });
+
+        handleResponseFormClose();
 
     }
 
