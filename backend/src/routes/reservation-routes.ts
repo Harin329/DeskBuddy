@@ -120,7 +120,7 @@ router.get('/month/:userID', (req, res: Response) => {
 })
 
 // COUNT # of reservations for an office
-router.get("/count/:officeID/:startDate/:endDate", (req, res: Response) => {
+router.get("/count/:officeID/:officeLocation/:startDate/:endDate", (req, res: Response) => {
     reservationServer.countEmployees(req.params)
         .then((count: any) => {
             res.status(200).json(count);

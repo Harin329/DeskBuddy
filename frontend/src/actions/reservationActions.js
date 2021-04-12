@@ -303,7 +303,7 @@ export const getEmployeeCount = (deskObj, filter) => dispatch => {
         redirect: 'follow'
     };
 
-    return safeFetch(Endpoint + "/reservation/count/" + deskObj.office_id + "/" + filter.from + "/" + filter.to, requestOptions)
+    return safeFetch(Endpoint + "/reservation/count/" + deskObj.office_id + "/" + deskObj.office_location + "/" + filter.from + "/" + filter.to, requestOptions)
         .then(response => {
             if (!response.ok) {
                 dispatch(setError(true));
@@ -330,7 +330,7 @@ export const getEmployeeCountUpcomingRes = (reservationObj) => dispatch => {
         redirect: 'follow'
     };
 
-    return safeFetch(Endpoint + "/reservation/count/" + reservationObj.fk_office_id + "/" + reservationObj.start_date.split("T")[0] + "/" + reservationObj.end_date.split("T")[0], requestOptions)
+    return safeFetch(Endpoint + "/reservation/count/" + reservationObj.fk_office_id + "/" + reservationObj.fk_office_location.toString() + "/" + reservationObj.start_date.split("T")[0] + "/" + reservationObj.end_date.split("T")[0], requestOptions)
         .then(response => {
             if (!response.ok) {
                 dispatch(setError(true));

@@ -95,9 +95,11 @@ export default class ReservationController {
     countEmployees(req: any) {
         const date = {
             office_id: req.officeID,
+            office_location: req.officeLocation,
             start_date: req.startDate,
             end_date: req.endDate,
         }
+        console.log(JSON.stringify(date, null, 2));
         return new Promise((resolve, reject) => {
             Reservation.getEmployeeCountForOffice(date,(err: any, res: any) => {
               if (err) {
