@@ -36,7 +36,6 @@ export const makeReservation = (userID, deskObj, filter) => dispatch => {
 
         safeFetch(Endpoint + "/reservation/range", requestOptions)
             .then(response => {
-                console.log(response)
                 if (!response.ok) {
                     dispatch(setError(true));
                 }
