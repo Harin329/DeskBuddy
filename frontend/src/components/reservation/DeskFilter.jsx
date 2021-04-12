@@ -178,7 +178,7 @@ function DeskFilter() {
         var newFilter = {
             desk: filter.desk,
             office: filter.office,
-            from: filter.to,
+            from: filter.from,
             to: event.target.value,
         };
         dispatch({ type: SET_FILTER, payload: newFilter });

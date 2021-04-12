@@ -138,7 +138,7 @@ function UpcomingReservations() {
 
     useEffect(() => {
         dispatch(fetchReservations(userOID));
-        console.log(upcomingReservation);
+        // console.log(upcomingReservation);
     }, []);
 
     const cancelReservation = (reservation) => {
