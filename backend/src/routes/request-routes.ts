@@ -11,7 +11,7 @@ const requestServer = new RequestController();
 // endpoint for creating a new request
 router.post('/', (req: Request, res: Response) => {
     // console.log(req.authInfo);
-    if (!req.body) {
+    if (!req.body || req.body === {} || req.body === null) {
         res.status(400).json({
             message: "Malformed request body"
         });
@@ -29,7 +29,7 @@ router.post('/', (req: Request, res: Response) => {
 
 // endpoint for getting all request for an employee
 router.get('/:employeeID', (req: Request, res: Response) => {
-    if (req.params.employeeID === null) {
+    if (!req.params.employeeID) {
         res.status(400).json({
             message: "must provide an employee_ID"
         });
@@ -47,7 +47,7 @@ router.get('/:employeeID', (req: Request, res: Response) => {
 
 // endpoint for closing a request
 router.put('/close', (req: Request, res: Response) => {
-    if (!req.body || !req.body.mail_id) {
+    if (!req.body || req.body === {} || !req.body.mail_id) {
         res.status(400).json({
             message: "malformed request body"
         });
@@ -65,7 +65,7 @@ router.put('/close', (req: Request, res: Response) => {
 
 // endpoint for updating a request for employee
 router.put('/employee', (req: Request, res: Response) => {
-    if (!req.body || req.body.mail_id === null) {
+    if (!req.body || req.body === {} || req.body.mail_id === null) {
         res.status(400).json({
             message: "malformed request body"
         })
@@ -84,7 +84,7 @@ router.put('/employee', (req: Request, res: Response) => {
 // endpoint for updating a request for admin
 router.put('/admin', (req: Request, res: Response) => {
     console.log(req.body);
-    if (!req.body || req.body.mail_id === null) {
+    if (!req.body || req.body === {} || req.body.mail_id === null) {
         console.log(req.body.mail_id)
         res.status(400).json({
             message: "malformed request body"
@@ -93,7 +93,7 @@ router.put('/admin', (req: Request, res: Response) => {
     else {
         requestServer.updateRequestAdmin(req)
             .then((result: any) => {
-                console.log(result);
+                // console.log(result);
                 res.json(result);
             })
             .catch((err: any) => {
