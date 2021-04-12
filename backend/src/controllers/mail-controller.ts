@@ -130,6 +130,7 @@ export default class MailController {
               if (mapping !== undefined) {
                 mail.request_type = mapping.request_type;
                 mail.forward_location = mapping.forward_location
+                mail.response = mapping.response;
               }
             }
             resolve(output);

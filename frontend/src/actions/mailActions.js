@@ -163,6 +163,7 @@ export const getNewMailAdmin = (office) => dispatch => {
         .then(result => {
 
             const mail = JSON.parse(result).mails;
+            console.log(mail);
             mail.map((mailObj) => mailObj.status = 'Admin Has Responded');
             dispatch({ type: SET_NEW_MAIL_ADMIN, payload: [...mail] });
         })
