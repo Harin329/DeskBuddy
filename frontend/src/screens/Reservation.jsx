@@ -261,9 +261,16 @@ function Reservation() {
                                                         </Typography>
                                                     </Typography>
                                                     <Typography className={classes.deskSectionText}>
-                                                        TYPE: <Typography className={classes.deskText}>
-                                                            Desk
-                                                </Typography>
+                                                        TYPE: {(option.capacity > 1)
+                                                        ?
+                                                        <Typography className={classes.deskText}>
+                                                        room
+                                                    </Typography>
+                                                        : <Typography className={classes.deskText}>
+                                                        desk
+                                                    </Typography>
+
+                                                    }
                                                     </Typography>
                                                     <Typography className={classes.deskSectionText}>
                                                         CAPACITY: <Typography className={classes.deskText}>
