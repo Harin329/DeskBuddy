@@ -3,7 +3,7 @@ import { Button, Typography, TextField } from '@material-ui/core';
 import { withStyles } from "@material-ui/core/styles";
 import { isMobile } from 'react-device-detect';
 import Endpoint from '../../config/Constants';
-import safeFetch from "../../util/Util";
+import safeFetch, {isNumeric} from "../../util/Util";
 import ImageUploader from 'react-images-upload';
 
 const styles = theme => ({
@@ -105,7 +105,12 @@ class AddLocationForm extends React.Component {
         } else {
             const floors = [];
             for (const floor of this.state.inputFloors) {
-                floors.push(this.parseFloorFromInputFloor(floor));
+                try {
+                    floors.push(this.parseFloorFromInputFloor(floor));
+                }catch (error) {
+                    alert(error);
+                    return;
+                }
             }
             const jsonBody = {
                 city: this.state.city,
@@ -163,19 +168,43 @@ class AddLocationForm extends React.Component {
     }
 
     parseFloorFromInputFloor(input) {
+        if (!isNumeric(input.floor_num)){
+            throw new Error("Floor Number must be a number");
+        }
         const floor = {
             floor_num: input.floor_num,
             image: null,
-            desks: this.parseDesksFromString(input.floor_desks)
+            desks: this.parseDesksFromString(input.floor_num, input.floor_desks)
         }
         return floor
     }
 
-    parseDesksFromString(input) {
+    parseDesksFromString(floor, input) {
         const parsedDesks = [];
+        input = input.trim();
         const tokens = input.split(";");
-        for (const token of tokens) {
+        if (input.length > 0 && !input.includes("-")) {
+            throw new Error("Format must be DeskID-Capacity, with semicolon separators");
+        }
+        const deskIDs = [];
+        for (let token of tokens) {
+            if (!token.includes("-")) {
+                throw new Error("Format must be DeskID-Capacity");
+            }
             const parts = token.split("-");
+            if (parts.length !== 2) {
+                throw new Error("Format must be Deskid-Capacity");
+            }
+            if (parts[0].trim() === "") {
+                throw new Error("DeskID cannot be null");
+            }
+            if (!isNumeric(parts[1])) {
+                throw new Error("Capacity must be a number");
+            }
+            if (deskIDs.includes(parts[0])) {
+                throw new Error("Duplicate DeskID " + parts[0] + " on Floor " + floor);
+            }
+            deskIDs.push(parts[0]);
             const ID = parts[0];
             const capacity = parts[1];
             parsedDesks.push({
@@ -184,7 +213,7 @@ class AddLocationForm extends React.Component {
             });
         }
         return parsedDesks;
-    }
+    };
 
     handleFloorNumberInput(id, input) {
         this.setState(prevState => ({

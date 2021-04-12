@@ -10,10 +10,18 @@ function UpdateLocationFloorContainer (props) {
         setUpdateLocationFloorAddition([...updateLocationFloorAddition]);
     }
 
-    return (<div>
-        {updateLocationFloorAddition.map((curr, index) => <div data-testid='update-location-floor'><UpdateLocationFloor handleFormChange={props.handleFormChange} floorsRetrieved={props.floorsRetrieved} key={index}></UpdateLocationFloor></ div>)}
-    </div>
-);
+    return (
+        <div>
+            {updateLocationFloorAddition.map((curr, index) =>
+                <div data-testid='update-location-floor'>
+                    <UpdateLocationFloor handleFormChange={props.handleFormChange}
+                                         floorsRetrieved={props.floorsRetrieved}
+                                         key={curr}>
+
+                    </UpdateLocationFloor>
+                </ div>)}
+        </div>
+    );
 }
 
 export default UpdateLocationFloorContainer;

@@ -47,3 +47,10 @@ export function accountIsAdmin(accountIdentifiers){
     return (accountIdentifiers.idTokenClaims.hasOwnProperty("groups")
             && accountIdentifiers.idTokenClaims.groups.includes(adminGroup));
 }
+
+export function isNumeric(str) {
+    if (typeof str != "string") {
+        return false;
+    }
+    return (!isNaN(str) && !isNaN(parseFloat(str)) && (Number(str) % 1 === 0));
+}
