@@ -62,10 +62,10 @@ export default class ReservationController {
         }
         return Promise.all(promises).then(result => {
             utils.end(conn);
-            return result;
+            return Promise.resolve(result);
         }).catch(err => {
             utils.rollback(conn);
-            return err;
+            return Promise.reject(err);
         })
     }
 
