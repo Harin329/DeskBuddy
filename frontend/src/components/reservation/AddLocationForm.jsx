@@ -99,7 +99,7 @@ class AddLocationForm extends React.Component {
         const floorList = []
 
         if (this.state.city === "") {
-            alert("No city identifier has been provided");
+            alert("No location selected");
         } else if (JSON.stringify(this.state.inputFloors) === "[]") {
             alert("No floors have been added");
         } else {

@@ -232,7 +232,7 @@ function UpdateLocationPopup (props) {
 
     const handleSubmit = () => {
         if (!office) {
-            alert("No city identifier has been provided");
+            alert("No location selected");
         } else if (currLocationEdits.floor.photo != null && currLocationEdits.floor.level === null) {
             alert("No floor selected");
         } else {
@@ -317,7 +317,7 @@ function UpdateLocationPopup (props) {
 
         const handleDelete = (event) => {
             if (!office) {
-                alert("No city identifier has been provided");
+                alert("No location selected");
             } else {
                 const originalCity = office.split(/-(?=[^-]+$)/)[0];
                 const id = office.split(/-(?=[^-]+$)/)[1];
@@ -533,7 +533,13 @@ function UpdateLocationPopup (props) {
                         <Button
                             style={isMobile ? {background: "#ba0000"} : {background: "red", marginLeft: "50px"}}
                             className={classes.actionButton}
-                            onClick={(event) => dispatch({type: SET_CONFIRM_DELETE_POPUP, payload: true})}
+                            onClick={(event) => {
+                                if (office != null) {
+                                    dispatch({type: SET_CONFIRM_DELETE_POPUP, payload: true})
+                                } else {
+                                    alert("No location selected");
+                                }
+                            }}
                         >
                             Delete Location
                         </Button>
