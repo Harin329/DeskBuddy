@@ -208,7 +208,7 @@ function UpdateLocationPopup (props) {
             break;
         case 'cityOrTown':
             currLocationEdits.cityOrTown = input.target.value;
-            break; 
+            break;
         case 'locationPhoto':
             currLocationEdits.locationPhoto = input[0];
             break;
@@ -224,7 +224,7 @@ function UpdateLocationPopup (props) {
             break;
       }
   }
-  
+
 
   useEffect(() => {
     dispatch(fetchOffices());
@@ -343,25 +343,25 @@ function UpdateLocationPopup (props) {
         input = input.trim();
         const tokens = input.split(";");
         if (input.length > 0 && !input.includes("-")) {
-            throw new Error("format must be deskID-capacity, with semicolon separators");
+            throw new Error("Format must be DeskID-Capacity, with semicolon separators");
         }
         const deskIDs = [];
         for (let token of tokens) {
             if (!token.includes("-")) {
-                throw new Error("format must be deskID-capacity");
+                throw new Error("Format must be DeskID-Capacity");
             }
             const parts = token.split("-");
             if (parts.length !== 2){
-                throw new Error("format must be deskid-capacity");
+                throw new Error("Format must be Deskid-Capacity");
             }
             if (parts[0].trim() === ""){
-                throw new Error("deskID cannot be null");
+                throw new Error("DeskID cannot be null");
             }
             if (!isNumeric(parts[1])){
-                throw new Error("capacity must be a number");
+                throw new Error("Capacity must be a number");
             }
             if (deskIDs.includes(parts[0])){
-                throw new Error("deskIDs must be unique");
+                throw new Error("Duplicate DeskID " + parts[0]);
             }
             deskIDs.push(parts[0]);
             const ID = parts[0];
