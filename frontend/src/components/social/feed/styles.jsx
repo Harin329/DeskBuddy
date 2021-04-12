@@ -182,6 +182,21 @@ const ReportPopup = styled.div`
   justify-content: space-between;
 `;
 
+const ConfirmPopup = styled.div`
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 20px;
+  height: 175px;
+  width: 350px;
+  background-color: white;
+  font-color: black;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
 export {
   Container,
   SocialFeed,
@@ -198,5 +213,6 @@ export {
   DatePostedContainer,
   Icon,
   PostingPopup,
-  ReportPopup
+  ReportPopup,
+  ConfirmPopup
 };

@@ -284,20 +284,35 @@ export default class LocationController {
     }
 
     private async updateOffice(id: number, office: IOffice, originalId: number, originalCity: string) {
-        const image = await Jimp.read(Buffer.from(office.image, 'base64'));
-        image.resize(75, 75);
-        const compressedImageBuffer = await image.getBufferAsync(image.getMIME());
-        office.image = compressedImageBuffer.toString('base64');
+        if (office.image != null && office.image.trim().length > 0) {
+            const image = await Jimp.read(Buffer.from(office.image, 'base64'));
+            image.resize(75, 75);
+            const compressedImageBuffer = await image.getBufferAsync(image.getMIME());
+            office.image = compressedImageBuffer.toString('base64');
 
-        return new Promise((resolve, reject) => {
-            Office.updateOffice(id, office, originalId, originalCity, (err: any, res: any) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(true);
-                }
-            });
-        })
+            return new Promise((resolve, reject) => {
+                Office.updateOffice(id, office, originalId, originalCity, (err: any, res: any) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(true);
+                    }
+                });
+            })
+
+        } else {
+            return new Promise((resolve, reject) => {
+                Office.updateOfficeExceptPhoto(id, office, originalId, originalCity, (err: any, res: any) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(true);
+                    }
+                });
+            })
+        }
+
+
     }
 
     private async getFloorsByOfficeId(originalId: number, originalCity: string): Promise<any[]> {
