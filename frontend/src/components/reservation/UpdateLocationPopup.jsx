@@ -445,6 +445,9 @@ function UpdateLocationPopup (props) {
                     Update Location
                 </Typography>
                 <form>
+                    <div>
+                        Select a location
+                    </div>
                     <div style={isMobile ? {marginBottom: '20px'} : null}>
                         <TextField
                             id="outlined-basic"
@@ -465,14 +468,15 @@ function UpdateLocationPopup (props) {
                             ))}
                         </TextField>
                     </div>
-                    <div style={isMobile ? {marginBottom: '20px'} : null}>
-                        Please choose one or more of the following to update for the selected
-                        location
+                    <div style={{marginTop: '10px'}}>
+                        Please choose one or more of the following to update for the selected location:
                     </div>
+                        <div style={{marginTop: '10px'}}>
+                        Select a new location photo
+                        </div>
                     <div>
                     </div>
                     <div>
-                        <Typography>Photo of Location</Typography>
                         <ImageUploader
                             buttonStyles={{
                                 background: '#00ADEF',
@@ -504,12 +508,13 @@ function UpdateLocationPopup (props) {
                         />
                     </div>
                     <div>
-                        {floorList.length > 0 &&
+                        <div style={{marginTop: '10px'}}>
+                            Select a floor number to update its floor plan image and/or desks
+                        </div>
                         <UpdateLocationFloorContainer
                             handleFormChange={handleFormChange}
                             floorsRetrieved={floorList}
                         ></UpdateLocationFloorContainer>
-                        }
                     </div>
                     <div>
                         <Button
