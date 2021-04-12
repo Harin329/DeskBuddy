@@ -123,6 +123,11 @@ function Reservation() {
         dispatch(fetchDesks(filter, false, 0, deskResults));
     }, []);
 
+    useEffect(() => {
+        setOpen(false);
+        setConfirmed(false);
+    }, [error]);
+
     const handleOpen = (option) => {
         setConfirmed(false);
         setConfirmationDesk(option);
