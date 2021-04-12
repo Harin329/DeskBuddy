@@ -8,7 +8,7 @@ export const makeReservation = (userID, deskObj, filter) => dispatch => {
     var day = new Date(filter.from)
     var toDay = new Date(filter.to)
 
-    if (day !== toDay) {
+    if (day.toUTCString() !== toDay.toUTCString()) {
         // Use Range Endpoint
         const newDay = day.setDate(day.getDate() + 1);
         day = new Date(newDay)
