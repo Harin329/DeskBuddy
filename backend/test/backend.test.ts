@@ -68,6 +68,30 @@ describe("Reservation endpoints tests", () => {
         done();
     });
 
+    // it.only("POST /reservation/range", async done => {
+    //     const res1 = await locationCreator();
+    //     const officeID = JSON.parse(res1.text).code.split("-")[1];
+    //     const body = loadJSON("test/jsonBody/reservationBody/postReservationRangeNormal.json");
+    //     body.office_id = officeID;
+    //     body.employee_id = testUserOID;
+    //     const res = await request.post('/reservation/range').send(body).set(userJSON);
+    //     expect(res.status).toBe(200);
+    //     done();
+    // });
+
+    // it.only("POST /reservation/range", async done => {
+    //     const res1 = await locationCreator();
+    //     const officeID = JSON.parse(res1.text).code.split("-")[1];
+    //     const body = loadJSON("test/jsonBody/reservationBody/postReservationRangeNormal.json");
+    //     body.office_id = officeID;
+    //     body.employee_id = testUserOID;
+    //     const res = await request.post('/reservation/range').send(body).set(userJSON);
+    //     expect(res.status).toBe(200);
+    //     const secondRes = await request.post('/reservation/range').send(body).set(userJSON)
+    //     expect(secondRes.status).toBe(404);
+    //     done();
+    // });
+
     it("POST /reservation with empty body", async done => {
         const body = {};
         const res1 = await request.post('/reservation/').send(body).set(userJSON);

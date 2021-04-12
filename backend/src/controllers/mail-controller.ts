@@ -218,16 +218,6 @@ export default class MailController {
       });
     });
   }
-  createMailRequest(req: any) {
-    return new Promise((resolve, reject) => {
-      Mail.createRequest(req, (err: any, result: any) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(result);
-      })
-    })
-  }
   // deletes a mail, returns how many rows have been deleted
   deleteMail(id: number): Promise<number> {
     return new Promise((resolve, reject) => {

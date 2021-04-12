@@ -85,6 +85,9 @@ const styles = theme => ({
     },
     officeSelector: {
         marginRight: isMobile ? 15 : 0,
+        marginLeft: !isMobile ? 5 : 0,
+        width: !isMobile ? '' : '140px',
+        marginBottom: isMobile ? 15 : 0,
     }
 
 });
@@ -227,6 +230,7 @@ class BranchUpdates extends React.Component {
         return (
             <div className={classes.backgroundBox} style={{ height: '500px', overflow: 'auto' }} ref={(ref) => this.scrollParentRef = ref}>
                 <div className={classes.titleBox}>
+                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: isMobile ? 'center' : 'space-between', alignItems: 'center'}}>
                     <h1 className={classes.title}>BRANCH UPDATES</h1>
                     <TextField className={classes.officeSelector} id="outlined-basic" label="" variant="outlined" select onChange={(e) => this.handleOfficeChange(e)} defaultValue={'All'}>
                         <MenuItem key={'All'} value={'All'}>
@@ -237,7 +241,8 @@ class BranchUpdates extends React.Component {
                                 {option.name}
                             </MenuItem>
                         ))}
-                    </TextField>
+                        </TextField>
+                    </div>
                     {this.props.isAdmin && <Button className={classes.actionButton} onClick={this.handleAddUpdateOpen}>Add</Button>}
                     <Modal
                         open={this.state.addAnnouncement}

@@ -123,6 +123,11 @@ function Reservation() {
         dispatch(fetchDesks(filter, false, 0, deskResults));
     }, []);
 
+    useEffect(() => {
+        setOpen(false);
+        setConfirmed(false);
+    }, [error]);
+
     const handleOpen = (option) => {
         setConfirmed(false);
         setConfirmationDesk(option);
@@ -261,9 +266,16 @@ function Reservation() {
                                                         </Typography>
                                                     </Typography>
                                                     <Typography className={classes.deskSectionText}>
-                                                        TYPE: <Typography className={classes.deskText}>
-                                                            Desk
-                                                </Typography>
+                                                        TYPE: {(option.capacity > 1)
+                                                        ?
+                                                        <Typography className={classes.deskText}>
+                                                        room
+                                                    </Typography>
+                                                        : <Typography className={classes.deskText}>
+                                                        desk
+                                                    </Typography>
+
+                                                    }
                                                     </Typography>
                                                     <Typography className={classes.deskSectionText}>
                                                         CAPACITY: <Typography className={classes.deskText}>
