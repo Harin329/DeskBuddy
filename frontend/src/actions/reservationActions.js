@@ -8,7 +8,7 @@ export const makeReservation = (userID, deskObj, filter) => dispatch => {
     var day = new Date(filter.from)
     var toDay = new Date(filter.to)
 
-    if (day.toUTCString() !== toDay.toUTCString()) {
+    // if (day.toUTCString() !== toDay.toUTCString()) {
         // Use Range Endpoint
         const newDay = day.setDate(day.getDate() + 1);
         day = new Date(newDay)
@@ -36,6 +36,7 @@ export const makeReservation = (userID, deskObj, filter) => dispatch => {
 
         safeFetch(Endpoint + "/reservation/range", requestOptions)
             .then(response => {
+                console.log(response)
                 if (!response.ok) {
                     dispatch(setError(true));
                 }
@@ -49,41 +50,41 @@ export const makeReservation = (userID, deskObj, filter) => dispatch => {
                 console.log('error', error);
                 dispatch(setError(true));
             });
-    } else {
-        const newDay = day.setDate(day.getDate() + 1);
-        day = new Date(newDay)
+    // } else {
+    //     const newDay = day.setDate(day.getDate() + 1);
+    //     day = new Date(newDay)
 
-        const thisDate = day.getFullYear() + "-" + appendLeadingZeroes(day.getMonth() + 1) + "-" + appendLeadingZeroes(day.getDate());
-        console.log(thisDate);
+    //     const thisDate = day.getFullYear() + "-" + appendLeadingZeroes(day.getMonth() + 1) + "-" + appendLeadingZeroes(day.getDate());
+    //     console.log(thisDate);
 
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
+    //     var myHeaders = new Headers();
+    //     myHeaders.append("Content-Type", "application/json");
 
-        var raw = JSON.stringify({ "employee_id": userID, "desk_id": String(deskObj.desk_id), "floor_num": Number(deskObj.fk_floor_num), "office_id": Number(deskObj.fk_office_id), "office_location": String(deskObj.fk_office_location), "date": thisDate });
+    //     var raw = JSON.stringify({ "employee_id": userID, "desk_id": String(deskObj.desk_id), "floor_num": Number(deskObj.fk_floor_num), "office_id": Number(deskObj.fk_office_id), "office_location": String(deskObj.fk_office_location), "date": thisDate });
 
-        var requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: raw,
-            redirect: 'follow'
-        };
+    //     var requestOptions = {
+    //         method: 'POST',
+    //         headers: myHeaders,
+    //         body: raw,
+    //         redirect: 'follow'
+    //     };
 
-        safeFetch(Endpoint + "/reservation", requestOptions)
-            .then(response => {
-                if (!response.ok) {
-                    dispatch(setError(true));
-                }
-                return response.text();
-            })
-            .then(result => console.log(result))
-            .then(() => {
-                dispatch(fetchReservations(userID))
-            })
-            .catch(error => {
-                console.log('error', error);
-                dispatch(setError(true));
-            });
-    }
+    //     safeFetch(Endpoint + "/reservation", requestOptions)
+    //         .then(response => {
+    //             if (!response.ok) {
+    //                 dispatch(setError(true));
+    //             }
+    //             return response.text();
+    //         })
+    //         .then(result => console.log(result))
+    //         .then(() => {
+    //             dispatch(fetchReservations(userID))
+    //         })
+    //         .catch(error => {
+    //             console.log('error', error);
+    //             dispatch(setError(true));
+    //         });
+    // }
 }
 
 export const hasFloorplan = (params) => dispatch => {
