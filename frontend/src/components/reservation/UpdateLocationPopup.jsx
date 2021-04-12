@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ImageUploader from 'react-images-upload';
-import { Button, Typography, TextField, MenuItem } from '@material-ui/core';
+import {Button, Typography, TextField, MenuItem, Modal} from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles';
 import UpdateLocationFloorContainer from '../../components/reservation/UpdateLocationFloorContainer';
@@ -9,7 +9,13 @@ import Endpoint from '../../config/Constants';
 import safeFetch from "../../util/Util";
 import { isMobile } from 'react-device-detect';
 import ICBC from "../../assets/ICBC.png";
-import {SET_PROFILE_PHOTO} from "../../actions/actionTypes";
+import {
+    SET_CONFIRM_DELETE_POPUP,
+    SET_CONFIRM_UPDATE_POPUP,
+    SET_OID,
+    SET_PROFILE_PHOTO
+} from "../../actions/actionTypes";
+import {Btn, ConfirmPopup, ReportPopup} from "../social/feed/styles";
 
 const useStyles = makeStyles({
   background: {
@@ -147,6 +153,20 @@ sectionTextModal: {
     fontSize: 20,
     textAlign: 'center',
 },
+confirmPopup: {
+    fontFamily: 'Lato',
+    fontStyle: 'normal',
+    fontWeight: 300,
+    fontSize: '20px',
+    height: '100px',
+    width: '350px',
+    backgroundColor: 'white',
+    fontColor: 'black',
+    padding: '12px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+},
 });
 
 function UpdateLocationPopup (props) {
@@ -156,6 +176,8 @@ function UpdateLocationPopup (props) {
   const dispatch = useDispatch()
   const officeList = useSelector(state => state.reservations.offices);
   const floorList = useSelector(state => state.reservations.floorsPerOfficeInUpdate);
+  const confirmDeletePopupIsOpen = useSelector(state => state.reservations.confirmDeletePopup);
+  const confirmUpdatePopupIsOpen = useSelector(state => state.reservations.confirmUpdatePopup);
 
   const initialLocationEditsObj = {
     name: null,
@@ -169,9 +191,11 @@ function UpdateLocationPopup (props) {
     }
   };
 
+  console.log("SETTING CURREDLOCATIONEDITS TO NULL LOL");
   let currLocationEdits = {...initialLocationEditsObj};
 
   const handleFormChange = (field, input) => {
+      console.log("HANDLE FORM CHANGE: " + field + " " + JSON.stringify(input))
       switch (field) {
         case 'name':
             currLocationEdits.name = input.target.value;
@@ -202,7 +226,7 @@ function UpdateLocationPopup (props) {
     dispatch(fetchOffices());
   }, []);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = () => {
         if (!office) {
             alert("No city identifier has been provided");
         } else {
@@ -267,6 +291,29 @@ function UpdateLocationPopup (props) {
         }
     };
 
+    const handleDelete = (event) => {
+        if (!office) {
+            alert("No city identifier has been provided");
+        } else {
+            const originalCity = office.split(/-(?=[^-]+$)/)[0];
+            const id = office.split(/-(?=[^-]+$)/)[1];
+
+            const requestOptions = {
+                method: 'DELETE'
+            }
+            safeFetch(Endpoint + `/location/${originalCity}/${id}`, requestOptions)
+                .then((response) => {
+                    response.text();
+                })
+                .then(() => {
+                    props.whatToDoWhenClosed();
+                })
+                .catch(error => {
+                    alert(error);
+                })
+        }
+    };
+
     const parseDesksFromString = (input) => {
         const parsedDesks = [];
         const tokens = input.split(";");
@@ -289,6 +336,59 @@ function UpdateLocationPopup (props) {
         dispatch(fetchFloorsByOffice(params));
     }
   };
+
+    let confirmDeletePopup = (
+        <Modal
+            open={confirmDeletePopupIsOpen}
+            onClose={() =>
+                dispatch({type: SET_CONFIRM_DELETE_POPUP, payload: false})
+            }
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}
+        >
+            <ConfirmPopup>
+                <div>Are you sure you want to delete this office? All mail, reservations, and announcements associated with this office will also be deleted. This action cannot be undone.</div>
+                <Btn
+                    type="button"
+                    value="Yes"
+                    onClick={() => handleDelete()}
+                />
+            </ConfirmPopup>
+        </Modal>
+    );
+
+    let confirmUpdatePopup = (
+        <Modal
+            open={confirmUpdatePopupIsOpen}
+            onClose={() =>
+                dispatch({type: SET_CONFIRM_UPDATE_POPUP, payload: false})
+            }
+            onRendered={() => {
+                console.log("IN CONFIRM SUBMIT POPUP")
+                console.log(JSON.stringify(currLocationEdits, null, 2))
+            }}
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}
+        >
+            <ConfirmPopup>
+                <div>Are you sure you want to update this floor? All existing reservations on this floor will be
+                    deleted. This action cannot be undone
+                </div>
+                <Btn
+                    type="button"
+                    value="Yes"
+                    onClick={() => {handleSubmit()}}
+                />
+            </ConfirmPopup>
+        </Modal>
+    );
+
   return (
     <div className={classes.updateLocation}>
       <Typography className={classes.sectionTextModal}>
@@ -320,49 +420,6 @@ function UpdateLocationPopup (props) {
           location
         </div>
         <div>
-          <TextField
-            id="name"
-            label="Name"
-            style={{ margin: 8 }}
-            placeholder="Ex. ICBC Surrey 78 Ave"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            onChange={(event) => handleFormChange('name', event)}
-          />
-        </div>
-        <div>
-          <TextField
-            id="address"
-            label="Address"
-            style={{ margin: 8 }}
-            placeholder="Ex. 13426 78 Ave"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            onChange={(event) => handleFormChange('address', event)}
-          />
-        </div>
-        <div>
-          <TextField
-            id="cityOrTown"
-            label="City or Town"
-            style={{ margin: 8 }}
-            placeholder="Ex. Surrey"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            onChange={(event) => handleFormChange('cityOrTown', event)}
-          />
         </div>
         <div>
           <Typography>Photo of Location</Typography>
@@ -402,15 +459,32 @@ function UpdateLocationPopup (props) {
             floorsRetrieved={floorList}
           ></UpdateLocationFloorContainer>
         </div>
-        <div>
-          <Button
-            className={classes.actionButton}
-            onClick={(event) => handleSubmit(event)}
-          >
-            Publish
-          </Button>
-        </div>
+          <div>
+              <Button
+                  className={classes.actionButton}
+                  onClick={(event) => {
+                      console.log("IN PROCEED ON CLICK")
+                      console.log(JSON.stringify(currLocationEdits, null, 2))
+                      if (currLocationEdits.floor.level != null){
+                          dispatch({type: SET_CONFIRM_UPDATE_POPUP, payload: true})
+                      } else {
+                          handleSubmit()
+                      }
+                  }}
+              >
+                  Publish
+              </Button>
+              <Button
+                  style={isMobile ? { background: "#ba0000" } : { background: "red", marginLeft: "50px" }}
+                  className={classes.actionButton}
+                  onClick={(event) => dispatch({type: SET_CONFIRM_DELETE_POPUP, payload: true})}
+              >
+                  Delete Location
+              </Button>
+          </div>
       </form>
+        {confirmDeletePopup}
+        {confirmUpdatePopup}
     </div>
   );
 }

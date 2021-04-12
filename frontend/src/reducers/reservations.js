@@ -1,4 +1,16 @@
-import { SET_RESERVATIONS, SET_EMPLOYEE_COUNT, SET_DESKS_RESULTS, CHECK_MORE, SET_PAGE, SET_FILTER, SET_OFFICES, SET_FLOORPLAN_AVAILABLE, SET_DESKS, SET_FLOORS_IN_UPDATE } from "../actions/actionTypes";
+import {
+  SET_RESERVATIONS,
+  SET_EMPLOYEE_COUNT,
+  SET_DESKS_RESULTS,
+  CHECK_MORE,
+  SET_PAGE,
+  SET_FILTER,
+  SET_OFFICES,
+  SET_FLOORPLAN_AVAILABLE,
+  SET_DESKS,
+  SET_FLOORS_IN_UPDATE,
+  CONFIRM_DELETE_POPUP, CONFIRM_UPDATE_POPUP, SET_CONFIRM_DELETE_POPUP, SET_CONFIRM_UPDATE_POPUP
+} from "../actions/actionTypes";
 import { combineReducers } from "redux";
 import { appendLeadingZeroes } from "../functions/Date";
 
@@ -127,5 +139,27 @@ const floorsPerOfficeInUpdate = (state = initialState, action) => {
   }
 }
 
-export default combineReducers({ upcomingReservations, deskEmployeeCount, deskResults, hasMore, pageCount, searchFilter, offices, hasFloorplan, desks, floorsPerOfficeInUpdate });
+const confirmDeletePopup = (state = initialFalseState, action) => {
+  switch (action.type) {
+    case SET_CONFIRM_DELETE_POPUP: {
+      return action.payload;
+    }
+    default: {
+      return state;
+    }
+  }
+};
+
+const confirmUpdatePopup = (state = initialFalseState, action) => {
+  switch (action.type) {
+    case SET_CONFIRM_UPDATE_POPUP: {
+      return action.payload;
+    }
+    default: {
+      return state;
+    }
+  }
+};
+
+export default combineReducers({ upcomingReservations, deskEmployeeCount, deskResults, hasMore, pageCount, searchFilter, offices, hasFloorplan, desks, floorsPerOfficeInUpdate, confirmDeletePopup, confirmUpdatePopup });
 

@@ -8,7 +8,13 @@ import { useSelector, useDispatch } from 'react-redux'
 import { fetchDesks, fetchOffices, fetchDesksByOffice, hasFloorplan } from '../../actions/reservationActions';
 import UpdateLocationPopup from './UpdateLocationPopup';
 import Search from '../../assets/search.png';
-import { SET_FILTER, SET_DESKS, SET_FLOORPLAN_AVAILABLE } from '../../actions/actionTypes';
+import {
+    SET_FILTER,
+    SET_DESKS,
+    SET_FLOORPLAN_AVAILABLE,
+    SET_CONFIRM_DELETE_POPUP,
+    SET_CONFIRM_UPDATE_POPUP
+} from '../../actions/actionTypes';
 import { useMsal } from "@azure/msal-react";
 import { accountIsAdmin } from "../../util/Util";
 
@@ -95,6 +101,8 @@ function DeskFilter() {
 
     const handleUpdateLocationClosed = () => {
         dispatch(fetchOffices());
+        dispatch({type: SET_CONFIRM_DELETE_POPUP, payload: false})
+        dispatch({type: SET_CONFIRM_UPDATE_POPUP, payload: false})
         setIsUpdateLocationOpen(false);
     }
 
