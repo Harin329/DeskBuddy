@@ -121,6 +121,7 @@ const useStyles = makeStyles({
       flexDirection: !isMobile ? 'row' : 'column',
       alignItems: !isMobile ? 'stretch' : 'center',
       marginTop: isMobile ? '20px' : '',
+      marginBottom: '-150px'
   },
   dialogLineLabel: {
       paddingTop: '20px'
