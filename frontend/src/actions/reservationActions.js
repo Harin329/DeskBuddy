@@ -7,7 +7,49 @@ import { setError, setLoading } from "./globalActions";
 export const makeReservation = (userID, deskObj, filter) => dispatch => {
     var day = new Date(filter.from)
     var toDay = new Date(filter.to)
-    while (day <= toDay) {
+
+    if (day !== toDay) {
+        // Use Range Endpoint
+        const newDay = day.setDate(day.getDate() + 1);
+        day = new Date(newDay)
+
+        const thisDate = day.getFullYear() + "-" + appendLeadingZeroes(day.getMonth() + 1) + "-" + appendLeadingZeroes(day.getDate());
+        console.log(thisDate);
+
+        const newDay2 = toDay.setDate(toDay.getDate() + 1);
+        toDay = new Date(newDay2)
+
+        const thisDate2 = toDay.getFullYear() + "-" + appendLeadingZeroes(toDay.getMonth() + 1) + "-" + appendLeadingZeroes(toDay.getDate());
+        console.log(thisDate2);
+
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({ "employee_id": userID, "desk_id": String(deskObj.desk_id), "floor_num": Number(deskObj.fk_floor_num), "office_id": Number(deskObj.fk_office_id), "office_location": String(deskObj.fk_office_location), "start_date": thisDate, "end_date": thisDate2 });
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
+
+        safeFetch(Endpoint + "/reservation/range", requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    dispatch(setError(true));
+                }
+                return response.text();
+            })
+            .then(result => console.log(result))
+            .then(() => {
+                dispatch(fetchReservations(userID))
+            })
+            .catch(error => {
+                console.log('error', error);
+                dispatch(setError(true));
+            });
+    } else {
         const newDay = day.setDate(day.getDate() + 1);
         day = new Date(newDay)
 
