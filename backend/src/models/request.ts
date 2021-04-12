@@ -1,5 +1,4 @@
 import DB from '../config/db-handler';
-import {getFormattedDate} from "../helpers/Date";
 
 const con = DB.getCon();
 
@@ -11,8 +10,7 @@ export const Request = function (this: any, request: any) {
 
 // creates a request for the given mail
 Request.createRequest = (req: any, result: any) => {
-    const currTime = getFormattedDate();
-    con.query(`CALL createRequest(?,?,?,?,?,?,?,?,?,?,?)`,
+    con.query(`CALL createRequest(?,?,?,?,?,?,?,?,?,?)`,
         [
             req.mail_id,
             req.employee_id,
@@ -23,8 +21,7 @@ Request.createRequest = (req: any, result: any) => {
             req.forward_location,
             req.additional_instructions,
             req.req_completion_date,
-            "awaiting_admin_action",
-            currTime
+            "awaiting admin action"
         ], (err: any, res: any) => {
             if (err) {
                 result(err, null);
@@ -48,8 +45,7 @@ Request.getAllRequests = (employeeID: any, result: any) => {
 
 // employee updates their request that they selected (Request additional assistance)
 Request.updateRequestEmployee = (req: any, result: any) => {
-    const currDate = getFormattedDate();
-    con.query(`CALL updateRequestEmployee(?,?,?,?,?,?,?,?,?)`, [
+    con.query(`CALL updateRequestEmployee(?,?,?,?,?,?,?,?)`, [
         req.mail_id,
         req.employee_id,
         req.employee_phone,
@@ -57,8 +53,7 @@ Request.updateRequestEmployee = (req: any, result: any) => {
         req.forward_location,
         req.additional_instruction,
         req.req_completion_date,
-        "awaiting_admin_action", // placeholder
-        currDate
+        "awaiting admin action", // placeholder
     ], (err: any, res: any) => {
         if (err) {
             result(err, null);
@@ -70,13 +65,11 @@ Request.updateRequestEmployee = (req: any, result: any) => {
 
 // admin responds to the request (updates request)
 Request.updateRequestAdmin = (req: any, result: any) => {
-    const currDate = getFormattedDate();
-    con.query(`CALL updateRequestAdmin(?,?,?,?,?)`, [
+    con.query(`CALL updateRequestAdmin(?,?,?,?)`, [
         req.mail_id,
-        "awaiting_employee_confirmation", // placeholder, will likely be an enum?
+        "awaiting employee confirmation", // placeholder, will likely be an enum?
         req.admin_eid,
-        req.response,
-        currDate
+        req.response
     ], (err: any, res: any) => {
         if (err) {
             result(err, null);
@@ -88,11 +81,8 @@ Request.updateRequestAdmin = (req: any, result: any) => {
 
 // admin or user can close request (request is updated to closed)
 Request.closeRequest = (req: any, result: any) => {
-    const currDate = getFormattedDate();
-    con.query("UPDATE mail_request SET `status` = ?, `completion_date` = ?, `modified_at` = ? WHERE mail_id = ? AND employee_id = ?", [
+    con.query("UPDATE mail_request SET `status` = ?, `completion_date` = now(), `modified_at` = now() WHERE mail_id = ? AND employee_id = ?", [
         "closed", // will be changed to an enum or something. i.e won't be hardcoded
-        currDate,
-        currDate,
         req.mail_id,
         req.employee_id
     ], (err: any, res: any) => {
