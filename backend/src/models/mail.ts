@@ -1,5 +1,4 @@
 import DB from '../config/db-handler';
-import { getFormattedDate } from "../helpers/Date";
 
 const con = DB.getCon();
 
@@ -450,20 +449,6 @@ Mail.createMail = (officeID: number, officeLoc: string, recipient: string, type:
     });
 }
 
-Mail.createRequest = (req: any, result: any) => {
-  con.query("INSERT INTO mail_request VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-    [req.mail_id, req.employee_id, req.employee_name, req.employee_email, req.employee_phone,
-    req.request_type, req.forward_location, req.additional_instructions, req.req_completion_date,
-    req.completion_date, req.status, req.admin_eid],
-    (err: any, res: any) => {
-      if (err) {
-        result(err, null);
-      } else {
-        result(null, res.affectedRows);
-      }
-    });
-}
-
 Mail.deleteMail = (mailID: number, result: any) => {
   con.query(`CALL deleteMail(?)`,
     [mailID],
@@ -498,10 +483,6 @@ Mail.getMailRequestTypeAndForwardLocation = (mailIDs: string, result: any) => {
   });
 }
 
-Mail.updateRequest = (req: any, result: any) => {
-  const date = new Date();
-  const currDate = getFormattedDate();
-};
 
 Mail.deleteRequest = (req: any, result: any) => {
   con.query("DELETE FROM mail_request WHERE employee_id = ? AND mail_id = ?", [
