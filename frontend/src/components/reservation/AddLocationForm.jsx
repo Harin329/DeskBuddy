@@ -283,7 +283,7 @@ class AddLocationForm extends React.Component {
                             alignSelf: 'flex-start'
                         }}
                         withIcon={false}
-                        buttonText='ATTACH IMAGE'
+                        buttonText='ATTACH FLOOR PLAN IMAGE'
                         onChange={this.handleFloorImageInput.bind(this, floor.floor_id)}
                         imgExtension={['.jpg', '.gif', '.png', '.gif']}
                         maxFileSize={5242880}
@@ -380,7 +380,7 @@ class AddLocationForm extends React.Component {
                                 alignSelf: 'flex-start'
                             }}
                             withIcon={false}
-                            buttonText='ATTACH IMAGE'
+                            buttonText='ATTACH LOCATION IMAGE'
                             onChange={this.handleOfficeImageInput.bind(this)}
                             imgExtension={['.jpg', '.gif', '.png', '.gif']}
                             maxFileSize={5242880}
