@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import UpdateLocationFloorContainer from '../../components/reservation/UpdateLocationFloorContainer';
 import { fetchOffices, fetchFloorsByOffice } from '../../actions/reservationActions';
 import Endpoint from '../../config/Constants';
-import safeFetch from "../../util/Util";
+import safeFetch, {isNumeric} from "../../util/Util";
 import { isMobile } from 'react-device-detect';
 import ICBC from "../../assets/ICBC.png";
 import {
@@ -262,7 +262,12 @@ function UpdateLocationPopup (props) {
 
             let parsedDesks;
             if (currLocationEdits.floor.deskIds) {
-                parsedDesks = parseDesksFromString(currLocationEdits.floor.deskIds);
+                try {
+                    parsedDesks = parseDesksFromString(currLocationEdits.floor.deskIds);
+                }catch (error){
+                    alert(error);
+                    return;
+                }
                 if (parsedDesks.length === 0){
                     parsedDesks = null;
                     if (currLocationEdits.floor.level != null){
@@ -337,8 +342,28 @@ function UpdateLocationPopup (props) {
         const parsedDesks = [];
         input = input.trim();
         const tokens = input.split(";");
+        if (input.length > 0 && !input.includes("-")) {
+            throw new Error("format must be deskID-capacity, with semicolon separators");
+        }
+        const deskIDs = [];
         for (let token of tokens) {
+            if (!token.includes("-")) {
+                throw new Error("format must be deskID-capacity");
+            }
             const parts = token.split("-");
+            if (parts.length !== 2){
+                throw new Error("format must be deskid-capacity");
+            }
+            if (parts[0].trim() === ""){
+                throw new Error("deskID cannot be null");
+            }
+            if (!isNumeric(parts[1])){
+                throw new Error("capacity must be a number");
+            }
+            if (deskIDs.includes(parts[0])){
+                throw new Error("deskIDs must be unique");
+            }
+            deskIDs.push(parts[0]);
             const ID = parts[0];
             const capacity = parts[1];
             parsedDesks.push({
