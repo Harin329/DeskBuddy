@@ -11,7 +11,7 @@ import { isMobile } from 'react-device-detect';
 import ICBC from "../../assets/ICBC.png";
 import {
     SET_CONFIRM_DELETE_POPUP,
-    SET_CONFIRM_UPDATE_POPUP,
+    SET_CONFIRM_UPDATE_POPUP, SET_DESKS_IN_UPDATE, SET_EDITS_IN_UPDATE, SET_FLOOR_IN_UPDATE, SET_FLOORS_IN_UPDATE,
     SET_OID,
     SET_PROFILE_PHOTO
 } from "../../actions/actionTypes";
@@ -169,17 +169,7 @@ confirmPopup: {
 },
 });
 
-function UpdateLocationPopup (props) {
-  const classes = useStyles();
-  const [office, setOffice] = useState();
-
-  const dispatch = useDispatch()
-  const officeList = useSelector(state => state.reservations.offices);
-  const floorList = useSelector(state => state.reservations.floorsPerOfficeInUpdate);
-  const confirmDeletePopupIsOpen = useSelector(state => state.reservations.confirmDeletePopup);
-  const confirmUpdatePopupIsOpen = useSelector(state => state.reservations.confirmUpdatePopup);
-
-  const initialLocationEditsObj = {
+export const initialLocationEditsObj = {
     name: null,
     address: null,
     cityOrTown: '',
@@ -189,10 +179,23 @@ function UpdateLocationPopup (props) {
         photo: null,
         deskIds: null
     }
-  };
+};
 
-  console.log("SETTING CURREDLOCATIONEDITS TO NULL LOL");
-  let currLocationEdits = {...initialLocationEditsObj};
+function UpdateLocationPopup (props) {
+  const classes = useStyles();
+  const [office, setOffice] = useState();
+
+  const dispatch = useDispatch()
+  const officeList = useSelector(state => state.reservations.offices);
+  const floorList = useSelector(state => state.reservations.floorsPerOfficeInUpdate);
+  const confirmDeletePopupIsOpen = useSelector(state => state.reservations.confirmDeletePopup);
+  const confirmUpdatePopupIsOpen = useSelector(state => state.reservations.confirmUpdatePopup);
+  const currLocationEditsRedux = useSelector(state => state.reservations.currLocationEditsRedux);
+
+
+  //console.log("SETTING CURREDLOCATIONEDITS TO NULL LOL");
+  // let currLocationEdits = {...initialLocationEditsObj};
+  let currLocationEdits = currLocationEditsRedux;
 
   const handleFormChange = (field, input) => {
       console.log("HANDLE FORM CHANGE: " + field + " " + JSON.stringify(input))
@@ -213,8 +216,9 @@ function UpdateLocationPopup (props) {
             currLocationEdits.floor.level = input.level;
             if (input.photo !== null)
                 currLocationEdits.floor.photo = input.photo;
-            if (input.deskIds !== null && input.deskIds !== '')
+            if (input.deskIds !== null )
                 currLocationEdits.floor.deskIds = input.deskIds;
+                dispatch({type: SET_DESKS_IN_UPDATE, payload: currLocationEdits.floor.deskIds})
             break;
         default:
             break;
@@ -229,6 +233,8 @@ function UpdateLocationPopup (props) {
     const handleSubmit = () => {
         if (!office) {
             alert("No city identifier has been provided");
+        } else if (currLocationEdits.floor.photo != null && currLocationEdits.floor.level === null) {
+            alert("No floor selected");
         } else {
             const originalCity = office.split(/-(?=[^-]+$)/)[0];
             const id = office.split(/-(?=[^-]+$)/)[1];
@@ -257,6 +263,16 @@ function UpdateLocationPopup (props) {
             let parsedDesks;
             if (currLocationEdits.floor.deskIds) {
                 parsedDesks = parseDesksFromString(currLocationEdits.floor.deskIds);
+                if (parsedDesks.length === 0){
+                    parsedDesks = null;
+                    if (currLocationEdits.floor.level != null){
+                        alert("No desks entered");
+                        return;
+                    }
+                } else if (currLocationEdits.floor.level === null) {
+                    alert("No floor selected");
+                    return;
+                }
             }
             const floors = [{
                 floor_num: currLocationEdits.floor.level,
@@ -280,13 +296,16 @@ function UpdateLocationPopup (props) {
                 dispatchPutlocation(formData);
 
             } else {
+                formData.append("image", null);
+                dispatchPutlocation(formData);
                 // perhaps we want to return nil instead?
-                fetch('data:image/png;base64,' + Buffer.from(originalOfficePhoto, 'base64').toString('base64'))
+                /*fetch('data:image/png;base64,' + Buffer.from(originalOfficePhoto, 'base64').toString('base64'))
                     .then(res => res.blob()
                         .then(data => {
                             formData.append("image", data);
                             dispatchPutlocation(formData);
                         }))
+                 */
             }
         }
     };
@@ -316,8 +335,9 @@ function UpdateLocationPopup (props) {
 
     const parseDesksFromString = (input) => {
         const parsedDesks = [];
+        input = input.trim();
         const tokens = input.split(";");
-        for (const token of tokens) {
+        for (let token of tokens) {
             const parts = token.split("-");
             const ID = parts[0];
             const capacity = parts[1];
@@ -331,6 +351,8 @@ function UpdateLocationPopup (props) {
 
   const handleOfficeChange = (event) => {
     setOffice(event.target.value);
+    dispatch({type: SET_FLOOR_IN_UPDATE, payload: null})
+    currLocationEdits.floor.level = null;
     if (event.target.value !== 'All') {
         const params = event.target.value.split(/-(?=[^-]+$)/);
         dispatch(fetchFloorsByOffice(params));
@@ -367,8 +389,7 @@ function UpdateLocationPopup (props) {
                 dispatch({type: SET_CONFIRM_UPDATE_POPUP, payload: false})
             }
             onRendered={() => {
-                console.log("IN CONFIRM SUBMIT POPUP")
-                console.log(JSON.stringify(currLocationEdits, null, 2))
+                currLocationEdits = currLocationEditsRedux;
             }}
             style={{
                 display: 'flex',
@@ -454,18 +475,19 @@ function UpdateLocationPopup (props) {
           />
         </div>
         <div>
-          <UpdateLocationFloorContainer
-            handleFormChange={handleFormChange}
-            floorsRetrieved={floorList}
-          ></UpdateLocationFloorContainer>
+            {floorList.length > 0 &&
+            <UpdateLocationFloorContainer
+                handleFormChange={handleFormChange}
+                floorsRetrieved={floorList}
+            ></UpdateLocationFloorContainer>
+        }
         </div>
           <div>
               <Button
                   className={classes.actionButton}
                   onClick={(event) => {
-                      console.log("IN PROCEED ON CLICK")
-                      console.log(JSON.stringify(currLocationEdits, null, 2))
-                      if (currLocationEdits.floor.level != null){
+                      dispatch({type: SET_EDITS_IN_UPDATE, payload: currLocationEdits})
+                      if (currLocationEdits.floor.level != null && currLocationEdits.floor.deskIds != null && currLocationEdits.floor.deskIds.trim() !== ""){
                           dispatch({type: SET_CONFIRM_UPDATE_POPUP, payload: true})
                       } else {
                           handleSubmit()
@@ -488,5 +510,6 @@ function UpdateLocationPopup (props) {
     </div>
   );
 }
+
 
 export default UpdateLocationPopup;

@@ -3,6 +3,8 @@ import ImageUploader from 'react-images-upload';
 import { Grid, Typography, TextField, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { isMobile } from 'react-device-detect';
+import {useDispatch, useSelector} from "react-redux";
+import {SET_CONFIRM_UPDATE_POPUP, SET_FLOOR_IN_UPDATE, SET_FLOORS_IN_UPDATE} from "../../actions/actionTypes";
 
 const useStyles = makeStyles({
   background: {
@@ -129,26 +131,30 @@ const useStyles = makeStyles({
 function UpdateLocationFloor (props) {
     const classes = useStyles();
     let handleFormChange = props.handleFormChange;
-    const [updateLocationFloor, setUpdateLocationFloor] = useState(0);
+    //const [updateLocationFloor, setUpdateLocationFloor] = useState(null);
+    const dispatch = useDispatch();
+    const updateLocationFloorRedux = useSelector(state => state.reservations.updateLocationFloorRedux);
+    const updateLocationDeskIDsRedux = useSelector(state => state.reservations.updateLocationDeskIDsRedux);
     const [pictures, setPictures] = useState([]);
     const [isExistingFloorPlanRemoved, setIsExistingFloorPlanRemoved] = useState(false);
     let floors = [...props.floorsRetrieved];
 
     const handleUpdateLocationFloorChange = (event) => {
-        setUpdateLocationFloor(event.target.value);
+        //setUpdateLocationFloor(event.target.value);
+        dispatch({type: SET_FLOOR_IN_UPDATE, payload: event.target.value})
         handleFormChange('floors', { level: event.target.value, deskIds: null, photo: null });
     };
 
     const onDrop = (newPic) => {
-        setPictures(pictures.concat(newPic));
+        setPictures(pictures[0] = newPic);
     };
 
     useEffect(() => {
         setTimeout(async () => {
             if (pictures) {
-                handleFormChange('floors', { level: updateLocationFloor, deskIds: null, photo: pictures[0] });
+                handleFormChange('floors', { level: updateLocationFloorRedux, deskIds: updateLocationDeskIDsRedux, photo: pictures[0] });
             } else {
-                handleFormChange('floors', { level: updateLocationFloor, deskIds: null, photo: '' });
+                handleFormChange('floors', { level: updateLocationFloorRedux, deskIds: updateLocationDeskIDsRedux, photo: '' });
             }
         }, 500);
     }, [pictures]);
@@ -156,7 +162,7 @@ function UpdateLocationFloor (props) {
     return (<Grid container justify='center' className={classes.dialogLineContainer}>
         
     <Grid item xs={!isMobile ? 5 : 12}>
-        <TextField id="outlined-basic" data-testid='update-location-floor-dropdown' label="Floor Number" variant="outlined" select onChange={handleUpdateLocationFloorChange} value={updateLocationFloor} className={classes.inputBoxes}>
+        <TextField id="outlined-basic" data-testid='update-location-floor-dropdown' label="Floor Number" variant="outlined" select onChange={handleUpdateLocationFloorChange} value={updateLocationFloorRedux} className={classes.inputBoxes}>
             {floors.map((floor) => {
                 return <MenuItem key={floor.floor_num} value={floor.floor_num}>
                     {floor.floor_num}
@@ -202,7 +208,7 @@ function UpdateLocationFloor (props) {
             InputLabelProps={{
                 shrink: true,
             }}
-            onChange={(event) => {handleFormChange('floors', { level: updateLocationFloor, deskIds: event.target.value, photo: null });}}
+            onChange={(event) => {handleFormChange('floors', { level: updateLocationFloorRedux, deskIds: event.target.value, photo: null });}}
         />
     </Grid>
     

@@ -6,14 +6,14 @@ import AddLocationForm from '../../components/reservation/AddLocationForm';
 import { isMobile } from "react-device-detect";
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchDesks, fetchOffices, fetchDesksByOffice, hasFloorplan } from '../../actions/reservationActions';
-import UpdateLocationPopup from './UpdateLocationPopup';
+import UpdateLocationPopup, {initialLocationEditsObj} from './UpdateLocationPopup';
 import Search from '../../assets/search.png';
 import {
     SET_FILTER,
     SET_DESKS,
     SET_FLOORPLAN_AVAILABLE,
     SET_CONFIRM_DELETE_POPUP,
-    SET_CONFIRM_UPDATE_POPUP
+    SET_CONFIRM_UPDATE_POPUP, SET_EDITS_IN_UPDATE, SET_FLOORS_IN_UPDATE, SET_FLOOR_IN_UPDATE, SET_DESKS_IN_UPDATE
 } from '../../actions/actionTypes';
 import { useMsal } from "@azure/msal-react";
 import { accountIsAdmin } from "../../util/Util";
@@ -99,10 +99,16 @@ function DeskFilter() {
         setIsUpdateLocationOpen(true);
     }
 
+
     const handleUpdateLocationClosed = () => {
         dispatch(fetchOffices());
         dispatch({type: SET_CONFIRM_DELETE_POPUP, payload: false})
         dispatch({type: SET_CONFIRM_UPDATE_POPUP, payload: false})
+        dispatch({type: SET_CONFIRM_UPDATE_POPUP, payload: false})
+        dispatch({type: SET_EDITS_IN_UPDATE, payload: JSON.parse(JSON.stringify(initialLocationEditsObj))})
+        dispatch({type: SET_FLOORS_IN_UPDATE, payload: []})
+        dispatch({type: SET_FLOOR_IN_UPDATE, payload: null})
+        dispatch({type: SET_DESKS_IN_UPDATE, payload: null})
         setIsUpdateLocationOpen(false);
     }
 
