@@ -118,7 +118,7 @@ function RequestMailNotification(props) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [responseOpen, setResponseOpen] = useState(false);
     const [requestOpen, setRequestOpen] = useState(false);
-    const [officeName, setOfficeName] = useState('');
+    const [officeName, setOfficeName] = useState("");
     const [reportOpen, setReportOpen] = useState(false);
     const [closeOpen, setCloseOpen] = useState(false);
 
@@ -131,6 +131,7 @@ function RequestMailNotification(props) {
 
     useEffect(() => {
         dispatch(fetchOffices());
+        console.log(data);
     }, []);
 
     useEffect(() => {
@@ -217,7 +218,7 @@ function RequestMailNotification(props) {
             }}>
                 <Typography className={classes.officeText}>Mail ID: {JSON.parse(data).mailID}</Typography>
                 <Typography className={classes.deskSectionText}>LOCATION: <Typography className={classes.deskText}>
-                    {officeName}
+                    {JSON.parse(data).officeLocation}
                 </Typography></Typography>
                 <Typography className={classes.deskSectionText}>STATUS: <Typography className={classes.deskText}>
                     {JSON.parse(data).status}
@@ -232,7 +233,7 @@ function RequestMailNotification(props) {
                 </Typography>
                 </Typography>
                 <Typography className={classes.deskSectionText}>ADMIN RESPONSE: <Typography className={classes.deskText}>
-                    {JSON.parse(data).response || "None"}
+                    {JSON.parse(data).response}
                 </Typography>
                 </Typography>
             </div>

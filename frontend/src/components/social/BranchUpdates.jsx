@@ -69,7 +69,7 @@ const styles = theme => ({
         fontFamily: 'Lato',
         fontWeight: 'bolder',
         fontSize: 18,
-      },
+    },
     announcementText: {
         // fontSize: isMobile ? 16 : 20,
         paddingLeft: 15,
@@ -120,14 +120,14 @@ class BranchUpdates extends React.Component {
         if (event.target.value !== 'All') {
             const params = event.target.value.split(/-(?=[^-]+$)/);
 
-            console.log(params[0])
-            console.log(params[1])
-            this.setState({ selectedOfficeLocation: params[0], selectedOfficeID: params[1], announcementList: [] });
+            this.setState({ selectedOfficeLocation: params[0], selectedOfficeID: params[1], announcementList: []});
 
             let requestOptions = {
                 method: 'GET',
                 redirect: 'follow'
             };
+
+            this.setState({hasMoreAnnouncements: true});
 
             setTimeout(() => {
                 safeFetch(Endpoint + "/announcement/getBranchAnnouncements/"
@@ -137,8 +137,8 @@ class BranchUpdates extends React.Component {
                         const announcements = JSON.parse(result);
                         console.log(announcements);
                         this.setState({
-                            announcementList: this.state.announcementList.concat(announcements),
-                            hasMoreAnnouncements: !(this.state.announcementList.length === this.state.totalAnnouncements)
+                            announcementList: announcements,
+                            hasMoreAnnouncements: false
                         });
                     })
                     .catch(error => console.log('error', error));
@@ -179,9 +179,11 @@ class BranchUpdates extends React.Component {
                 this.setState({ officeList: JSON.parse(result) });
             })
             .catch(error => console.log('error', error));
+
+        this.getAnnouncements();
     }
 
-    getAnnouncements(page) {
+    getAnnouncements() {
         const requestOptions = {
             method: 'GET',
             redirect: 'follow'
@@ -192,8 +194,8 @@ class BranchUpdates extends React.Component {
                 const announcements = JSON.parse(result);
                 console.log(announcements);
                 this.setState({
-                    announcementList: this.state.announcementList.concat(announcements),
-                    hasMoreAnnouncements: !(this.state.announcementList.length === this.state.totalAnnouncements)
+                    announcementList: announcements,
+                    hasMoreAnnouncements: false
                 });
             })
             .catch(error => console.log('error', error))
@@ -231,16 +233,16 @@ class BranchUpdates extends React.Component {
             <div className={classes.backgroundBox} style={{ height: '500px', overflow: 'auto' }} ref={(ref) => this.scrollParentRef = ref}>
                 <div className={classes.titleBox}>
                     <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: isMobile ? 'center' : 'space-between', alignItems: 'center'}}>
-                    <h1 className={classes.title}>BRANCH UPDATES</h1>
-                    <TextField className={classes.officeSelector} id="outlined-basic" label="" variant="outlined" select onChange={(e) => this.handleOfficeChange(e)} defaultValue={'All'}>
-                        <MenuItem key={'All'} value={'All'}>
-                            All
-                        </MenuItem>
-                        {this.state.officeList.map((option) => (
-                            <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
-                                {option.name}
+                        <h1 className={classes.title}>BRANCH UPDATES</h1>
+                        <TextField className={classes.officeSelector} id="outlined-basic" label="" variant="outlined" select onChange={(e) => this.handleOfficeChange(e)} defaultValue={'All'}>
+                            <MenuItem key={'All'} value={'All'}>
+                                All
                             </MenuItem>
-                        ))}
+                            {this.state.officeList.map((option) => (
+                                <MenuItem key={option.office_location + "-" + String(option.office_id)} value={option.office_location + "-" + String(option.office_id)}>
+                                    {option.name}
+                                </MenuItem>
+                            ))}
                         </TextField>
                     </div>
                     {this.props.isAdmin && <Button className={classes.actionButton} onClick={this.handleAddUpdateOpen}>Add</Button>}
@@ -253,8 +255,6 @@ class BranchUpdates extends React.Component {
 
                 </div>
                 <InfiniteScroll
-                    loadMore={this.getAnnouncements.bind(this)}
-                    hasMore={this.state.hasMoreAnnouncements}
                     useWindow={false}
                     getScrollParent={() => this.scrollParentRef}
                 >

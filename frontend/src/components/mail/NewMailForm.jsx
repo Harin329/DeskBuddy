@@ -57,13 +57,13 @@ const useStyles = makeStyles((theme) => ({
     },
     makeRequest: {
         position: 'fixed',
-        top: isMobile ? '2%' : '20%',
+        top: isMobile ? '2%' : '10%',
         left: isMobile? '5%' : '25%',
         width: isMobile? '75%' : '45%',
-        height: '450',
+        height: '350',
         background: '#FFFCF7',
         padding: '30px',
-        overflow: 'auto',
+        overflow: 'auto'
     },
     titles: {
         marginLeft: 8,
