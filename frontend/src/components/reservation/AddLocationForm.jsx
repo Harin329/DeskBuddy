@@ -131,13 +131,17 @@ class AddLocationForm extends React.Component {
 
 
                 for (const desk of floor.floor_desks.split(';')) {
-                    const deskID = Number(desk.split('-')[0])
-                    if (deskList.includes(deskID)) {
+                    const deskID = Number(desk.split('-')[0]);
+                    const capacity = Number(desk.split('-')[1]);
+                    if (deskList.some(e => e.ID === deskID)) {
                         valid = "Duplicate DeskID " + deskID.toString() + " on floor " + floor.floor_num.toString()
                         break;
                     }
-
-                    deskList.push(deskID)
+                    let deskObj = {
+                        ID: deskID,
+                        capacity: capacity
+                    }
+                    deskList.push(deskObj)
                 }
             }
 
