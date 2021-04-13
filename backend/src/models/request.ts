@@ -21,7 +21,7 @@ Request.createRequest = (req: any, result: any) => {
             req.forward_location,
             req.additional_instructions,
             req.req_completion_date,
-            "awaiting admin action"
+            "awaiting_admin_action"
         ], (err: any, res: any) => {
             if (err) {
                 result(err, null);
@@ -53,7 +53,7 @@ Request.updateRequestEmployee = (req: any, result: any) => {
         req.forward_location,
         req.additional_instruction,
         req.req_completion_date,
-        "awaiting admin action", // placeholder
+        "awaiting_admin_action", // placeholder
     ], (err: any, res: any) => {
         if (err) {
             result(err, null);
