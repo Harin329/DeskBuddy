@@ -193,8 +193,9 @@ function MailNotification(props) {
     let expandedNotifText;
     let expandedNotifButtons;
     if (isExpanded) {
-        let officeName = officeList.find(existingOffice => existingOffice.office_location == data.officeLocation && existingOffice.office_id == data.officeID).name;
-        expandedNotifText = 
+        let officeName = officeList.find(existingOffice => existingOffice.office_location == data.officeLocation && existingOffice.office_id == data.officeID);
+        officeName = officeName == null ? "Retrieving..." : officeName.name;
+        expandedNotifText =
         <div>
             <Typography className={classes.deskSectionText}>LOCATION: <Typography className={classes.deskText}>
                 {officeName}
