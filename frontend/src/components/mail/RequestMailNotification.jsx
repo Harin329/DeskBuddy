@@ -231,6 +231,10 @@ function RequestMailNotification(props) {
                     {JSON.parse(data).forward_location || "N/A"}
                 </Typography>
                 </Typography>
+                <Typography className={classes.deskSectionText}>INSTRUCTIONS: <Typography className={classes.deskText}>
+                    {JSON.parse(data).additional_instructions}
+                </Typography>
+                </Typography>
                 <Typography className={classes.deskSectionText}>ADMIN RESPONSE: <Typography className={classes.deskText}>
                     {JSON.parse(data).response}
                 </Typography>
