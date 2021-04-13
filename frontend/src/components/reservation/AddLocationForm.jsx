@@ -169,7 +169,11 @@ class AddLocationForm extends React.Component {
                     .then(result => {
                         this.props.closeModal();
                     })
-                    .catch(error => alert(error));
+                    .catch(error =>
+                    {
+                        //console.log(error);
+                        alert(error)
+                    });
             } else {
                 alert(valid)
             }
@@ -268,12 +272,6 @@ class AddLocationForm extends React.Component {
         this.setState({
             name: input.target.value
         })
-    }
-
-    handleAddressInput(input) {
-        this.setState({
-            address: input.target.value
-        });
     }
 
     handleOfficeImageInput(input) {
@@ -379,19 +377,6 @@ class AddLocationForm extends React.Component {
                             shrink: true,
                         }}
                         onChange={this.handleCityInput.bind(this)}
-                    /></div>
-                    <div><TextField
-                        id="address"
-                        label="Address"
-                        style={{ margin: 8 }}
-                        placeholder="Ex. 1320 3rd Ave"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        onChange={this.handleAddressInput.bind(this)}
                     /></div>
                     <div>
                         <GoogleAddress ref={this.googleRef}/>
