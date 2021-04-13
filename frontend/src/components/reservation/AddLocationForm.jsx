@@ -5,7 +5,7 @@ import { isMobile } from 'react-device-detect';
 import Endpoint from '../../config/Constants';
 import safeFetch, {isNumeric} from "../../util/Util";
 import ImageUploader from 'react-images-upload';
-import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import GoogleAddress from "./GoogleAddress";
 
 const styles = theme => ({
     actionButton: {
@@ -65,6 +65,9 @@ class AddLocationForm extends React.Component {
             visible: false,
             inputFloors: []
         }
+
+        this.googleRef = React.createRef();
+
     }
 
     getLowestID() {
@@ -98,12 +101,17 @@ class AddLocationForm extends React.Component {
     handleSubmit(event) {
         let valid = true;
         const floorList = []
+        //console.log(this.googleRef.current.state.address);
 
         if (this.state.city === "") {
             alert("No city identifier has been provided");
         } else if (JSON.stringify(this.state.inputFloors) === "[]") {
             alert("No floors have been added");
-        } else {
+        }
+        else if (this.googleRef.current.state.address === "") {
+            alert("No address has been selected");
+        }
+            else {
             const floors = [];
             for (const floor of this.state.inputFloors) {
                 try {
@@ -116,7 +124,7 @@ class AddLocationForm extends React.Component {
             const jsonBody = {
                 city: this.state.city,
                 name: this.state.name,
-                address: this.state.address,
+                address: this.googleRef.current.state.address,
                 floors: floors
             }
             const jsonData = JSON.stringify(jsonBody);
@@ -267,9 +275,6 @@ class AddLocationForm extends React.Component {
             address: input.target.value
         });
     }
-    handleGoogleAddrSelection(input) {
-        console.log(input);
-    }
 
     handleOfficeImageInput(input) {
         this.setState({
@@ -389,7 +394,7 @@ class AddLocationForm extends React.Component {
                         onChange={this.handleAddressInput.bind(this)}
                     /></div>
                     <div>
-                        <GooglePlacesAutocomplete/>
+                        <GoogleAddress ref={this.googleRef}/>
                     </div>
                     <div><TextField
                         id="name"
