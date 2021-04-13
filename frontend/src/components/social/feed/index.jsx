@@ -95,6 +95,7 @@ class Feed extends React.Component {
 
   // request to POST a post
   handlePost = (oid) => {
+    console.log('posting...')
     this.setState({
       post_loaded: (this.state.post_loaded + 1) % 2,
     });
@@ -116,14 +117,23 @@ class Feed extends React.Component {
       safeFetch(Endpoint + '/post/createPost', requestOptions)
         .then((response) => response.text())
         .then((result) => {
-          // console.log(JSON.parse(result));
-          this.init();
-          this.setState({
-            post_loaded: (this.state.post_loaded + 1) % 2,
-            post: '',
-          });
+          if (JSON.parse(result).hasOwnProperty('post_id')) {
+            console.log(JSON.parse(result));
+            this.init();
+            this.setState({
+              post_loaded: (this.state.post_loaded + 1) % 2,
+              post: '',
+            });
+          } else {
+            this.setState({
+              post_loaded: (this.state.post_loaded + 1) % 2,
+              post: '',
+              error_popup: true,
+            });
+          }
         })
         .catch((error) => {
+          console.log('failed');
           this.setState({
             post_loaded: (this.state.post_loaded + 1) % 2,
             post: '',
