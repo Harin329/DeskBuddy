@@ -111,7 +111,6 @@ const useStyles = makeStyles({
 
 
 function RequestMailNotification(props) {
-  // [{"mailID":263,"officeID":1,"officeLocation":"NV","recipient_first":"Peter","recipient_last":"Parker","recipient_email":"admin@deskbuddy.onmicrosoft.com","type":"Letter","approx_date":"0000-00-00","sender":"From TD","dimensions":"7 inches x 8 inches","comments":"Billing statement","adminID":"3c43b7d8-06f0-44ab-bc03-70f8b36c2ea1"}]
     const data = props.data;
     const isAdminModule = props.isAdminModule;
     const classes = useStyles();
@@ -217,8 +216,8 @@ function RequestMailNotification(props) {
                 flexDirection: 'column'
             }}>
                 <Typography className={classes.officeText}>Mail ID: {JSON.parse(data).mailID}</Typography>
-                <Typography className={classes.deskSectionText}>LOCATION: <Typography className={classes.deskText}>
-                    {JSON.parse(data).officeLocation}
+                <Typography className={classes.deskSectionText}>MAIL RECIPIENT: <Typography className={classes.deskText}>
+                    {`${JSON.parse(data).recipient_first} ${JSON.parse(data).recipient_last}`}
                 </Typography></Typography>
                 <Typography className={classes.deskSectionText}>STATUS: <Typography className={classes.deskText}>
                     {JSON.parse(data).status}
@@ -232,8 +231,16 @@ function RequestMailNotification(props) {
                     {JSON.parse(data).forward_location || "N/A"}
                 </Typography>
                 </Typography>
+                <Typography className={classes.deskSectionText}>INSTRUCTIONS: <Typography className={classes.deskText}>
+                    {JSON.parse(data).additional_instructions}
+                </Typography>
+                </Typography>
                 <Typography className={classes.deskSectionText}>ADMIN RESPONSE: <Typography className={classes.deskText}>
                     {JSON.parse(data).response}
+                </Typography>
+                </Typography>
+                <Typography className={classes.deskSectionText}>LAST EDITED AT: <Typography className={classes.deskText}>
+                    {JSON.parse(data).modified_at}
                 </Typography>
                 </Typography>
             </div>
@@ -294,7 +301,10 @@ function RequestMailNotification(props) {
         <div style={{ display: 'flex', flexDirection: !isMobile ? 'row' : 'column', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
         <Button className={classes.actionButton} onClick={handleClosePopup}>Close</Button>
         <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>
-    </div> :  <div style={{ display: 'flex', flexDirection: !isMobile ? 'row' : 'column', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
+    </div> :  JSON.parse(data).status === 'Closed' ? <div style={{ display: 'flex', flexDirection: !isMobile ? 'row' : 'column', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
+        <Button className={classes.requestActionButton} onClick={handleMailResponse}>Notify Recipient</Button>
+        <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>
+    </div> : <div style={{ display: 'flex', flexDirection: !isMobile ? 'row' : 'column', justifyContent: 'space-evenly', marginRight: 30, width: '80%'}}>
         <Button className={classes.actionButton} onClick={handleClosePopup}>Close</Button>
         <Button className={classes.requestActionButton} onClick={handleMailResponse}>Respond</Button>
         <Button className={classes.actionButton} onClick={handleReportOpen}>See Report</Button>

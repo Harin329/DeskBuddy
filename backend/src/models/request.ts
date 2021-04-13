@@ -67,7 +67,7 @@ Request.updateRequestEmployee = (req: any, result: any) => {
 Request.updateRequestAdmin = (req: any, result: any) => {
     con.query(`CALL updateRequestAdmin(?,?,?,?)`, [
         req.mail_id,
-        "awaiting employee confirmation", // placeholder, will likely be an enum?
+        "awaiting_employee_confirmation", // placeholder, will likely be an enum
         req.admin_eid,
         req.response
     ], (err: any, res: any) => {
