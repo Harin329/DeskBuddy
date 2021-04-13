@@ -163,7 +163,7 @@ function UpdateLocationFloor (props) {
     return (<Grid container justify='center' className={classes.dialogLineContainer}>
         
     <Grid item xs={!isMobile ? 5 : 12}>
-        <TextField id="outlined-basic" data-testid='update-location-floor-dropdown' label="Floor Number" variant="outlined" select onChange={handleUpdateLocationFloorChange} value={updateLocationFloorRedux} className={classes.inputBoxes}>
+        <TextField id="outlined-basic" data-testid='update-location-floor-dropdown' label="Floor #" variant="outlined" select onChange={handleUpdateLocationFloorChange} value={updateLocationFloorRedux} className={classes.inputBoxes}>
             {floors.map((floor) => {
                 return <MenuItem key={floor.floor_num} value={floor.floor_num}>
                     {floor.floor_num}
