@@ -130,7 +130,7 @@ function RequestMailNotification(props) {
     const userOID = accounts[0].idTokenClaims.oid;
 
     useEffect(() => {
-        dispatch(fetchOffices());
+        // dispatch(fetchOffices());
         console.log(data);
     }, []);
 

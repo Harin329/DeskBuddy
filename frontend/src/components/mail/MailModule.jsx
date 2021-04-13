@@ -11,6 +11,7 @@ import {isMobile} from "react-device-detect";
 import { setError } from '../../actions/globalActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNewMail } from '../../actions/mailActions';
+import {fetchOffices} from "../../actions/reservationActions";
 
 
 const useStyles = makeStyles({
@@ -84,6 +85,10 @@ function MailModule(size, text) {
 
     const { accounts } = useMsal();
     const userOID = accounts[0].idTokenClaims.oid;
+
+    useEffect(() => {
+        dispatch(fetchOffices());
+    }, []);
 
     const getMail = () => {
         dispatch(getNewMail(userOID));
