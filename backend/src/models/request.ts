@@ -81,7 +81,8 @@ Request.updateRequestAdmin = (req: any, result: any) => {
 
 // admin or user can close request (request is updated to closed)
 Request.closeRequest = (req: any, result: any) => {
-    con.query("UPDATE mail_request SET `status` = ?, `completion_date` = now(), `modified_at` = now() WHERE mail_id = ? AND employee_id = ?", [
+    // console.log(JSON.stringify(req, null, 2));
+    con.query("UPDATE mail_request SET `status` = ?, `completion_date` = now(), `modified_at` = now() WHERE mail_id = ?", [
         "closed", // will be changed to an enum or something. i.e won't be hardcoded
         req.mail_id,
         req.employee_id
