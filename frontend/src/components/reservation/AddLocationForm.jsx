@@ -5,6 +5,7 @@ import { isMobile } from 'react-device-detect';
 import Endpoint from '../../config/Constants';
 import safeFetch, {isNumeric} from "../../util/Util";
 import ImageUploader from 'react-images-upload';
+import GoogleAddress from "./GoogleAddress";
 
 const styles = theme => ({
     actionButton: {
@@ -64,6 +65,9 @@ class AddLocationForm extends React.Component {
             visible: false,
             inputFloors: []
         }
+
+        this.googleRef = React.createRef();
+
     }
 
     getLowestID() {
@@ -97,12 +101,17 @@ class AddLocationForm extends React.Component {
     handleSubmit(event) {
         let valid = true;
         const floorList = []
+        //console.log(this.googleRef.current.state.address);
 
         if (this.state.city === "") {
             alert("No city identifier has been provided");
         } else if (JSON.stringify(this.state.inputFloors) === "[]") {
             alert("No floors have been added");
-        } else {
+        }
+        else if (this.googleRef.current.state.address === "") {
+            alert("No address has been selected");
+        }
+            else {
             const floors = [];
             for (const floor of this.state.inputFloors) {
                 try {
@@ -115,7 +124,7 @@ class AddLocationForm extends React.Component {
             const jsonBody = {
                 city: this.state.city,
                 name: this.state.name,
-                address: this.state.address,
+                address: this.googleRef.current.state.address,
                 floors: floors
             }
             const jsonData = JSON.stringify(jsonBody);
@@ -156,11 +165,19 @@ class AddLocationForm extends React.Component {
                     body: formData
                 };
                 safeFetch(Endpoint + "/location", requestOptions, formData)
-                    .then((response) => response.text())
+                    .then((response) => {
+                        if (!response.ok) {
+                                throw new Error("The location could not be added. Please check your inputs and try again!");
+                        }
+                    })
                     .then(result => {
                         this.props.closeModal();
                     })
-                    .catch(error => alert(error));
+                    .catch(error =>
+                    {
+                        //console.log(error);
+                        alert(error)
+                    });
             } else {
                 alert(valid)
             }
@@ -259,12 +276,6 @@ class AddLocationForm extends React.Component {
         this.setState({
             name: input.target.value
         })
-    }
-
-    handleAddressInput(input) {
-        this.setState({
-            address: input.target.value
-        });
     }
 
     handleOfficeImageInput(input) {
@@ -371,19 +382,9 @@ class AddLocationForm extends React.Component {
                         }}
                         onChange={this.handleCityInput.bind(this)}
                     /></div>
-                    <div><TextField
-                        id="address"
-                        label="Address"
-                        style={{ margin: 8 }}
-                        placeholder="Ex. 1320 3rd Ave"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        onChange={this.handleAddressInput.bind(this)}
-                    /></div>
+                    <div>
+                        <GoogleAddress ref={this.googleRef}/>
+                    </div>
                     <div><TextField
                         id="name"
                         label="Branch Name"

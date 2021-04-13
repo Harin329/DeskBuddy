@@ -31,7 +31,9 @@
     "redux-thunk": "^2.3.0",
     "styled-components": "^5.2.1",
     "typescript": "^4.1.5",
-    "web-vitals": "^0.2.4"
+    "web-vitals": "^0.2.4",
+    "react-google-places-autocomplete": "^3.3.0",
+    "react-places-autocomplete": "^7.3.0"
   },
   "scripts": {
     "start": "PORT=3001 react-scripts start",

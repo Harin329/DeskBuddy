@@ -12,6 +12,7 @@ import { setError } from '../actions/globalActions';
 import ErrorPopup from '../components/global/error-popup';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal } from '@material-ui/core';
+import GoogleAddress from '../components/reservation/GoogleAddress';
 
 const useStyles = makeStyles((theme) => ({
   updatesSection: {
