@@ -25,7 +25,7 @@ User.insertUser = (newUser: any, result: any) => {
                 console.log("Error: ", err);
                 result(err, null);
             } else {
-                console.log("User Created: ", { ...newUser });
+                // console.log("User Created: ", { ...newUser });
                 result(null, newUser);
             }
         }
@@ -88,7 +88,7 @@ User.updatePhoto = (oid: any, photo: any, result: any) => {
                 console.log("Error: ", err);
                 result(err, null);
             } else {
-                console.log("Photo updated for user: ", oid);
+                // console.log("Photo updated for user: ", oid);
                 result(null, "Photo updated for user: ", oid);
             }
         }
