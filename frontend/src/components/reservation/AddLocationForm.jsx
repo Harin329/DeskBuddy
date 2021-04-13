@@ -5,6 +5,7 @@ import { isMobile } from 'react-device-detect';
 import Endpoint from '../../config/Constants';
 import safeFetch, {isNumeric} from "../../util/Util";
 import ImageUploader from 'react-images-upload';
+import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 
 const styles = theme => ({
     actionButton: {
@@ -266,6 +267,9 @@ class AddLocationForm extends React.Component {
             address: input.target.value
         });
     }
+    handleGoogleAddrSelection(input) {
+        console.log(input);
+    }
 
     handleOfficeImageInput(input) {
         this.setState({
@@ -384,6 +388,9 @@ class AddLocationForm extends React.Component {
                         }}
                         onChange={this.handleAddressInput.bind(this)}
                     /></div>
+                    <div>
+                        <GooglePlacesAutocomplete/>
+                    </div>
                     <div><TextField
                         id="name"
                         label="Branch Name"

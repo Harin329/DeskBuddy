@@ -12,6 +12,7 @@ import { setError } from '../actions/globalActions';
 import ErrorPopup from '../components/global/error-popup';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal } from '@material-ui/core';
+import GoogleAddress from '../components/reservation/GoogleAddress';
 
 const useStyles = makeStyles((theme) => ({
   updatesSection: {
@@ -54,6 +55,9 @@ function Social() {
         <BranchUpdates isAdmin={isAdmin}>
         </BranchUpdates>
       </div>
+        <div>
+            <GoogleAddress/>
+        </div>
       {window.innerWidth > 1500 && Subheader('FEED', 4, 2, 4)}
       {window.innerWidth <= 1500 && Subheader('FEED', 0, 12, 0)}
       <GroupChannel />
