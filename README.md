@@ -24,8 +24,8 @@ CPSC 319 ICBC project built with React.js, Node.ts, mySQL. See it live [here](ht
 ~~- Stretch Goal #3: Link JPG map to a clickable hot spot to pre-fill the desk location code.~~
 
 ## Module 2: ”Staying Connected” 
-![Module3](./demo/Module3.png)
-![Module3b](./demo/Module3b.png)
+![Module2](./demo/Module2.png)
+![Module2b](./demo/Module2b.png)
 
 - This module makes the transition to work-from-home to office seamless by providing up-to-date notifications and wellness tips; and, encouraging staff to stay connected through social media type features
 - Allows staff toview the latest updates relevant for their location, COVID-19 News, Wellness tips, and other important announcements
@@ -33,8 +33,8 @@ CPSC 319 ICBC project built with React.js, Node.ts, mySQL. See it live [here](ht
 - The administration component of this module allows the administrator to create categories for staff to create topics (ie: Pets, Sports, Music, Java,etc.) and monitor and delete postings (e.g. due to inappropriate use).
 
 ## Module 3: “Mail Management Concierge”
-![Module2](./demo/Module2.png)
-![Module2b](./demo/Module2b.png)
+![Module3](./demo/Module3.png)
+![Module3b](./demo/Module3b.png)
 
 - This module enables employees to manage physical mail while maintain flexible work arrangements (e.g. combining work-from-home and in-office attendance).
 - Within this module users can request helpregarding mail/parcels when they are not physically on site.
