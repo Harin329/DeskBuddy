@@ -28,20 +28,26 @@ export interface IMailResponse {
     adminID: string,
     request_type: string,
     forward_location: string,
-    response: string
+    response: string,
+    additional_instructions: string,
+    modified_at: string
 }
 
 export interface IRequestTypesForward {
     mail_id: number,
     request_type: string,
     forward_location: string,
-    response: string
+    response: string,
+    additional_instructions: string,
+    modified_at: string
 }
 
 export interface IRequestTypesForwardPair {
     request_type: string,
     forward_location: string,
-    response: string
+    response: string,
+    additional_instructions: string,
+    modified_at: string
 }
 
 export interface IRequest {

@@ -46,7 +46,9 @@ export default class MailController {
                     adminID: mail.fk_admin_eid,
                     request_type: null as any,
                     forward_location: null as any,
-                    response: null as any
+                    response: null as any,
+                    additional_instructions: null as any,
+                    modified_at: null as any,
                   }
                   output.push(parsedMail);
                 }
@@ -56,7 +58,9 @@ export default class MailController {
                   requestMap.set(element.mail_id, {
                     request_type: element.request_type,
                     forward_location: element.forward_location,
-                    response: element.response
+                    response: element.response,
+                    additional_instructions: element.additional_instructions,
+                    modified_at: element.modified_at,
                   });
                 }
                 for (const mail of output) {
@@ -64,7 +68,9 @@ export default class MailController {
                   if (mapping !== undefined) {
                     mail.request_type = mapping.request_type;
                     mail.forward_location = mapping.forward_location;
-                    mail.response = mapping.response
+                    mail.response = mapping.response,
+                    mail.additional_instructions = mapping.additional_instructions;
+                    mail.modified_at = mapping.modified_at;
                   }
                 }
                 resolve(output);
@@ -112,7 +118,9 @@ export default class MailController {
                 adminID: mail.fk_admin_eid,
                 request_type: null as any,
                 forward_location: null as any,
-                response: null as any
+                response: null as any,
+                additional_instructions: null as any,
+                modified_at: null as any,
               }
               output.push(parsedMail);
             }
@@ -122,7 +130,9 @@ export default class MailController {
               requestMap.set(element.mail_id, {
                 request_type: element.request_type,
                 forward_location: element.forward_location,
-                response: element.response
+                response: element.response,
+                additional_instructions: element.additional_instructions,
+                modified_at: element.modified_at,
               });
             }
             for (const mail of output) {
@@ -131,6 +141,8 @@ export default class MailController {
                 mail.request_type = mapping.request_type;
                 mail.forward_location = mapping.forward_location
                 mail.response = mapping.response;
+                mail.additional_instructions = mapping.additional_instructions;
+                mail.modified_at = mapping.modified_at;
               }
             }
             resolve(output);
