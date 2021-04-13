@@ -126,6 +126,7 @@ function RequestMailNotification(props) {
     const filter = useSelector(state => state.mail.allReqFilter);
 
     const { accounts } = useMsal();
+    const isAdmin = accountIsAdmin(accounts[0]);
     const userOID = accounts[0].idTokenClaims.oid;
 
     useEffect(() => {
@@ -170,9 +171,11 @@ function RequestMailNotification(props) {
               .then((response) => response.text())
               .then(result => {
                 dispatch(getNewMailAll(userOID, filter));
-                dispatch(getNewMailReq());
-                dispatch(getNewMailAdmin());
-                dispatch(getNewMailClosed());
+                if (isAdmin) {
+                    dispatch(getNewMailReq());
+                    dispatch(getNewMailAdmin());
+                    dispatch(getNewMailClosed());
+                }
               })
               .catch(error => {
                   console.log('error', error);

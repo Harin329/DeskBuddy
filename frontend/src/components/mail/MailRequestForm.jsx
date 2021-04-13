@@ -6,6 +6,7 @@ import safeFetch from "../../util/Util"
 import {useMsal} from "@azure/msal-react";
 import {isMobile} from "react-device-detect";
 import { setError } from '../../actions/globalActions';
+import { accountIsAdmin } from "../../util/Util";
 import { useDispatch, useSelector } from 'react-redux';
 import { getNewMail, getNewMailAdmin, getNewMailAll, getNewMailClosed, getNewMailReq } from '../../actions/mailActions';
 
@@ -82,6 +83,7 @@ function MailRequestForm(props) {
     const filter = useSelector(state => state.mail.allReqFilter);
 
     const { accounts } = useMsal();
+    const isAdmin = accountIsAdmin(accounts[0]);
     const userOID = accounts[0].idTokenClaims.oid;
     const classes = useStyles();
 
@@ -136,9 +138,11 @@ function MailRequestForm(props) {
             .then(result => {
                 dispatch(getNewMail(userOID));
                 dispatch(getNewMailAll(userOID, filter));
-                dispatch(getNewMailReq());
-                dispatch(getNewMailAdmin());
-                dispatch(getNewMailClosed());
+                if (isAdmin) {
+                    dispatch(getNewMailReq());
+                    dispatch(getNewMailAdmin());
+                    dispatch(getNewMailClosed());
+                }
                 props.closeModal();
             })
             .catch(error => {
