@@ -68,8 +68,6 @@ function AllClosedRequestsAdminMailModule(size, text, office) {
 
   const userOID = accounts[0].idTokenClaims.oid;
 
-  const statusChoices = ['Admin has Responded', 'Waiting for Admin', 'Cannot Complete', 'Closed']
-
   useEffect(() => {
     fetchFilteredMail();
   }, []);
@@ -93,7 +91,7 @@ function AllClosedRequestsAdminMailModule(size, text, office) {
   let mail = [];
   mailList.map((update, i) => {
     mail.push(
-      <RequestMailNotification data={JSON.stringify(update)}></RequestMailNotification>
+      <RequestMailNotification isAdminModule={true} data={JSON.stringify(update)}></RequestMailNotification>
     );
   });
 
