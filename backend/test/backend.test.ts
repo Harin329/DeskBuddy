@@ -645,7 +645,7 @@ describe("Mail manager endpoints tests", () => {
         done();
     });
 
-    it.only("POST /request", async done => {
+    it("POST /request", async done => {
         const postBody: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         postBody.oid = testUserOID;
         const requestBody: IRequestComplete = loadJSON("test/jsonBody/mailRequestBody/postMailRequestNormal.json");
