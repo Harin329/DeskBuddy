@@ -44,7 +44,7 @@ export default class RequestController {
 
     closeRequest(req: any) {
         return new Promise((resolve, reject) => {
-            req.body.employee_id = req.authInfo.oid;
+            // req.body.employee_id = req.authInfo.oid;
             Request.closeRequest(req.body, (err: any, res: any) => {
                 if (err) {
                     reject(err);

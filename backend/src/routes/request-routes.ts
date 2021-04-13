@@ -3,7 +3,7 @@ import { Router, Request, Response } from 'express';
 const router = Router();
 
 import RequestController from "../controllers/request-controller";
-import {requestIsAdmin} from "../util";
+import {oidMatchesRequest, requestIsAdmin} from "../util";
 const requestServer = new RequestController();
 
 
@@ -51,8 +51,11 @@ router.put('/close', (req: Request, res: Response) => {
         res.status(400).json({
             message: "malformed request body"
         });
-    }
-    else {
+    } else if (!requestIsAdmin(req.authInfo) && !oidMatchesRequest(req.authInfo, req.body.employee_id)){
+        res.status(401).json({
+            message: "Unauthorized"
+        });
+    } else {
         requestServer.closeRequest(req)
             .then((result: any) => {
                 res.json(result);
