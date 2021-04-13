@@ -119,7 +119,7 @@ function MailNotification(props) {
     const officeList = useSelector(state => state.reservations.offices);
 
     useEffect(() => {
-        dispatch(fetchOffices());
+        // dispatch(fetchOffices());
     }, []);
 
     const getNotifClass = () => {

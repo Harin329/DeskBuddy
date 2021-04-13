@@ -10,10 +10,16 @@ import DashboardUpdates from '../components/dashboard/DashboardUpdates';
 import MailUpdates from '../components/dashboard/MailUpdates';
 import ErrorPopup from '../components/global/error-popup';
 import { setError } from '../actions/globalActions';
+import {useEffect} from "react";
+import {fetchOffices} from "../actions/reservationActions";
 
 function Dashboard() {
   const dispatch = useDispatch()
   const error = useSelector(state => state.global.error);
+
+  useEffect(() => {
+    dispatch(fetchOffices());
+  }, []);
 
   return (
     <div className="App">
