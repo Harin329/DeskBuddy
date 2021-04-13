@@ -55,9 +55,6 @@ function Social() {
         <BranchUpdates isAdmin={isAdmin}>
         </BranchUpdates>
       </div>
-        <div>
-            <GoogleAddress/>
-        </div>
       {window.innerWidth > 1500 && Subheader('FEED', 4, 2, 4)}
       {window.innerWidth <= 1500 && Subheader('FEED', 0, 12, 0)}
       <GroupChannel />
