@@ -165,7 +165,11 @@ class AddLocationForm extends React.Component {
                     body: formData
                 };
                 safeFetch(Endpoint + "/location", requestOptions, formData)
-                    .then((response) => response.text())
+                    .then((response) => {
+                        if (!response.ok) {
+                                throw new Error("The location could not be added. Please check your inputs and try again!");
+                        }
+                    })
                     .then(result => {
                         this.props.closeModal();
                     })

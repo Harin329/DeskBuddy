@@ -26,7 +26,7 @@ router.post('/', upload.any(), (req: any, res: Response) => {
                 });
             })
             .catch((err) => {
-                res.status(404).send({
+                res.status(400).send({
                     message: err
                 });
             });
