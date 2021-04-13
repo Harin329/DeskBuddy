@@ -742,7 +742,7 @@ describe("Mail manager endpoints tests", () => {
         done();
     });
 
-    it("GET /mail/:employeeID filtered on awaiting admin action only", async done => {
+    it("GET /mail/:employeeID filtered on awaiting_admin_action only", async done => {
         const body: IMail = loadJSON("test/jsonBody/mailBody/postMailNormal.json");
         body.oid = testUserOID;
         const res = await request.post('/mail').send(body).set(adminJSON);
