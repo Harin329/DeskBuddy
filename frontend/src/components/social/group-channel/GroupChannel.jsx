@@ -24,6 +24,10 @@ const useStyles = makeStyles((theme) => ({
         fontSize: 14,
         textAlign: 'left',
     },
+    listItem: {
+        overflow: 'hidden',
+        padding: 5,
+    },
     addChannelButton: {
         color: 'black',
         fontFamily: 'lato',
@@ -223,17 +227,17 @@ function GroupChannel() {
                         {channels.map((option, index) => {
                             return (
                                 <div style={{ alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
-                                    <div style={{ width: '70%', height: '30px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
-                                        <ListItem button={true} onClick={(event) => handleListItemClicked(event, option.channel_id, option.channel_name)} selected={selectedChannel === option.channel_id} style={{ overflow: 'hidden' }}>
-                                            <div style={{ width: '20%', height: '15px', alignItems: 'center' }}>
+                                    <div style={{ width: '70%', minHeight: '30px', alignItems: 'center', justifyContent: 'center', display: 'flex', flexDirection: 'row' }}>
+                                        <ListItem button={true} onClick={(event) => handleListItemClicked(event, option.channel_id, option.channel_name)} selected={selectedChannel === option.channel_id} className={classes.listItem}>
+                                            <div style={{ width: '20%', minHeight: '15px', alignItems: 'center' }}>
                                                 {(option.channel_icon != null)
                                                     ? <img src={'data:image/png;base64,' + new Buffer(option.channel_icon, 'binary')
                                                         .toString('base64')}
                                                         alt={""} style={{ height: '15px', width: '15px', borderRadius: 10, backgroundColor: 'transparent' }} />
                                                     : <img src={Home} alt={"home"} style={{ width: '15px', height: '15px', backgroundColor: 'transparent', borderRadius: 10 }} />}
                                             </div>
-                                            <div style={{ width: '80%', height: '15px', alignItems: 'center' }}>
-                                                <Typography className={classes.channelText}>
+                                            <div style={{ width: '80%', minHeight: '15px', alignItems: 'center' }}>
+                                                <Typography style={{wordWrap: 'break-word'}} className={classes.channelText}>
                                                     {option.channel_name}
                                                 </Typography>
                                             </div>
@@ -250,7 +254,7 @@ function GroupChannel() {
                                         }}>
                                         {(option.channel_id !== 0 && option.channel_id !== 1) &&
                                             <Button onClick={() => handleOpen(option.channel_id)}
-                                                style={{ width: 15, height: 15, marginBottom: '10px', border: 'none', display: buttonHoveredID === option.channel_id ? buttonStyle : 'none' }}>
+                                                style={{ width: 15, height: 15, marginBottom: '12px', border: 'none', display: buttonHoveredID === option.channel_id ? buttonStyle : 'none' }}>
                                                 <img src={Delete} alt={"Delete"} style={{ width: '15px', height: '15px', backgroundColor: 'transparent' }} />
                                             </Button>}
                                     </div>}
