@@ -9,9 +9,8 @@ import { isMobile } from 'react-device-detect';
 import SpecificReservations from './SpecificReservations';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { setError } from '../../actions/globalActions';
-import { useDispatch } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
-const bookedDays = [];
 const today = new Date();
 const maxDate = new Date(today.setMonth(today.getMonth() + 6));
 const formattedMaxDate = {
@@ -46,7 +45,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function formatReservations(res) {
+export function formatReservations(res) {
+    let bookedDays = [];
     let i;
     for (i = 0; i < res.length; i++) {
         let year = res[i].start_date.substring(0, 4);
@@ -67,8 +67,8 @@ function formatReservations(res) {
             day: Number(day),
             className: 'bookedDay'
         })
-
     }
+    return bookedDays;
 }
 
 function BookingsCalendar(UID) {
@@ -78,6 +78,7 @@ function BookingsCalendar(UID) {
     const [openDate, setOpenDate] = useState(false);
     const classes = useStyles();
     const dispatch = useDispatch();
+    const bookedDays = useSelector(state => state.reservations.formattedReservations);
 
 
     useEffect(() => {

@@ -1,8 +1,20 @@
-import { SET_RESERVATIONS, SET_EMPLOYEE_COUNT, SET_DESKS_RESULTS, CHECK_MORE, SET_PAGE, SET_OFFICES, SET_DESKS, SET_FLOORPLAN_AVAILABLE, SET_FLOORS_IN_UPDATE } from "./actionTypes";
+import {
+    SET_RESERVATIONS,
+    SET_EMPLOYEE_COUNT,
+    SET_DESKS_RESULTS,
+    CHECK_MORE,
+    SET_PAGE,
+    SET_OFFICES,
+    SET_DESKS,
+    SET_FLOORPLAN_AVAILABLE,
+    SET_FLOORS_IN_UPDATE,
+    SET_FORMATTED_RESERVATIONS
+} from "./actionTypes";
 import Endpoint, { resultOnPage } from '../config/Constants';
 import { appendLeadingZeroes } from "../functions/Date";
 import safeFetch from "../util/Util";
 import { setError, setLoading } from "./globalActions";
+import {formatReservations} from "../components/reservation/BookingsCalendar";
 
 export const makeReservation = (userID, deskObj, filter) => dispatch => {
     var day = new Date(filter.from)
@@ -260,6 +272,7 @@ export const fetchReservations = (userID) => dispatch => {
             const res = JSON.parse(result)
             // console.log(res)
             dispatch({ type: SET_RESERVATIONS, payload: res })
+            dispatch({ type: SET_FORMATTED_RESERVATIONS, payload: formatReservations(res) })
         })
         .catch(error => {
             console.log('error', error);

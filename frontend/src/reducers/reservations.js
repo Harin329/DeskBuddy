@@ -14,7 +14,7 @@ import {
   SET_CONFIRM_DELETE_POPUP,
   SET_CONFIRM_UPDATE_POPUP,
   SET_EDITS_IN_UPDATE,
-  SET_FLOOR_IN_UPDATE, SET_DESKS_IN_UPDATE
+  SET_FLOOR_IN_UPDATE, SET_DESKS_IN_UPDATE, SET_FORMATTED_RESERVATIONS
 } from "../actions/actionTypes";
 import { combineReducers } from "redux";
 import { appendLeadingZeroes } from "../functions/Date";
@@ -200,5 +200,16 @@ const updateLocationDeskIDsRedux = (state = null, action) => {
   }
 };
 
-export default combineReducers({ upcomingReservations, deskEmployeeCount, deskResults, hasMore, pageCount, searchFilter, offices, hasFloorplan, desks, floorsPerOfficeInUpdate, confirmDeletePopup, confirmUpdatePopup, currLocationEditsRedux, updateLocationFloorRedux, updateLocationDeskIDsRedux });
+const formattedReservations = (state = initialState, action) => {
+  switch (action.type) {
+    case SET_FORMATTED_RESERVATIONS: {
+      return action.payload;
+    }
+    default: {
+      return state;
+    }
+  }
+};
+
+export default combineReducers({ upcomingReservations, deskEmployeeCount, deskResults, hasMore, pageCount, searchFilter, offices, hasFloorplan, desks, floorsPerOfficeInUpdate, confirmDeletePopup, confirmUpdatePopup, currLocationEditsRedux, updateLocationFloorRedux, updateLocationDeskIDsRedux, formattedReservations });
 
