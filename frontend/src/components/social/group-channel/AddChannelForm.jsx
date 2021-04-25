@@ -168,6 +168,7 @@ function AddChannelForm(props) {
                     variant="outlined"
                     fullWidth
                     margin="normal"
+                    inputProps={{ maxLength: 25 }}
                     InputLabelProps={{
                         shrink: true,
                     }}

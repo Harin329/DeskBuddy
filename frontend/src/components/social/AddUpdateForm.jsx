@@ -193,6 +193,7 @@ function AddUpdateForm(props) {
                     variant="outlined"
                     fullWidth
                     margin="normal"
+                    inputProps={{ maxLength: 25 }}
                     InputLabelProps={{
                         shrink: true,
                     }}
@@ -206,6 +207,7 @@ function AddUpdateForm(props) {
                     variant="outlined"
                     fullWidth
                     margin="normal"
+                    inputProps={{ maxLength: 25 }}
                     InputLabelProps={{
                         shrink: true,
                     }}
@@ -219,6 +221,7 @@ function AddUpdateForm(props) {
                     variant="outlined"
                     fullWidth
                     margin="normal"
+                    inputProps={{ maxLength: 500 }}
                     InputLabelProps={{
                         shrink: true,
                     }}
