@@ -1,5 +1,5 @@
 import '../App.css';
-import { Button, Grid, Modal, TextField, MenuItem } from '@material-ui/core';
+import { Button, Grid, Modal, TextField, MenuItem, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Title from '../components/global/Title';
 import Subheader from '../components/global/Subheader';
@@ -9,6 +9,7 @@ import NewlyCreatedRequestsMailModule from '../components/mail/NewlyCreatedReque
 import AllRequestsAdminMailModule from '../components/mail/AllRequestsAdminMailModule';
 import AllClosedRequestsAdminMailModule from '../components/mail/AllClosedRequestsAdminMailModule';
 import React, { useState, useEffect } from "react";
+import {fetchEmployeesFromAD} from "../actions/authenticationActions";
 import NewMailForm from "../components/mail/NewMailForm";
 import { useMsal } from "@azure/msal-react";
 import { accountIsAdmin } from "../util/Util";
@@ -17,6 +18,7 @@ import { setError } from '../actions/globalActions';
 import ErrorPopup from '../components/global/error-popup';
 import { isMobile } from 'react-device-detect';
 import { getNewMailAdmin, getNewMailReq, getNewMailClosed } from '../actions/mailActions';
+import Select from "react-select";
 
 const useStyles = makeStyles((theme) => ({
   background: {
@@ -64,9 +66,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Mail() {
+  const { accounts } = useMsal();
+  const isAdmin = accountIsAdmin(accounts[0]);
+
+  const classes = useStyles();
+
+  const userOID = accounts[0].idTokenClaims.oid;
   const dispatch = useDispatch()
+  const [employee, setEmployee] = useState("");
+  const [recipientFN, setRecipientFN] = useState("");
+  const [recipientLN, setRecipientLN] = useState("");
   const error = useSelector(state => state.global.error);
   const officeList = useSelector(state => state.reservations.offices);
+  const employeeList = useSelector(state => state.authentication.users);
   const [open, setOpen] = useState(false);
   const [newMailRefresh, setNewMailRefresh] = useState(0);
   const [office, setOffice] = useState('All Locations');
@@ -74,12 +86,7 @@ function Mail() {
   const allMail = useSelector(state => state.mail.allAdminMail);
   const closedMailList = useSelector(state => state.mail.allClosedMail);
 
-  const { accounts } = useMsal();
-  const isAdmin = accountIsAdmin(accounts[0]);
 
-  const classes = useStyles();
-
-  const userOID = accounts[0].idTokenClaims.oid;
 
   const handleNewMail = () => {
     setOpen(true);
@@ -97,8 +104,13 @@ function Mail() {
     setOffice(event.target.value);
   };
 
+  const handleEmployeeChange = (event) => {
+    // placeholder
+}
+
   useEffect(() => {
     if (isAdmin) {
+      dispatch(fetchEmployeesFromAD());
       dispatch(getNewMailReq(office));
       dispatch(getNewMailAdmin(office));
       dispatch(getNewMailClosed(office));
@@ -108,6 +120,8 @@ function Mail() {
   const newMailPopup = () => {
     return <NewMailForm closeModal={closeNewMail} whatToDoWhenClosed={(bool) => { setOpen(bool) }} handleNewMailRefresh={handleNewMailRefresh} />
   }
+
+  const employees = employeeList.map((option) => { return {value: {oid: option.id, first: option.givenName, last:option.surname}, label: option.givenName + " " + option.surname + " (" + (option.mail != null ? option.mail : option.userPrincipalName + ")")} })
 
   return (
     <div className={classes.background}>
@@ -132,7 +146,8 @@ function Mail() {
         {isAdmin && window.innerWidth <= 1500 && Subheader('MANAGE REQUESTS', 0, 12, 0)}
 
 
-        {isAdmin && <Grid container justify={isMobile ? 'center' : 'flex-start'} alignItems='center' style={{ width: isMobile ? '100%' : '80%' }}><TextField id="outlined-basic" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
+        {isAdmin && <Grid container justify={isMobile ? 'center' : 'flex-start'} alignItems='center' style={{ width: isMobile ? '100%' : '80%' }}>
+          <TextField id="outlined-basic" variant="outlined" select onChange={handleOfficeChange} value={office} className={classes.inputBoxes}>
           <MenuItem key={'All Locations'} value={'All Locations'}>
             All Locations
                                 </MenuItem>
@@ -141,7 +156,16 @@ function Mail() {
               {option.name}
             </MenuItem>
           ))}
-        </TextField></Grid>}
+        </TextField>
+        <Typography className={classes.titles}>
+                    Recipient
+                </Typography>
+                <Select
+                    defaultValue={employee}
+                    onChange={handleEmployeeChange}
+                    options={employees}
+                    className={classes.inputBoxes}
+                /></Grid>}
         {isAdmin && <Grid container justify='center' alignItems='center' className={classes.sectionSpacing}>
           {NewlyCreatedRequestsMailModule(!isMobile ? 3 : 11, "NEWLY SUBMITTED REQUESTS", newMailRefresh, office)}
           <Grid item xs={'auto'}>
