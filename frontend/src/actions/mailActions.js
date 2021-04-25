@@ -28,7 +28,7 @@ export const getNewMail = (userID) => dispatch => {
         });
 }
 
-export const getNewMailReq = (office) => dispatch => {
+export const getNewMailReq = (office, employee) => dispatch => {
     const [officeLocation, officeId] = office ? office.split(/-(?=[^-]+$)/) : [];
 
     const requestOptions = {
@@ -46,7 +46,10 @@ export const getNewMailReq = (office) => dispatch => {
             return response.text();
         })
         .then(result => {
-            const mail = JSON.parse(result).mails;
+            let mail = JSON.parse(result).mails;
+            if (employee !== "" && employee !== undefined) {
+                mail = mail.filter((mailObj) => mailObj.recipient_email === employee);
+            }
             mail.map((mailObj) => mailObj.status = 'Needs Attention from Admin');
             const sortedMail = mail.sort((a, b) => { return new Date(b.approx_date) - new Date(a.approx_date) });
             dispatch({ type: SET_NEW_MAIL_REQ, payload: [...sortedMail] });
@@ -144,7 +147,7 @@ export const getNewMailAll = (userOID, filter) => dispatch => {
 }
 
 
-export const getNewMailAdmin = (office) => dispatch => {
+export const getNewMailAdmin = (office, employee) => dispatch => {
     const [officeLocation, officeId] = office ? office.split(/-(?=[^-]+$)/) : [];
 
     const requestOptions = {
@@ -161,9 +164,10 @@ export const getNewMailAdmin = (office) => dispatch => {
             return response.text();
         })
         .then(result => {
-
-            const mail = JSON.parse(result).mails;
-            console.log(mail);
+            let mail = JSON.parse(result).mails;
+            if (employee !== "" && employee !== undefined) {
+                mail = mail.filter((mailObj) => mailObj.recipient_email === employee);
+            }
             mail.map((mailObj) => mailObj.status = 'Admin Has Responded');
             dispatch({ type: SET_NEW_MAIL_ADMIN, payload: [...mail] });
         })
@@ -174,7 +178,7 @@ export const getNewMailAdmin = (office) => dispatch => {
 }
 
 
-export const getNewMailClosed = (office) => dispatch => {
+export const getNewMailClosed = (office, employee) => dispatch => {
     const [officeLocation, officeId] = office ? office.split(/-(?=[^-]+$)/) : [];
     const requestOptions = {
         method: 'GET',
@@ -189,7 +193,10 @@ export const getNewMailClosed = (office) => dispatch => {
             return response.text();
         })
         .then(result => {
-            const mail = JSON.parse(result).mails;
+            let mail = JSON.parse(result).mails;
+            if (employee !== "" && employee !== undefined) {
+                mail = mail.filter((mailObj) => mailObj.recipient_email === employee);
+            }
             mail.map((mailObj) => mailObj.status = 'Closed');
             dispatch({ type: SET_NEW_MAIL_CLOSED, payload: [...mail] });
         })
