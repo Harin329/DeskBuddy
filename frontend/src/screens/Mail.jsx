@@ -105,24 +105,24 @@ function Mail() {
   };
 
   const handleEmployeeChange = (event) => {
-    // placeholder
+    setEmployee(event.value.email);
 }
 
   useEffect(() => {
     if (isAdmin) {
       dispatch(fetchEmployeesFromAD());
-      dispatch(getNewMailReq(office));
-      dispatch(getNewMailAdmin(office));
-      dispatch(getNewMailClosed(office));
+      dispatch(getNewMailReq(office, employee));
+      dispatch(getNewMailAdmin(office, employee));
+      dispatch(getNewMailClosed(office, employee));
     }
-  }, [office]);
+  }, [office, employee]);
 
   const newMailPopup = () => {
     return <NewMailForm closeModal={closeNewMail} whatToDoWhenClosed={(bool) => { setOpen(bool) }} handleNewMailRefresh={handleNewMailRefresh} />
   }
 
-  const employees = employeeList.map((option) => { return {value: {oid: option.id, first: option.givenName, last:option.surname}, label: option.givenName + " " + option.surname + " (" + (option.mail != null ? option.mail : option.userPrincipalName + ")")} })
-
+  const employees = employeeList.map((option) => { return {value: {oid: option.id, first: option.givenName, last:option.surname, email: option.userPrincipalName}, label: option.givenName + " " + option.surname + " (" + (option.mail != null ? option.mail : option.userPrincipalName + ")")} })
+  employees.unshift({label: "All Employees", value: {oid: "", first: "", last: "", email: ""}});
   return (
     <div className={classes.background}>
       <Modal
