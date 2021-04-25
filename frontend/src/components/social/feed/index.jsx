@@ -4,7 +4,7 @@ import UnreportIcon from './assets/unreport.svg'
 import Thrash from './assets/delete.svg';
 import Endpoint from '../../../config/Constants';
 import Spinner from '../../reservation/map-popup/spinner/spinner';
-import { Modal } from '@material-ui/core';
+import { Modal, TextField } from '@material-ui/core';
 import safeFetch, { accountIsAdmin } from "../../../util/Util";
 import { MsalContext } from "@azure/msal-react";
 import ErrorPopup from '../../global/error-popup/index'
@@ -63,6 +63,7 @@ class Feed extends React.Component {
     delete_popup: false,
     delete_post: null,
     error_popup: false,
+    searchText: "",
   };
 
   constructor(props) {
@@ -168,7 +169,7 @@ class Feed extends React.Component {
       })
       .catch((error) => {
         console.log('error', error);
-        this.setState({ report_popup: false, reported_post: -1, error_popup: true,})
+        this.setState({ report_popup: false, reported_post: -1, error_popup: true, })
       });
   };
 
@@ -197,7 +198,7 @@ class Feed extends React.Component {
       })
       .catch((error) => {
         console.log('error', error);
-        this.setState({ unreported_popup: false, reported_post: -1, error_popup: true,})
+        this.setState({ unreported_popup: false, reported_post: -1, error_popup: true, })
       });
   };
 
@@ -264,7 +265,11 @@ class Feed extends React.Component {
     let list_of_feed = Spinner();
 
     if (this.state.loaded && !this.state.error && Array.isArray(this.feed)) {
-      list_of_feed = this.feed.map((el) => {
+      let res = this.feed;
+      if (this.state.searchText !== "") {
+        res = res.filter((item) => item.first_name.includes(this.state.searchText) || item.last_name.includes(this.state.searchText) || item.post_content.includes(this.state.searchText))
+      }
+      list_of_feed = res.map((el) => {
         return (
           <SinglePostContainer key={el.post_id}>
             <UserContainer>
@@ -276,7 +281,7 @@ class Feed extends React.Component {
               />
               {`${el.first_name} ${el.last_name} | `}
               <DatePostedContainer>
-                {`${MONTHS[Number(el.date_posted.slice(5, 7)) - 1]} ${el.date_posted.slice(8,10)}, ${el.date_posted.slice(0,4)}`}
+                {`${MONTHS[Number(el.date_posted.slice(5, 7)) - 1]} ${el.date_posted.slice(8, 10)}, ${el.date_posted.slice(0, 4)}`}
               </DatePostedContainer>
             </UserContainer>
             <TextContainer>{el.post_content}</TextContainer>
@@ -319,7 +324,7 @@ class Feed extends React.Component {
           <PostingPopup>Posting...</PostingPopup>
         </Modal>
       );
-    } 
+    }
 
     let reportPopup = (
       <Modal
@@ -394,7 +399,7 @@ class Feed extends React.Component {
       <Modal
         open={this.state.error_popup}
         onClose={() =>
-          this.setState({ error_popup: false})
+          this.setState({ error_popup: false })
         }
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >
@@ -411,7 +416,12 @@ class Feed extends React.Component {
         {errorPopup}
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <SocialFeed>
-            { this.channel_id !== 0 ?
+            <TextField id="filled-basic" label="" variant="outlined" style={{ background: 'white', width: '100%', borderRadius: 20, marginBottom: 30, padding: 10 }} placeholder="Search..." onChange={(text) => {
+              this.setState({
+                searchText: text.target.value
+              });
+            }} />
+            {this.channel_id !== 0 ?
               <ShareContainer>
                 <ShareForm>
                   <ShareTextArea
