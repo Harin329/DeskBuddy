@@ -1,6 +1,6 @@
 # Welcome to DeskBuddy!
 
-CPSC 319 ICBC project built with React.js, Node.ts, mySQL. See it live [here](https://d2y5vcfqq9yc1u.cloudfront.net/)
+CPSC 319 ICBC project built with React.js, Node.ts, mySQL. ~~See it live [here](https://d2y5vcfqq9yc1u.cloudfront.net/)~~
 
 ![Module0](./demo/Module0.png)
 
